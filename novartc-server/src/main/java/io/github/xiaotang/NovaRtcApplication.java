@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Created on 2026/2/27 16:14
  *
  * @author tangj
- * @description
  */
 @SpringBootApplication
 public class NovaRtcApplication {
