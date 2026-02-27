@@ -1,0 +1,14 @@
+server:
+  port: 7000
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+spring:
+  application:
+    name: NovaRTC
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27017/novartc
