@@ -5,27 +5,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.Date;
-
 /**
- * @author Tang_J on 2025/3/2 1:34
+ * @author Tang_J on 2025/3/2 2:03
  * @Description TODO
  **/
 @Data
-@Document(collection = "message")
-public class Message {
+@Document(collection = "single_chat")
+public class IMSingleChat {
     @MongoId
     private String id;
-    @Field("message_id")
-    private String messageId;
     @Field("chat_id")
     private String chatId;
-    @Field("sender_id")
-    private String senderId;
-    @Field("message_text")
-    private String messageText;
+    @Field("user1_id")
+    private String user1Id;
+    @Field("user2_id")
+    private String user2Id;
     @Field("created_at")
-    private Date createdAt;
-    @Field("chat_type")
-    private Integer chatType;
+    private String createdAt;
 }

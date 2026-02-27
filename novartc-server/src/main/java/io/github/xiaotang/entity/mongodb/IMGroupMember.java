@@ -8,24 +8,22 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 import java.util.Date;
 
 /**
- * Created on 2025/2/28 13:56
+ * Created on 2025/2/28 15:36
  *
  * @author tangj
  * @description
  */
 @Data
-@Document(collection = "user")
-public class User {
+@Document(collection = "group_member")
+public class IMGroupMember {
     @MongoId
     private String id;
+    @Field("group_member_id")
+    private String groupMemberId;
+    @Field("chat_id")
+    private String chatId;
     @Field("user_id")
     private String userId;
-    @Field("username")
-    private String username;
-    @Field("password")
-    private String password;
-    @Field("email")
-    private String email;
-    @Field("created_at")
-    private Date createdAt;
+    @Field("joined_at")
+    private Date joinedAt;
 }

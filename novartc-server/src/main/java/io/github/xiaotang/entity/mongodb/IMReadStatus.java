@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
  **/
 @Data
 @Document(collection = "read_status")
-public class ReadStatus {
+public class IMReadStatus {
     @MongoId
     private String id;
     @Field("read_status_id")
