@@ -18,10 +18,8 @@ import java.util.Date;
 public class IMGroupMember {
     @MongoId
     private String id;
-    @Field("group_member_id")
-    private String groupMemberId;
-    @Field("chat_id")
-    private String chatId;
+    @Field("group_id")
+    private String groupId;
     @Field("user_id")
     private String userId;
     @Field("joined_at")

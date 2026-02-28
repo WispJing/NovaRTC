@@ -47,20 +47,37 @@ message MsgBody {
   MessageType message_type = 2; // 消息类型（文本、图片、复合消息等）
   User sender = 3;           // 发送者信息
   int64 timestamp = 4;       // 消息发送时间戳（Unix时间戳）
-  repeated User recipients = 5;  // 接收者列表（单聊为1，群聊为多个）
-  bool is_group = 6;         // 是否为群聊消息（true为群聊，false为单聊）
+  bool is_group = 5;         // 是否为群聊消息（true为群聊，false为单聊）
+
+  // 单聊信息
+  SingleChatInfo single_chat_info = 6;
+  // 群聊信息
+  GroupChatInfo group_chat_info = 7;
 
   // 根据消息类型选择对应的内容字段
   oneof content {
-    TextContent text_content = 7;       // 文本消息内容
-    ImageContent image_content = 8;     // 图片消息内容
-    TextAndImageContent text_and_image_content = 9; // 复合消息（文本 + 图片）
+    TextContent text_content = 8;       // 文本消息内容
+    ImageContent image_content = 9;     // 图片消息内容
+    TextAndImageContent text_and_image_content = 10; // 复合消息（文本 + 图片）
   }
 }
 
 // 群聊消息附加信息（可选）
 message GroupChatInfo {
-  string group_id = 1;           // 群组ID
-  string group_name = 2;         // 群组名称
-  repeated User group_members = 3; // 群组成员
+  string chat_id = 1;             // 群聊ID
+  string group_id = 2;           // 群组ID
+}
+
+// 单聊消息附加信息（可选）
+message SingleChatInfo {
+  string chat_id = 1;        // 单聊ID
+  string user1_id = 2;       // 用户1 ID
+  string user2_id = 3;       // 用户2 ID
+}
+
+// 阅读状态信息
+message ReadStatus {
+  string message_id = 1;  // 消息ID
+  string user_id = 2;     // 阅读该消息的用户ID
+  string read_at = 3;     // 阅读时间 (字符串格式)
 }

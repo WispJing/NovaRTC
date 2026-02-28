@@ -20,6 +20,8 @@ public class IMGroupChat {
     private String id;
     @Field("chat_id")
     private String chatId;
+    @Field("group_num")
+    private String groupNum;
     @Field("group_name")
     private String groupName;
     @Field("created_at")
