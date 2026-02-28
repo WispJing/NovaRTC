@@ -1,5 +1,6 @@
 package io.github.xiaotang.novartc;
 
+import io.github.xiaotang.novartc.constant.IMConstant;
 import io.github.xiaotang.novartc.core.BaseServer;
 import io.github.xiaotang.novartc.netty.ChatMessage;
 import io.netty.channel.ChannelInitializer;
@@ -37,9 +38,8 @@ public class NovaRTCServer extends BaseServer {
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 //由于使用自定义的心跳机制，所以没必要加上 childOption(ChannelOption.SO_KEEPALIVE, true);
                 //而且SO_KEEPALIVE默认是每3600s发送一次心跳，不能及时检测到链路的有效性
-                .localAddress(new InetSocketAddress(Constants.DEFAULT_PORT))
+                .localAddress(new InetSocketAddress(IMConstant.port))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
-
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(defLoopGroup,
