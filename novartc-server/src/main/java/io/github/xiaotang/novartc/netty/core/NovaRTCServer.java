@@ -1,6 +1,7 @@
-package io.github.xiaotang.novartc;
+package io.github.xiaotang.novartc.netty.core;
 
 import io.github.xiaotang.novartc.constant.IMConstant;
+import io.github.xiaotang.novartc.netty.UserAuthHandler;
 import io.github.xiaotang.novartc.netty.core.BaseServer;
 import io.github.xiaotang.novartc.netty.ChatMessage;
 import io.netty.channel.ChannelInitializer;
@@ -33,9 +34,9 @@ public class NovaRTCServer extends BaseServer {
     public void start() {
         b.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 1024)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 //由于使用自定义的心跳机制，所以没必要加上 childOption(ChannelOption.SO_KEEPALIVE, true);
                 //而且SO_KEEPALIVE默认是每3600s发送一次心跳，不能及时检测到链路的有效性
                 .localAddress(new InetSocketAddress(IMConstant.port))
@@ -62,9 +63,9 @@ public class NovaRTCServer extends BaseServer {
                                 //检测链路是否读空闲,配合心跳handler检测channel是否正常
                                 new IdleStateHandler(60, 0, 0),
                                 //处理握手和认证
-                                new UserAuthHandler(),
+                                new UserAuthHandler()
                                 //处理消息的发送
-                                new MessageHandler()
+//                                new MessageHandler()
                         );
                     }
                 });
@@ -79,7 +80,7 @@ public class NovaRTCServer extends BaseServer {
                 @Override
                 public void run() {
                     logger.info("scanNotActiveChannel --------");
-                    UserInfoManager.scanNotActiveChannel();
+//                    UserInfoManager.scanNotActiveChannel();
                 }
             }, 3, 60, TimeUnit.SECONDS);
 
@@ -87,7 +88,7 @@ public class NovaRTCServer extends BaseServer {
             executorService.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    UserInfoManager.broadCastPing();
+//                    UserInfoManager.broadCastPing();
                 }
             }, 3, 50, TimeUnit.SECONDS);
 

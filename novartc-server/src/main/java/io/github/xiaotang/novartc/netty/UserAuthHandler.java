@@ -43,8 +43,8 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
             if (event.state().equals(IdleState.READER_IDLE)) {
                 final String remoteAddress = NettyUtil.parseChannelRemoteAddr(ctx.channel());
                 logger.warn("NETTY SERVER PIPELINE: IDLE exception [{}]", remoteAddress);
-                UserInfoManager.removeChannel(ctx.channel());
-                UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT, UserInfoManager.getAuthUserCount());
+//                UserInfoManager.removeChannel(ctx.channel());
+//                UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT, UserInfoManager.getAuthUserCount());
             }
         }
         ctx.fireUserEventTriggered(evt);
@@ -56,16 +56,16 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
             ctx.channel().close();
             return;
         }
-        WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory(
+        WebSocketServerHandshakerFactory handShakerFactory = new WebSocketServerHandshakerFactory(
                 IMConstant.websocketUrl, null, true);
-        handshaker = handshakerFactory.newHandshaker(request);
+        handshaker = handShakerFactory.newHandshaker(request);
         if (handshaker == null) {
             WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
         } else {
             // 动态加入websocket的编解码处理
             handshaker.handshake(ctx.channel(), request);
             // 存储已经连接的Channel
-            UserInfoManager.addChannel(ctx.channel());
+//            UserInfoManager.addChannel(ctx.channel());
         }
     }
 
@@ -73,7 +73,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
         // 判断是否关闭链路命令
         if (frame instanceof CloseWebSocketFrame) {
             handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
-            UserInfoManager.removeChannel(ctx.channel());
+//            UserInfoManager.removeChannel(ctx.channel());
             return;
         }
         // 判断是否Ping消息
@@ -109,27 +109,29 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
 
         Channel channel = ctx.channel();
         switch (msgBody.getMessageType()) {
-            case TEXT:
+            case TEXT ->
                 // 文本消息的处理
-                handleTextMessage(channel, msgBody);
-                break;
-            case IMAGE:
+                    handleTextMessage(channel, msgBody);
+            case IMAGE ->
                 // 图片消息的处理
-                handleImageMessage(channel, msgBody);
-                break;
-            case PING:
+                    handleImageMessage(channel, msgBody);
+            case PING -> {
                 logger.info("receive ping message");
                 return;
-            case PONG:
-                UserInfoManager.updateUserTime(channel);
+            }
+            case PONG -> {
+//                UserInfoManager.updateUserTime(channel);
                 logger.info("receive pong message, address: {}", NettyUtil.parseChannelRemoteAddr(channel));
                 return;
-            case AUTH:
+            }
+            case AUTH -> {
                 handleAuthMessage(channel, msgBody);
                 return;
-            default:
+            }
+            default -> {
                 logger.warn("The message type [{}] can't be auth!!!", msgBody.getMessageType());
                 return;
+            }
         }
         // 交给下一个处理器
         ctx.fireChannelRead(frame.retain());
@@ -149,10 +151,10 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
         String userId = msgBody.getSender().getUserId();
         String username = msgBody.getSender().getUsername();
         String password = msgBody.getSender().getAvatarUrl();
-        boolean isSuccess = UserInfoManager.saveUser(channel, username, password);
-        UserInfoManager.sendInfo(channel, ChatCode.SYS_AUTH_STATE, isSuccess);
-        if (isSuccess) {
-            UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT, UserInfoManager.getAuthUserCount());
-        }
+//        boolean isSuccess = UserInfoManager.saveUser(channel, username, password);
+//        UserInfoManager.sendInfo(channel, ChatCode.SYS_AUTH_STATE, isSuccess);
+//        if (isSuccess) {
+//            UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT, UserInfoManager.getAuthUserCount());
+//        }
     }
 }
