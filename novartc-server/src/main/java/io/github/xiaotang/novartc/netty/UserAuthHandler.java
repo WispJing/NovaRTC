@@ -103,9 +103,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
             msgBody = ChatMessage.MsgBody.parseFrom(byteArray);
         } catch (Exception e) {
             logger.error("Failed to parse protobuf message", e);
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(ChatMessage.MsgBody.newBuilder()
-                    .setMessageType(ChatMessage.MessageType.SYSTEM)
-                    .setTextContent(ChatMessage.TextContent.newBuilder().setText("msg type not supported")).build().toByteArray())));
+            WebSocketMsgHandler.sendSystemMessage(ctx, "msg type not supported");
             return;
         }
 

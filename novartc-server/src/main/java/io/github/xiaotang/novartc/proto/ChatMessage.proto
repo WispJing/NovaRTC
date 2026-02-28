@@ -15,6 +15,9 @@ enum MessageType {
   FILE = 4;           // 文件消息
   TEXT_AND_IMAGE = 5; // 复合消息类型：文本 + 图片
   SYSTEM = 6;         // 系统消息
+  PING = 7;           // Ping 消息
+  PONG = 8;           // Pong 消息
+  AUTH = 9;           // 用户认证消息
 }
 
 // 用户信息
@@ -59,6 +62,9 @@ message MsgBody {
     TextContent text_content = 8;       // 文本消息内容
     ImageContent image_content = 9;     // 图片消息内容
     TextAndImageContent text_and_image_content = 10; // 复合消息（文本 + 图片）
+    Ping pong_ping = 11;                // Ping 消息
+    Pong pong_response = 12;            // Pong 消息
+    Auth auth_message = 13;             // 用户认证消息
   }
 }
 
@@ -73,6 +79,26 @@ message SingleChatInfo {
   string chat_id = 1;        // 单聊ID
   string user1_id = 2;       // 用户1 ID
   string user2_id = 3;       // 用户2 ID
+}
+
+// Ping 消息
+message Ping {
+  string ping_id = 1;    // Ping 唯一ID
+  string message = 2;    // Ping 消息内容 (可选)
+}
+
+// Pong 消息
+message Pong {
+  string ping_id = 1;    // 对应的 Ping 唯一ID
+  string message = 2;    // Pong 消息内容 (可选)
+}
+
+// 用户认证消息
+message Auth {
+  string user_id = 1;      // 用户ID
+  string token = 2;        // 认证令牌
+  bool success = 3;        // 认证结果 (成功/失败)
+  string message = 4;      // 认证失败消息 (可选)
 }
 
 // 阅读状态信息

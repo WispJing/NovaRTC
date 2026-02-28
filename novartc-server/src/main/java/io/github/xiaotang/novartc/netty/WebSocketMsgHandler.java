@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -19,7 +18,6 @@ import java.util.Objects;
  * @author tangj
  * @description
  */
-@Component
 public class WebSocketMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketMsgHandler.class);
 
@@ -29,7 +27,7 @@ public class WebSocketMsgHandler {
      * @param ctx     Netty ChannelHandlerContext
      * @param message 系统消息内容
      */
-    private void sendSystemMessage(ChannelHandlerContext ctx, String message) {
+    public static void sendSystemMessage(ChannelHandlerContext ctx, String message) {
         sendMessage(ctx, ChatMessage.MessageType.SYSTEM, message, null, null, null, null, null, null);
     }
 
@@ -39,7 +37,7 @@ public class WebSocketMsgHandler {
      * @param ctx       Netty ChannelHandlerContext
      * @param isSuccess 认证结果
      */
-    private void sendAuthState(ChannelHandlerContext ctx, boolean isSuccess) {
+    public static void sendAuthState(ChannelHandlerContext ctx, boolean isSuccess) {
         sendMessage(ctx, ChatMessage.MessageType.SYSTEM, "Authentication " + (isSuccess ? "successful" : "failed"),
                 null, null, null, null, null, null);
     }
@@ -47,39 +45,39 @@ public class WebSocketMsgHandler {
     /**
      * 发送文本消息
      *
-     * @param ctx  Netty ChannelHandlerContext
+     * @param ctx Netty ChannelHandlerContext
      */
-    private void sendTextMessage(ChannelHandlerContext ctx, String messageId, String text, String description,
-                                 IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+    public static void sendTextMessage(ChannelHandlerContext ctx, String messageId, String text, String description,
+                                       IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
         sendMessage(ctx, ChatMessage.MessageType.TEXT, text, messageId, sendUser, imGroupChat, imSingleChat, null, null);
     }
 
     /**
      * 发送图片消息
      *
-     * @param ctx         Netty ChannelHandlerContext
+     * @param ctx Netty ChannelHandlerContext
      */
-    private void sendImageMessage(ChannelHandlerContext ctx, String messageId, String imageUrl, String description,
-                                  IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+    public static void sendImageMessage(ChannelHandlerContext ctx, String messageId, String imageUrl, String description,
+                                        IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
         sendMessage(ctx, ChatMessage.MessageType.IMAGE, description, messageId, sendUser, imGroupChat, imSingleChat, imageUrl, description);
     }
 
     /**
      * 发送复合消息（文本+图片）
      *
-     * @param ctx         Netty ChannelHandlerContext
+     * @param ctx Netty ChannelHandlerContext
      */
-    private void sendTextAndImageMessage(ChannelHandlerContext ctx, String messageId, String text, String imageUrl,
-                                         String description, IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+    public static void sendTextAndImageMessage(ChannelHandlerContext ctx, String messageId, String text, String imageUrl,
+                                               String description, IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
         sendMessage(ctx, ChatMessage.MessageType.TEXT_AND_IMAGE, text, messageId, sendUser, imGroupChat, imSingleChat, imageUrl, description);
     }
 
     /**
      * 通用的发送消息方法
      */
-    private void sendMessage(ChannelHandlerContext ctx, ChatMessage.MessageType messageType, String textContent,
-                             String messageId, IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat,
-                             String imageUrl, String description) {
+    public static void sendMessage(ChannelHandlerContext ctx, ChatMessage.MessageType messageType, String textContent,
+                                   String messageId, IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat,
+                                   String imageUrl, String description) {
         try {
             ChatMessage.MsgBody.Builder msgBodyBuilder = ChatMessage.MsgBody.newBuilder()
                     .setMessageType(messageType)
@@ -130,7 +128,7 @@ public class WebSocketMsgHandler {
         }
     }
 
-    private ChatMessage.User buildUser(IMUser imUser) {
+    public static ChatMessage.User buildUser(IMUser imUser) {
         return ChatMessage.User.newBuilder()
                 .setUserId(imUser.getUserNum())
                 .setUsername(imUser.getUsername())
