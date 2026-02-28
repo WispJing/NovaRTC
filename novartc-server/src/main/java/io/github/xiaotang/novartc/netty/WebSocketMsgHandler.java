@@ -6,6 +6,7 @@ import io.github.xiaotang.novartc.entity.mongodb.IMUser;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -29,17 +30,7 @@ public class WebSocketMsgHandler {
      * @param message 系统消息内容
      */
     private void sendSystemMessage(ChannelHandlerContext ctx, String message) {
-        try {
-            ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.newBuilder()
-                    .setMessageType(ChatMessage.MessageType.SYSTEM)
-                    .setTextContent(ChatMessage.TextContent.newBuilder().setText(message).build())
-                    .build();
-
-            byte[] byteArray = msgBody.toByteArray();
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(byteArray)));
-        } catch (Exception e) {
-            logger.error("Failed to send system message", e);
-        }
+        sendMessage(ctx, ChatMessage.MessageType.SYSTEM, message, null, null, null, null, null, null);
     }
 
     /**
@@ -49,17 +40,8 @@ public class WebSocketMsgHandler {
      * @param isSuccess 认证结果
      */
     private void sendAuthState(ChannelHandlerContext ctx, boolean isSuccess) {
-        try {
-            ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.newBuilder()
-                    .setMessageType(ChatMessage.MessageType.SYSTEM)
-                    .setTextContent(ChatMessage.TextContent.newBuilder().setText("Authentication " + (isSuccess ? "successful" : "failed")).build())
-                    .build();
-
-            byte[] byteArray = msgBody.toByteArray();
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(byteArray)));
-        } catch (Exception e) {
-            logger.error("Failed to send authentication state message", e);
-        }
+        sendMessage(ctx, ChatMessage.MessageType.SYSTEM, "Authentication " + (isSuccess ? "successful" : "failed"),
+                null, null, null, null, null, null);
     }
 
     /**
@@ -67,36 +49,9 @@ public class WebSocketMsgHandler {
      *
      * @param ctx  Netty ChannelHandlerContext
      */
-    private void sendTextMessage(ChannelHandlerContext ctx
-            , String messageId, String text, String description
-            , IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
-        try {
-            ChatMessage.MsgBody.Builder msgBodyBuilder = ChatMessage.MsgBody.newBuilder()
-                    .setMessageId(messageId)
-                    .setMessageType(ChatMessage.MessageType.TEXT)
-                    .setTimestamp(System.currentTimeMillis())
-                    .setSender(buildUser(sendUser))
-                    .setTextContent(ChatMessage.TextContent.newBuilder()
-                            .setText(text)
-                            .build());
-            if (Objects.nonNull(imGroupChat)) {
-                msgBodyBuilder.setIsGroup(true)
-                        .setGroupChatInfo(ChatMessage.GroupChatInfo.newBuilder()
-                                .setChatId(imGroupChat.getChatId())
-                                .setGroupId(imGroupChat.getId()));
-            }
-            if (Objects.nonNull(imSingleChat)) {
-                msgBodyBuilder.setSingleChatInfo(ChatMessage.SingleChatInfo.newBuilder()
-                        .setChatId(imSingleChat.getChatId())
-                        .setUser1Id(imSingleChat.getUser1Id())
-                        .setUser2Id(imSingleChat.getUser2Id()));
-            }
-
-            byte[] byteArray = msgBodyBuilder.build().toByteArray();
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(byteArray)));
-        } catch (Exception e) {
-            logger.error("Failed to send text message", e);
-        }
+    private void sendTextMessage(ChannelHandlerContext ctx, String messageId, String text, String description,
+                                 IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+        sendMessage(ctx, ChatMessage.MessageType.TEXT, text, messageId, sendUser, imGroupChat, imSingleChat, null, null);
     }
 
     /**
@@ -104,36 +59,9 @@ public class WebSocketMsgHandler {
      *
      * @param ctx         Netty ChannelHandlerContext
      */
-    private void sendImageMessage(ChannelHandlerContext ctx
-            , String messageId, String imageUrl, String description
-            , IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
-        try {
-            ChatMessage.MsgBody.Builder msgBodyBuilder = ChatMessage.MsgBody.newBuilder()
-                    .setMessageId(messageId)
-                    .setMessageType(ChatMessage.MessageType.IMAGE)
-                    .setTimestamp(System.currentTimeMillis())
-                    .setSender(buildUser(sendUser))
-                    .setImageContent(ChatMessage.ImageContent.newBuilder()
-                            .setImageUrl(imageUrl)
-                            .setImageDescription(description).build());
-            if (Objects.nonNull(imGroupChat)) {
-                msgBodyBuilder.setIsGroup(true)
-                        .setGroupChatInfo(ChatMessage.GroupChatInfo.newBuilder()
-                                .setChatId(imGroupChat.getChatId())
-                                .setGroupId(imGroupChat.getId()));
-            }
-            if (Objects.nonNull(imSingleChat)) {
-                msgBodyBuilder.setSingleChatInfo(ChatMessage.SingleChatInfo.newBuilder()
-                        .setChatId(imSingleChat.getChatId())
-                        .setUser1Id(imSingleChat.getUser1Id())
-                        .setUser2Id(imSingleChat.getUser2Id()));
-            }
-
-            byte[] byteArray = msgBodyBuilder.build().toByteArray();
-            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(byteArray)));
-        } catch (Exception e) {
-            logger.error("Failed to send image message", e);
-        }
+    private void sendImageMessage(ChannelHandlerContext ctx, String messageId, String imageUrl, String description,
+                                  IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+        sendMessage(ctx, ChatMessage.MessageType.IMAGE, description, messageId, sendUser, imGroupChat, imSingleChat, imageUrl, description);
     }
 
     /**
@@ -141,25 +69,39 @@ public class WebSocketMsgHandler {
      *
      * @param ctx         Netty ChannelHandlerContext
      */
-    private void sendTextAndImageMessage(ChannelHandlerContext ctx
-            , String messageId, String text, String imageUrl, String description
-            , IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+    private void sendTextAndImageMessage(ChannelHandlerContext ctx, String messageId, String text, String imageUrl,
+                                         String description, IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat) {
+        sendMessage(ctx, ChatMessage.MessageType.TEXT_AND_IMAGE, text, messageId, sendUser, imGroupChat, imSingleChat, imageUrl, description);
+    }
+
+    /**
+     * 通用的发送消息方法
+     */
+    private void sendMessage(ChannelHandlerContext ctx, ChatMessage.MessageType messageType, String textContent,
+                             String messageId, IMUser sendUser, IMGroupChat imGroupChat, IMSingleChat imSingleChat,
+                             String imageUrl, String description) {
         try {
             ChatMessage.MsgBody.Builder msgBodyBuilder = ChatMessage.MsgBody.newBuilder()
-                    .setMessageId(messageId)
-                    .setMessageType(ChatMessage.MessageType.TEXT_AND_IMAGE)
-                    .setTimestamp(System.currentTimeMillis())
-                    .setSender(buildUser(sendUser))
-                    .setTextAndImageContent(ChatMessage.TextAndImageContent.newBuilder()
-                            .setTextContent(ChatMessage.TextContent.newBuilder().setText(text).build())
-                            .setImageContent(ChatMessage.ImageContent.newBuilder().setImageUrl(imageUrl).setImageDescription(description).build())
-                            .build());
+                    .setMessageType(messageType)
+                    .setTimestamp(System.currentTimeMillis());
+
+            if (StringUtils.isNotBlank(messageId)) {
+                msgBodyBuilder.setMessageId(messageId);
+            }
+
+            if (Objects.nonNull(sendUser)) {
+                msgBodyBuilder.setSender(buildUser(sendUser));
+            }
+
+            // 设置群聊信息
             if (Objects.nonNull(imGroupChat)) {
                 msgBodyBuilder.setIsGroup(true)
                         .setGroupChatInfo(ChatMessage.GroupChatInfo.newBuilder()
                                 .setChatId(imGroupChat.getChatId())
                                 .setGroupId(imGroupChat.getId()));
             }
+
+            // 设置单聊信息
             if (Objects.nonNull(imSingleChat)) {
                 msgBodyBuilder.setSingleChatInfo(ChatMessage.SingleChatInfo.newBuilder()
                         .setChatId(imSingleChat.getChatId())
@@ -167,10 +109,24 @@ public class WebSocketMsgHandler {
                         .setUser2Id(imSingleChat.getUser2Id()));
             }
 
+            // 设置消息内容
+            if (messageType == ChatMessage.MessageType.TEXT) {
+                msgBodyBuilder.setTextContent(ChatMessage.TextContent.newBuilder().setText(textContent).build());
+            } else if (messageType == ChatMessage.MessageType.IMAGE) {
+                msgBodyBuilder.setImageContent(ChatMessage.ImageContent.newBuilder()
+                        .setImageUrl(imageUrl)
+                        .setImageDescription(description).build());
+            } else if (messageType == ChatMessage.MessageType.TEXT_AND_IMAGE) {
+                msgBodyBuilder.setTextAndImageContent(ChatMessage.TextAndImageContent.newBuilder()
+                        .setTextContent(ChatMessage.TextContent.newBuilder().setText(textContent).build())
+                        .setImageContent(ChatMessage.ImageContent.newBuilder().setImageUrl(imageUrl).setImageDescription(description).build())
+                        .build());
+            }
+
             byte[] byteArray = msgBodyBuilder.build().toByteArray();
             ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(byteArray)));
         } catch (Exception e) {
-            logger.error("Failed to send text and image message", e);
+            logger.error("Failed to send message", e);
         }
     }
 
