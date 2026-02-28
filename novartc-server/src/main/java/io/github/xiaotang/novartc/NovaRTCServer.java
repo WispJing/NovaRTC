@@ -1,7 +1,7 @@
 package io.github.xiaotang.novartc;
 
 import io.github.xiaotang.novartc.constant.IMConstant;
-import io.github.xiaotang.novartc.core.BaseServer;
+import io.github.xiaotang.novartc.netty.core.BaseServer;
 import io.github.xiaotang.novartc.netty.ChatMessage;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
