@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package io.github.xiaotang.entity.im;
+
+option java_multiple_files = false;  // 生成每个消息类独立文件
+option java_package = "io.github.xiaotang.entity.im";  // 指定 Java 包名
+option java_outer_classname = "ChatMessage";  // 控制外部类名
+
+// 消息类型枚举
+enum MessageType {
+  TEXT = 0;           // 文本消息
+  IMAGE = 1;          // 图片消息
+  VIDEO = 2;          // 视频消息
+  AUDIO = 3;          // 音频消息
+  FILE = 4;           // 文件消息
+  TEXT_AND_IMAGE = 5; // 复合消息类型：文本 + 图片
+}
+
+// 用户信息
+message User {
+  string user_id = 1;     // 用户ID
+  string username = 2;     // 用户名
+  string avatar_url = 3;  // 用户头像URL
+}
+
+// 图片消息内容
+message ImageContent {
+  string image_url = 1;   // 图片URL
+  string image_description = 2; // 图片描述 (可选)
+}
+
+// 文本消息内容
+message TextContent {
+  string text = 1;        // 文本内容
+}
+
+// 复合消息内容 (文本 + 图片)
+message TextAndImageContent {
+  TextContent text_content = 1;  // 文本内容
+  ImageContent image_content = 2; // 图片内容
+}
+
+// 消息体
+message MsgBody {
+  string message_id = 1;     // 消息唯一ID
+  MessageType message_type = 2; // 消息类型（文本、图片、复合消息等）
+  User sender = 3;           // 发送者信息
+  int64 timestamp = 4;       // 消息发送时间戳（Unix时间戳）
+  repeated User recipients = 5;  // 接收者列表（单聊为1，群聊为多个）
+  bool is_group = 6;         // 是否为群聊消息（true为群聊，false为单聊）
+
+  // 根据消息类型选择对应的内容字段
+  oneof content {
+    TextContent text_content = 7;       // 文本消息内容
+    ImageContent image_content = 8;     // 图片消息内容
+    TextAndImageContent text_and_image_content = 9; // 复合消息（文本 + 图片）
+  }
+}
+
+// 群聊消息附加信息（可选）
+message GroupChatInfo {
+  string group_id = 1;           // 群组ID
+  string group_name = 2;         // 群组名称
+  repeated User group_members = 3; // 群组成员
+}
