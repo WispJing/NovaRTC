@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package io.github.xiaotang.entity.im;
+package io.github.xiaotang.novartc.netty;
 
 option java_multiple_files = false;  // 生成每个消息类独立文件
-option java_package = "io.github.xiaotang.entity.im";  // 指定 Java 包名
+option java_package = "io.github.xiaotang.novartc.netty";  // 指定 Java 包名
 option java_outer_classname = "ChatMessage";  // 控制外部类名
 
 // 消息类型枚举

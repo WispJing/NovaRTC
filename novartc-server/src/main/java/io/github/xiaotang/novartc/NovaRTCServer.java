@@ -1,7 +1,7 @@
-package io.github.xiaotang;
+package io.github.xiaotang.novartc;
 
-import io.github.xiaotang.netty.core.BaseServer;
-import io.github.xiaotang.entity.im.ChatMessage;
+import io.github.xiaotang.novartc.core.BaseServer;
+import io.github.xiaotang.novartc.netty.ChatMessage;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;

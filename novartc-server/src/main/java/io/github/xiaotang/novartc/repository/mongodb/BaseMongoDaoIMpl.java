@@ -1,4 +1,4 @@
-package io.github.xiaotang.repository.mongodb;
+package io.github.xiaotang.novartc.repository.mongodb;
 
 import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;

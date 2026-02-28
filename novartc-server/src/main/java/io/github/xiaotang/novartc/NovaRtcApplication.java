@@ -1,7 +1,7 @@
-package io.github.xiaotang;
+package io.github.xiaotang.novartc;
 
-import io.github.xiaotang.repository.mongodb.IMUserRepository;
-import io.github.xiaotang.util.JacksonUtil;
+import io.github.xiaotang.novartc.repository.mongodb.IMUserRepository;
+import io.github.xiaotang.novartc.util.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

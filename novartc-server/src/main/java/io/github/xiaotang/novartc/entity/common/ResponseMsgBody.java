@@ -1,8 +1,8 @@
-package io.github.xiaotang.entity.common;
+package io.github.xiaotang.novartc.entity.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.xiaotang.enums.ExceptionEnum;
-import io.github.xiaotang.util.JacksonUtil;
+import io.github.xiaotang.novartc.enums.ExceptionEnum;
+import io.github.xiaotang.novartc.util.JacksonUtil;
 
 import java.util.HashMap;
 import java.util.Map;

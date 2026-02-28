@@ -1,8 +1,8 @@
-package io.github.xiaotang.repository.mongodb.impl;
+package io.github.xiaotang.novartc.repository.mongodb.impl;
 
-import io.github.xiaotang.entity.mongodb.IMUser;
-import io.github.xiaotang.repository.mongodb.BaseMongoDaoIMpl;
-import io.github.xiaotang.repository.mongodb.IMUserRepository;
+import io.github.xiaotang.novartc.entity.mongodb.IMUser;
+import io.github.xiaotang.novartc.repository.mongodb.IMUserRepository;
+import io.github.xiaotang.novartc.repository.mongodb.BaseMongoDaoIMpl;
 import org.springframework.stereotype.Repository;
 
 /**

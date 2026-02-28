@@ -1,4 +1,4 @@
-package io.github.xiaotang.repository.mongodb;
+package io.github.xiaotang.novartc.repository.mongodb;
 
 /**
  * Created on 2026/2/27 17:47

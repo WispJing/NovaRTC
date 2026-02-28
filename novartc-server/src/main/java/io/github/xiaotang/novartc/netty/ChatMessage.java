@@ -3,7 +3,7 @@
 // source: ChatMessage.proto
 // Protobuf Java Version: 4.32.0
 
-package io.github.xiaotang.entity.im;
+package io.github.xiaotang.novartc.netty;
 
 @com.google.protobuf.Generated
 public final class ChatMessage {
@@ -31,7 +31,7 @@ public final class ChatMessage {
    * 消息类型枚举
    * </pre>
    *
-   * Protobuf enum {@code io.github.xiaotang.entity.im.MessageType}
+   * Protobuf enum {@code io.github.xiaotang.novartc.netty.MessageType}
    */
   public enum MessageType
       implements com.google.protobuf.ProtocolMessageEnum {
@@ -205,7 +205,7 @@ public final class ChatMessage {
     }
     public static com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.getDescriptor().getEnumTypes().get(0);
+      return io.github.xiaotang.novartc.netty.ChatMessage.getDescriptor().getEnumTypes().get(0);
     }
 
     private static final MessageType[] VALUES = values();
@@ -228,11 +228,11 @@ public final class ChatMessage {
       this.value = value;
     }
 
-    // @@protoc_insertion_point(enum_scope:io.github.xiaotang.entity.im.MessageType)
+    // @@protoc_insertion_point(enum_scope:io.github.xiaotang.novartc.netty.MessageType)
   }
 
   public interface UserOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.entity.im.User)
+      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.novartc.netty.User)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -300,11 +300,11 @@ public final class ChatMessage {
    * 用户信息
    * </pre>
    *
-   * Protobuf type {@code io.github.xiaotang.entity.im.User}
+   * Protobuf type {@code io.github.xiaotang.novartc.netty.User}
    */
   public static final class User extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:io.github.xiaotang.entity.im.User)
+      // @@protoc_insertion_point(message_implements:io.github.xiaotang.novartc.netty.User)
       UserOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
@@ -328,15 +328,15 @@ public final class ChatMessage {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_User_descriptor;
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_User_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_User_fieldAccessorTable
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_User_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.github.xiaotang.entity.im.ChatMessage.User.class, io.github.xiaotang.entity.im.ChatMessage.User.Builder.class);
+              io.github.xiaotang.novartc.netty.ChatMessage.User.class, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder.class);
     }
 
     public static final int USER_ID_FIELD_NUMBER = 1;
@@ -531,10 +531,10 @@ public final class ChatMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof io.github.xiaotang.entity.im.ChatMessage.User)) {
+      if (!(obj instanceof io.github.xiaotang.novartc.netty.ChatMessage.User)) {
         return super.equals(obj);
       }
-      io.github.xiaotang.entity.im.ChatMessage.User other = (io.github.xiaotang.entity.im.ChatMessage.User) obj;
+      io.github.xiaotang.novartc.netty.ChatMessage.User other = (io.github.xiaotang.novartc.netty.ChatMessage.User) obj;
 
       if (!getUserId()
           .equals(other.getUserId())) return false;
@@ -564,44 +564,44 @@ public final class ChatMessage {
       return hash;
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(byte[] data)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -609,26 +609,26 @@ public final class ChatMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseDelimitedFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseDelimitedFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.User parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -641,7 +641,7 @@ public final class ChatMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(io.github.xiaotang.entity.im.ChatMessage.User prototype) {
+    public static Builder newBuilder(io.github.xiaotang.novartc.netty.ChatMessage.User prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -661,26 +661,26 @@ public final class ChatMessage {
      * 用户信息
      * </pre>
      *
-     * Protobuf type {@code io.github.xiaotang.entity.im.User}
+     * Protobuf type {@code io.github.xiaotang.novartc.netty.User}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.entity.im.User)
-        io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.novartc.netty.User)
+        io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_User_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_User_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_User_fieldAccessorTable
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_User_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.github.xiaotang.entity.im.ChatMessage.User.class, io.github.xiaotang.entity.im.ChatMessage.User.Builder.class);
+                io.github.xiaotang.novartc.netty.ChatMessage.User.class, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder.class);
       }
 
-      // Construct using io.github.xiaotang.entity.im.ChatMessage.User.newBuilder()
+      // Construct using io.github.xiaotang.novartc.netty.ChatMessage.User.newBuilder()
       private Builder() {
 
       }
@@ -703,17 +703,17 @@ public final class ChatMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_User_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_User_descriptor;
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.User getDefaultInstanceForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance();
+      public io.github.xiaotang.novartc.netty.ChatMessage.User getDefaultInstanceForType() {
+        return io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.User build() {
-        io.github.xiaotang.entity.im.ChatMessage.User result = buildPartial();
+      public io.github.xiaotang.novartc.netty.ChatMessage.User build() {
+        io.github.xiaotang.novartc.netty.ChatMessage.User result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -721,14 +721,14 @@ public final class ChatMessage {
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.User buildPartial() {
-        io.github.xiaotang.entity.im.ChatMessage.User result = new io.github.xiaotang.entity.im.ChatMessage.User(this);
+      public io.github.xiaotang.novartc.netty.ChatMessage.User buildPartial() {
+        io.github.xiaotang.novartc.netty.ChatMessage.User result = new io.github.xiaotang.novartc.netty.ChatMessage.User(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(io.github.xiaotang.entity.im.ChatMessage.User result) {
+      private void buildPartial0(io.github.xiaotang.novartc.netty.ChatMessage.User result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.userId_ = userId_;
@@ -743,16 +743,16 @@ public final class ChatMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.github.xiaotang.entity.im.ChatMessage.User) {
-          return mergeFrom((io.github.xiaotang.entity.im.ChatMessage.User)other);
+        if (other instanceof io.github.xiaotang.novartc.netty.ChatMessage.User) {
+          return mergeFrom((io.github.xiaotang.novartc.netty.ChatMessage.User)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(io.github.xiaotang.entity.im.ChatMessage.User other) {
-        if (other == io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance()) return this;
+      public Builder mergeFrom(io.github.xiaotang.novartc.netty.ChatMessage.User other) {
+        if (other == io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance()) return this;
         if (!other.getUserId().isEmpty()) {
           userId_ = other.userId_;
           bitField0_ |= 0x00000001;
@@ -1102,16 +1102,16 @@ public final class ChatMessage {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.entity.im.User)
+      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.novartc.netty.User)
     }
 
-    // @@protoc_insertion_point(class_scope:io.github.xiaotang.entity.im.User)
-    private static final io.github.xiaotang.entity.im.ChatMessage.User DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.github.xiaotang.novartc.netty.User)
+    private static final io.github.xiaotang.novartc.netty.ChatMessage.User DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.github.xiaotang.entity.im.ChatMessage.User();
+      DEFAULT_INSTANCE = new io.github.xiaotang.novartc.netty.ChatMessage.User();
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.User getDefaultInstance() {
+    public static io.github.xiaotang.novartc.netty.ChatMessage.User getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1147,14 +1147,14 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.User getDefaultInstanceForType() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.User getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
   public interface ImageContentOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.entity.im.ImageContent)
+      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.novartc.netty.ImageContent)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -1202,11 +1202,11 @@ public final class ChatMessage {
    * 图片消息内容
    * </pre>
    *
-   * Protobuf type {@code io.github.xiaotang.entity.im.ImageContent}
+   * Protobuf type {@code io.github.xiaotang.novartc.netty.ImageContent}
    */
   public static final class ImageContent extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:io.github.xiaotang.entity.im.ImageContent)
+      // @@protoc_insertion_point(message_implements:io.github.xiaotang.novartc.netty.ImageContent)
       ImageContentOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
@@ -1229,15 +1229,15 @@ public final class ChatMessage {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_ImageContent_descriptor;
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_ImageContent_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_ImageContent_fieldAccessorTable
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_ImageContent_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.github.xiaotang.entity.im.ChatMessage.ImageContent.class, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder.class);
+              io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.class, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder.class);
     }
 
     public static final int IMAGE_URL_FIELD_NUMBER = 1;
@@ -1379,10 +1379,10 @@ public final class ChatMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof io.github.xiaotang.entity.im.ChatMessage.ImageContent)) {
+      if (!(obj instanceof io.github.xiaotang.novartc.netty.ChatMessage.ImageContent)) {
         return super.equals(obj);
       }
-      io.github.xiaotang.entity.im.ChatMessage.ImageContent other = (io.github.xiaotang.entity.im.ChatMessage.ImageContent) obj;
+      io.github.xiaotang.novartc.netty.ChatMessage.ImageContent other = (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) obj;
 
       if (!getImageUrl()
           .equals(other.getImageUrl())) return false;
@@ -1408,44 +1408,44 @@ public final class ChatMessage {
       return hash;
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(byte[] data)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1453,26 +1453,26 @@ public final class ChatMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseDelimitedFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseDelimitedFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1485,7 +1485,7 @@ public final class ChatMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(io.github.xiaotang.entity.im.ChatMessage.ImageContent prototype) {
+    public static Builder newBuilder(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1505,26 +1505,26 @@ public final class ChatMessage {
      * 图片消息内容
      * </pre>
      *
-     * Protobuf type {@code io.github.xiaotang.entity.im.ImageContent}
+     * Protobuf type {@code io.github.xiaotang.novartc.netty.ImageContent}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.entity.im.ImageContent)
-        io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.novartc.netty.ImageContent)
+        io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_ImageContent_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_ImageContent_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_ImageContent_fieldAccessorTable
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_ImageContent_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.github.xiaotang.entity.im.ChatMessage.ImageContent.class, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder.class);
+                io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.class, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder.class);
       }
 
-      // Construct using io.github.xiaotang.entity.im.ChatMessage.ImageContent.newBuilder()
+      // Construct using io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.newBuilder()
       private Builder() {
 
       }
@@ -1546,17 +1546,17 @@ public final class ChatMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_ImageContent_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_ImageContent_descriptor;
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent getDefaultInstanceForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getDefaultInstanceForType() {
+        return io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent build() {
-        io.github.xiaotang.entity.im.ChatMessage.ImageContent result = buildPartial();
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent build() {
+        io.github.xiaotang.novartc.netty.ChatMessage.ImageContent result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1564,14 +1564,14 @@ public final class ChatMessage {
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent buildPartial() {
-        io.github.xiaotang.entity.im.ChatMessage.ImageContent result = new io.github.xiaotang.entity.im.ChatMessage.ImageContent(this);
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent buildPartial() {
+        io.github.xiaotang.novartc.netty.ChatMessage.ImageContent result = new io.github.xiaotang.novartc.netty.ChatMessage.ImageContent(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(io.github.xiaotang.entity.im.ChatMessage.ImageContent result) {
+      private void buildPartial0(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.imageUrl_ = imageUrl_;
@@ -1583,16 +1583,16 @@ public final class ChatMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.github.xiaotang.entity.im.ChatMessage.ImageContent) {
-          return mergeFrom((io.github.xiaotang.entity.im.ChatMessage.ImageContent)other);
+        if (other instanceof io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) {
+          return mergeFrom((io.github.xiaotang.novartc.netty.ChatMessage.ImageContent)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(io.github.xiaotang.entity.im.ChatMessage.ImageContent other) {
-        if (other == io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance()) return this;
+      public Builder mergeFrom(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent other) {
+        if (other == io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance()) return this;
         if (!other.getImageUrl().isEmpty()) {
           imageUrl_ = other.imageUrl_;
           bitField0_ |= 0x00000001;
@@ -1840,16 +1840,16 @@ public final class ChatMessage {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.entity.im.ImageContent)
+      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.novartc.netty.ImageContent)
     }
 
-    // @@protoc_insertion_point(class_scope:io.github.xiaotang.entity.im.ImageContent)
-    private static final io.github.xiaotang.entity.im.ChatMessage.ImageContent DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.github.xiaotang.novartc.netty.ImageContent)
+    private static final io.github.xiaotang.novartc.netty.ChatMessage.ImageContent DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.github.xiaotang.entity.im.ChatMessage.ImageContent();
+      DEFAULT_INSTANCE = new io.github.xiaotang.novartc.netty.ChatMessage.ImageContent();
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.ImageContent getDefaultInstance() {
+    public static io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1885,14 +1885,14 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.ImageContent getDefaultInstanceForType() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
   public interface TextContentOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.entity.im.TextContent)
+      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.novartc.netty.TextContent)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -1920,11 +1920,11 @@ public final class ChatMessage {
    * 文本消息内容
    * </pre>
    *
-   * Protobuf type {@code io.github.xiaotang.entity.im.TextContent}
+   * Protobuf type {@code io.github.xiaotang.novartc.netty.TextContent}
    */
   public static final class TextContent extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:io.github.xiaotang.entity.im.TextContent)
+      // @@protoc_insertion_point(message_implements:io.github.xiaotang.novartc.netty.TextContent)
       TextContentOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
@@ -1946,15 +1946,15 @@ public final class ChatMessage {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextContent_descriptor;
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextContent_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextContent_fieldAccessorTable
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextContent_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.github.xiaotang.entity.im.ChatMessage.TextContent.class, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder.class);
+              io.github.xiaotang.novartc.netty.ChatMessage.TextContent.class, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder.class);
     }
 
     public static final int TEXT_FIELD_NUMBER = 1;
@@ -2043,10 +2043,10 @@ public final class ChatMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof io.github.xiaotang.entity.im.ChatMessage.TextContent)) {
+      if (!(obj instanceof io.github.xiaotang.novartc.netty.ChatMessage.TextContent)) {
         return super.equals(obj);
       }
-      io.github.xiaotang.entity.im.ChatMessage.TextContent other = (io.github.xiaotang.entity.im.ChatMessage.TextContent) obj;
+      io.github.xiaotang.novartc.netty.ChatMessage.TextContent other = (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) obj;
 
       if (!getText()
           .equals(other.getText())) return false;
@@ -2068,44 +2068,44 @@ public final class ChatMessage {
       return hash;
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(byte[] data)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2113,26 +2113,26 @@ public final class ChatMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseDelimitedFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseDelimitedFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2145,7 +2145,7 @@ public final class ChatMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(io.github.xiaotang.entity.im.ChatMessage.TextContent prototype) {
+    public static Builder newBuilder(io.github.xiaotang.novartc.netty.ChatMessage.TextContent prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -2165,26 +2165,26 @@ public final class ChatMessage {
      * 文本消息内容
      * </pre>
      *
-     * Protobuf type {@code io.github.xiaotang.entity.im.TextContent}
+     * Protobuf type {@code io.github.xiaotang.novartc.netty.TextContent}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.entity.im.TextContent)
-        io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.novartc.netty.TextContent)
+        io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextContent_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextContent_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextContent_fieldAccessorTable
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextContent_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.github.xiaotang.entity.im.ChatMessage.TextContent.class, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder.class);
+                io.github.xiaotang.novartc.netty.ChatMessage.TextContent.class, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder.class);
       }
 
-      // Construct using io.github.xiaotang.entity.im.ChatMessage.TextContent.newBuilder()
+      // Construct using io.github.xiaotang.novartc.netty.ChatMessage.TextContent.newBuilder()
       private Builder() {
 
       }
@@ -2205,17 +2205,17 @@ public final class ChatMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextContent_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextContent_descriptor;
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent getDefaultInstanceForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent getDefaultInstanceForType() {
+        return io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent build() {
-        io.github.xiaotang.entity.im.ChatMessage.TextContent result = buildPartial();
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent build() {
+        io.github.xiaotang.novartc.netty.ChatMessage.TextContent result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -2223,14 +2223,14 @@ public final class ChatMessage {
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent buildPartial() {
-        io.github.xiaotang.entity.im.ChatMessage.TextContent result = new io.github.xiaotang.entity.im.ChatMessage.TextContent(this);
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent buildPartial() {
+        io.github.xiaotang.novartc.netty.ChatMessage.TextContent result = new io.github.xiaotang.novartc.netty.ChatMessage.TextContent(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(io.github.xiaotang.entity.im.ChatMessage.TextContent result) {
+      private void buildPartial0(io.github.xiaotang.novartc.netty.ChatMessage.TextContent result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.text_ = text_;
@@ -2239,16 +2239,16 @@ public final class ChatMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.github.xiaotang.entity.im.ChatMessage.TextContent) {
-          return mergeFrom((io.github.xiaotang.entity.im.ChatMessage.TextContent)other);
+        if (other instanceof io.github.xiaotang.novartc.netty.ChatMessage.TextContent) {
+          return mergeFrom((io.github.xiaotang.novartc.netty.ChatMessage.TextContent)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(io.github.xiaotang.entity.im.ChatMessage.TextContent other) {
-        if (other == io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance()) return this;
+      public Builder mergeFrom(io.github.xiaotang.novartc.netty.ChatMessage.TextContent other) {
+        if (other == io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance()) return this;
         if (!other.getText().isEmpty()) {
           text_ = other.text_;
           bitField0_ |= 0x00000001;
@@ -2394,16 +2394,16 @@ public final class ChatMessage {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.entity.im.TextContent)
+      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.novartc.netty.TextContent)
     }
 
-    // @@protoc_insertion_point(class_scope:io.github.xiaotang.entity.im.TextContent)
-    private static final io.github.xiaotang.entity.im.ChatMessage.TextContent DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.github.xiaotang.novartc.netty.TextContent)
+    private static final io.github.xiaotang.novartc.netty.ChatMessage.TextContent DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.github.xiaotang.entity.im.ChatMessage.TextContent();
+      DEFAULT_INSTANCE = new io.github.xiaotang.novartc.netty.ChatMessage.TextContent();
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextContent getDefaultInstance() {
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextContent getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -2439,14 +2439,14 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextContent getDefaultInstanceForType() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextContent getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
   public interface TextAndImageContentOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.entity.im.TextAndImageContent)
+      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.novartc.netty.TextAndImageContent)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -2454,7 +2454,7 @@ public final class ChatMessage {
      * 文本内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
      * @return Whether the textContent field is set.
      */
     boolean hasTextContent();
@@ -2463,25 +2463,25 @@ public final class ChatMessage {
      * 文本内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
      * @return The textContent.
      */
-    io.github.xiaotang.entity.im.ChatMessage.TextContent getTextContent();
+    io.github.xiaotang.novartc.netty.ChatMessage.TextContent getTextContent();
     /**
      * <pre>
      * 文本内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder getTextContentOrBuilder();
+    io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder getTextContentOrBuilder();
 
     /**
      * <pre>
      * 图片内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
      * @return Whether the imageContent field is set.
      */
     boolean hasImageContent();
@@ -2490,29 +2490,29 @@ public final class ChatMessage {
      * 图片内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
      * @return The imageContent.
      */
-    io.github.xiaotang.entity.im.ChatMessage.ImageContent getImageContent();
+    io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getImageContent();
     /**
      * <pre>
      * 图片内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder();
+    io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder();
   }
   /**
    * <pre>
    * 复合消息内容 (文本 + 图片)
    * </pre>
    *
-   * Protobuf type {@code io.github.xiaotang.entity.im.TextAndImageContent}
+   * Protobuf type {@code io.github.xiaotang.novartc.netty.TextAndImageContent}
    */
   public static final class TextAndImageContent extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:io.github.xiaotang.entity.im.TextAndImageContent)
+      // @@protoc_insertion_point(message_implements:io.github.xiaotang.novartc.netty.TextAndImageContent)
       TextAndImageContentOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
@@ -2533,26 +2533,26 @@ public final class ChatMessage {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextAndImageContent_descriptor;
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextAndImageContent_fieldAccessorTable
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.class, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder.class);
+              io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.class, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder.class);
     }
 
     private int bitField0_;
     public static final int TEXT_CONTENT_FIELD_NUMBER = 1;
-    private io.github.xiaotang.entity.im.ChatMessage.TextContent textContent_;
+    private io.github.xiaotang.novartc.netty.ChatMessage.TextContent textContent_;
     /**
      * <pre>
      * 文本内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
      * @return Whether the textContent field is set.
      */
     @java.lang.Override
@@ -2564,33 +2564,33 @@ public final class ChatMessage {
      * 文本内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
      * @return The textContent.
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextContent getTextContent() {
-      return textContent_ == null ? io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance() : textContent_;
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextContent getTextContent() {
+      return textContent_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance() : textContent_;
     }
     /**
      * <pre>
      * 文本内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
-      return textContent_ == null ? io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance() : textContent_;
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
+      return textContent_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance() : textContent_;
     }
 
     public static final int IMAGE_CONTENT_FIELD_NUMBER = 2;
-    private io.github.xiaotang.entity.im.ChatMessage.ImageContent imageContent_;
+    private io.github.xiaotang.novartc.netty.ChatMessage.ImageContent imageContent_;
     /**
      * <pre>
      * 图片内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
      * @return Whether the imageContent field is set.
      */
     @java.lang.Override
@@ -2602,23 +2602,23 @@ public final class ChatMessage {
      * 图片内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
      * @return The imageContent.
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.ImageContent getImageContent() {
-      return imageContent_ == null ? io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
+    public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getImageContent() {
+      return imageContent_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
     }
     /**
      * <pre>
      * 图片内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
-      return imageContent_ == null ? io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
+    public io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
+      return imageContent_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2668,10 +2668,10 @@ public final class ChatMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent)) {
+      if (!(obj instanceof io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent)) {
         return super.equals(obj);
       }
-      io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent other = (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) obj;
+      io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent other = (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) obj;
 
       if (hasTextContent() != other.hasTextContent()) return false;
       if (hasTextContent()) {
@@ -2707,44 +2707,44 @@ public final class ChatMessage {
       return hash;
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(byte[] data)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2752,26 +2752,26 @@ public final class ChatMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseDelimitedFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseDelimitedFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2784,7 +2784,7 @@ public final class ChatMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent prototype) {
+    public static Builder newBuilder(io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -2804,26 +2804,26 @@ public final class ChatMessage {
      * 复合消息内容 (文本 + 图片)
      * </pre>
      *
-     * Protobuf type {@code io.github.xiaotang.entity.im.TextAndImageContent}
+     * Protobuf type {@code io.github.xiaotang.novartc.netty.TextAndImageContent}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.entity.im.TextAndImageContent)
-        io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.novartc.netty.TextAndImageContent)
+        io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextAndImageContent_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextAndImageContent_fieldAccessorTable
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.class, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder.class);
+                io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.class, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder.class);
       }
 
-      // Construct using io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.newBuilder()
+      // Construct using io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2860,17 +2860,17 @@ public final class ChatMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_TextAndImageContent_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_descriptor;
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent getDefaultInstanceForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent getDefaultInstanceForType() {
+        return io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent build() {
-        io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent result = buildPartial();
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent build() {
+        io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -2878,14 +2878,14 @@ public final class ChatMessage {
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent buildPartial() {
-        io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent result = new io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent(this);
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent buildPartial() {
+        io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent result = new io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent result) {
+      private void buildPartial0(io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -2905,16 +2905,16 @@ public final class ChatMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) {
-          return mergeFrom((io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent)other);
+        if (other instanceof io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) {
+          return mergeFrom((io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent other) {
-        if (other == io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance()) return this;
+      public Builder mergeFrom(io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent other) {
+        if (other == io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance()) return this;
         if (other.hasTextContent()) {
           mergeTextContent(other.getTextContent());
         }
@@ -2978,15 +2978,15 @@ public final class ChatMessage {
       }
       private int bitField0_;
 
-      private io.github.xiaotang.entity.im.ChatMessage.TextContent textContent_;
+      private io.github.xiaotang.novartc.netty.ChatMessage.TextContent textContent_;
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.TextContent, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder> textContentBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.TextContent, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder> textContentBuilder_;
       /**
        * <pre>
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        * @return Whether the textContent field is set.
        */
       public boolean hasTextContent() {
@@ -2997,12 +2997,12 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        * @return The textContent.
        */
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent getTextContent() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent getTextContent() {
         if (textContentBuilder_ == null) {
-          return textContent_ == null ? io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance() : textContent_;
+          return textContent_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance() : textContent_;
         } else {
           return textContentBuilder_.getMessage();
         }
@@ -3012,9 +3012,9 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
-      public Builder setTextContent(io.github.xiaotang.entity.im.ChatMessage.TextContent value) {
+      public Builder setTextContent(io.github.xiaotang.novartc.netty.ChatMessage.TextContent value) {
         if (textContentBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3032,10 +3032,10 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
       public Builder setTextContent(
-          io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder builderForValue) {
         if (textContentBuilder_ == null) {
           textContent_ = builderForValue.build();
         } else {
@@ -3050,13 +3050,13 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
-      public Builder mergeTextContent(io.github.xiaotang.entity.im.ChatMessage.TextContent value) {
+      public Builder mergeTextContent(io.github.xiaotang.novartc.netty.ChatMessage.TextContent value) {
         if (textContentBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
             textContent_ != null &&
-            textContent_ != io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance()) {
+            textContent_ != io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance()) {
             getTextContentBuilder().mergeFrom(value);
           } else {
             textContent_ = value;
@@ -3075,7 +3075,7 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
       public Builder clearTextContent() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -3092,9 +3092,9 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder getTextContentBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder getTextContentBuilder() {
         bitField0_ |= 0x00000001;
         onChanged();
         return internalGetTextContentFieldBuilder().getBuilder();
@@ -3104,14 +3104,14 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
         if (textContentBuilder_ != null) {
           return textContentBuilder_.getMessageOrBuilder();
         } else {
           return textContent_ == null ?
-              io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance() : textContent_;
+              io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance() : textContent_;
         }
       }
       /**
@@ -3119,14 +3119,14 @@ public final class ChatMessage {
        * 文本内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 1;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.TextContent, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.TextContent, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder> 
           internalGetTextContentFieldBuilder() {
         if (textContentBuilder_ == null) {
           textContentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.TextContent, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder>(
+              io.github.xiaotang.novartc.netty.ChatMessage.TextContent, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder>(
                   getTextContent(),
                   getParentForChildren(),
                   isClean());
@@ -3135,15 +3135,15 @@ public final class ChatMessage {
         return textContentBuilder_;
       }
 
-      private io.github.xiaotang.entity.im.ChatMessage.ImageContent imageContent_;
+      private io.github.xiaotang.novartc.netty.ChatMessage.ImageContent imageContent_;
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.ImageContent, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder> imageContentBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.ImageContent, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder> imageContentBuilder_;
       /**
        * <pre>
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        * @return Whether the imageContent field is set.
        */
       public boolean hasImageContent() {
@@ -3154,12 +3154,12 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        * @return The imageContent.
        */
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent getImageContent() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getImageContent() {
         if (imageContentBuilder_ == null) {
-          return imageContent_ == null ? io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
+          return imageContent_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
         } else {
           return imageContentBuilder_.getMessage();
         }
@@ -3169,9 +3169,9 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
-      public Builder setImageContent(io.github.xiaotang.entity.im.ChatMessage.ImageContent value) {
+      public Builder setImageContent(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent value) {
         if (imageContentBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3189,10 +3189,10 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
       public Builder setImageContent(
-          io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder builderForValue) {
         if (imageContentBuilder_ == null) {
           imageContent_ = builderForValue.build();
         } else {
@@ -3207,13 +3207,13 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
-      public Builder mergeImageContent(io.github.xiaotang.entity.im.ChatMessage.ImageContent value) {
+      public Builder mergeImageContent(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent value) {
         if (imageContentBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0) &&
             imageContent_ != null &&
-            imageContent_ != io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance()) {
+            imageContent_ != io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance()) {
             getImageContentBuilder().mergeFrom(value);
           } else {
             imageContent_ = value;
@@ -3232,7 +3232,7 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
       public Builder clearImageContent() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -3249,9 +3249,9 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder getImageContentBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder getImageContentBuilder() {
         bitField0_ |= 0x00000002;
         onChanged();
         return internalGetImageContentFieldBuilder().getBuilder();
@@ -3261,14 +3261,14 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
         if (imageContentBuilder_ != null) {
           return imageContentBuilder_.getMessageOrBuilder();
         } else {
           return imageContent_ == null ?
-              io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
+              io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance() : imageContent_;
         }
       }
       /**
@@ -3276,14 +3276,14 @@ public final class ChatMessage {
        * 图片内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.ImageContent, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.ImageContent, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder> 
           internalGetImageContentFieldBuilder() {
         if (imageContentBuilder_ == null) {
           imageContentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.ImageContent, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder>(
+              io.github.xiaotang.novartc.netty.ChatMessage.ImageContent, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder>(
                   getImageContent(),
                   getParentForChildren(),
                   isClean());
@@ -3292,16 +3292,16 @@ public final class ChatMessage {
         return imageContentBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.entity.im.TextAndImageContent)
+      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.novartc.netty.TextAndImageContent)
     }
 
-    // @@protoc_insertion_point(class_scope:io.github.xiaotang.entity.im.TextAndImageContent)
-    private static final io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.github.xiaotang.novartc.netty.TextAndImageContent)
+    private static final io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent();
+      DEFAULT_INSTANCE = new io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent();
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent getDefaultInstance() {
+    public static io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3337,14 +3337,14 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent getDefaultInstanceForType() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
   public interface MsgBodyOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.entity.im.MsgBody)
+      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.novartc.netty.MsgBody)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -3372,7 +3372,7 @@ public final class ChatMessage {
      * 消息类型（文本、图片、复合消息等）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
      * @return The enum numeric value on the wire for messageType.
      */
     int getMessageTypeValue();
@@ -3381,17 +3381,17 @@ public final class ChatMessage {
      * 消息类型（文本、图片、复合消息等）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
      * @return The messageType.
      */
-    io.github.xiaotang.entity.im.ChatMessage.MessageType getMessageType();
+    io.github.xiaotang.novartc.netty.ChatMessage.MessageType getMessageType();
 
     /**
      * <pre>
      * 发送者信息
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+     * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
      * @return Whether the sender field is set.
      */
     boolean hasSender();
@@ -3400,18 +3400,18 @@ public final class ChatMessage {
      * 发送者信息
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+     * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
      * @return The sender.
      */
-    io.github.xiaotang.entity.im.ChatMessage.User getSender();
+    io.github.xiaotang.novartc.netty.ChatMessage.User getSender();
     /**
      * <pre>
      * 发送者信息
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+     * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getSenderOrBuilder();
+    io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getSenderOrBuilder();
 
     /**
      * <pre>
@@ -3428,24 +3428,24 @@ public final class ChatMessage {
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
-    java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> 
+    java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> 
         getRecipientsList();
     /**
      * <pre>
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.User getRecipients(int index);
+    io.github.xiaotang.novartc.netty.ChatMessage.User getRecipients(int index);
     /**
      * <pre>
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
     int getRecipientsCount();
     /**
@@ -3453,18 +3453,18 @@ public final class ChatMessage {
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
-    java.util.List<? extends io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+    java.util.List<? extends io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
         getRecipientsOrBuilderList();
     /**
      * <pre>
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getRecipientsOrBuilder(
+    io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getRecipientsOrBuilder(
         int index);
 
     /**
@@ -3482,7 +3482,7 @@ public final class ChatMessage {
      * 文本消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
      * @return Whether the textContent field is set.
      */
     boolean hasTextContent();
@@ -3491,25 +3491,25 @@ public final class ChatMessage {
      * 文本消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
      * @return The textContent.
      */
-    io.github.xiaotang.entity.im.ChatMessage.TextContent getTextContent();
+    io.github.xiaotang.novartc.netty.ChatMessage.TextContent getTextContent();
     /**
      * <pre>
      * 文本消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder getTextContentOrBuilder();
+    io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder getTextContentOrBuilder();
 
     /**
      * <pre>
      * 图片消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
      * @return Whether the imageContent field is set.
      */
     boolean hasImageContent();
@@ -3518,25 +3518,25 @@ public final class ChatMessage {
      * 图片消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
      * @return The imageContent.
      */
-    io.github.xiaotang.entity.im.ChatMessage.ImageContent getImageContent();
+    io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getImageContent();
     /**
      * <pre>
      * 图片消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder();
+    io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder();
 
     /**
      * <pre>
      * 复合消息（文本 + 图片）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
      * @return Whether the textAndImageContent field is set.
      */
     boolean hasTextAndImageContent();
@@ -3545,31 +3545,31 @@ public final class ChatMessage {
      * 复合消息（文本 + 图片）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
      * @return The textAndImageContent.
      */
-    io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent getTextAndImageContent();
+    io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent getTextAndImageContent();
     /**
      * <pre>
      * 复合消息（文本 + 图片）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder getTextAndImageContentOrBuilder();
+    io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder getTextAndImageContentOrBuilder();
 
-    io.github.xiaotang.entity.im.ChatMessage.MsgBody.ContentCase getContentCase();
+    io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.ContentCase getContentCase();
   }
   /**
    * <pre>
    * 消息体
    * </pre>
    *
-   * Protobuf type {@code io.github.xiaotang.entity.im.MsgBody}
+   * Protobuf type {@code io.github.xiaotang.novartc.netty.MsgBody}
    */
   public static final class MsgBody extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:io.github.xiaotang.entity.im.MsgBody)
+      // @@protoc_insertion_point(message_implements:io.github.xiaotang.novartc.netty.MsgBody)
       MsgBodyOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
@@ -3593,15 +3593,15 @@ public final class ChatMessage {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_MsgBody_descriptor;
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_MsgBody_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_MsgBody_fieldAccessorTable
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_MsgBody_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.github.xiaotang.entity.im.ChatMessage.MsgBody.class, io.github.xiaotang.entity.im.ChatMessage.MsgBody.Builder.class);
+              io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.class, io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.Builder.class);
     }
 
     private int bitField0_;
@@ -3703,7 +3703,7 @@ public final class ChatMessage {
      * 消息类型（文本、图片、复合消息等）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
      * @return The enum numeric value on the wire for messageType.
      */
     @java.lang.Override public int getMessageTypeValue() {
@@ -3714,22 +3714,22 @@ public final class ChatMessage {
      * 消息类型（文本、图片、复合消息等）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+     * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
      * @return The messageType.
      */
-    @java.lang.Override public io.github.xiaotang.entity.im.ChatMessage.MessageType getMessageType() {
-      io.github.xiaotang.entity.im.ChatMessage.MessageType result = io.github.xiaotang.entity.im.ChatMessage.MessageType.forNumber(messageType_);
-      return result == null ? io.github.xiaotang.entity.im.ChatMessage.MessageType.UNRECOGNIZED : result;
+    @java.lang.Override public io.github.xiaotang.novartc.netty.ChatMessage.MessageType getMessageType() {
+      io.github.xiaotang.novartc.netty.ChatMessage.MessageType result = io.github.xiaotang.novartc.netty.ChatMessage.MessageType.forNumber(messageType_);
+      return result == null ? io.github.xiaotang.novartc.netty.ChatMessage.MessageType.UNRECOGNIZED : result;
     }
 
     public static final int SENDER_FIELD_NUMBER = 3;
-    private io.github.xiaotang.entity.im.ChatMessage.User sender_;
+    private io.github.xiaotang.novartc.netty.ChatMessage.User sender_;
     /**
      * <pre>
      * 发送者信息
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+     * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
      * @return Whether the sender field is set.
      */
     @java.lang.Override
@@ -3741,23 +3741,23 @@ public final class ChatMessage {
      * 发送者信息
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+     * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
      * @return The sender.
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.User getSender() {
-      return sender_ == null ? io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance() : sender_;
+    public io.github.xiaotang.novartc.netty.ChatMessage.User getSender() {
+      return sender_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance() : sender_;
     }
     /**
      * <pre>
      * 发送者信息
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+     * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getSenderOrBuilder() {
-      return sender_ == null ? io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance() : sender_;
+    public io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getSenderOrBuilder() {
+      return sender_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance() : sender_;
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 4;
@@ -3777,16 +3777,16 @@ public final class ChatMessage {
 
     public static final int RECIPIENTS_FIELD_NUMBER = 5;
     @SuppressWarnings("serial")
-    private java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> recipients_;
+    private java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> recipients_;
     /**
      * <pre>
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
     @java.lang.Override
-    public java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> getRecipientsList() {
+    public java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> getRecipientsList() {
       return recipients_;
     }
     /**
@@ -3794,10 +3794,10 @@ public final class ChatMessage {
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+    public java.util.List<? extends io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
         getRecipientsOrBuilderList() {
       return recipients_;
     }
@@ -3806,7 +3806,7 @@ public final class ChatMessage {
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
     @java.lang.Override
     public int getRecipientsCount() {
@@ -3817,10 +3817,10 @@ public final class ChatMessage {
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.User getRecipients(int index) {
+    public io.github.xiaotang.novartc.netty.ChatMessage.User getRecipients(int index) {
       return recipients_.get(index);
     }
     /**
@@ -3828,10 +3828,10 @@ public final class ChatMessage {
      * 接收者列表（单聊为1，群聊为多个）
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getRecipientsOrBuilder(
+    public io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getRecipientsOrBuilder(
         int index) {
       return recipients_.get(index);
     }
@@ -3857,7 +3857,7 @@ public final class ChatMessage {
      * 文本消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
      * @return Whether the textContent field is set.
      */
     @java.lang.Override
@@ -3869,29 +3869,29 @@ public final class ChatMessage {
      * 文本消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
      * @return The textContent.
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextContent getTextContent() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextContent getTextContent() {
       if (contentCase_ == 7) {
-         return (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_;
+         return (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_;
       }
-      return io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+      return io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
     }
     /**
      * <pre>
      * 文本消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
       if (contentCase_ == 7) {
-         return (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_;
+         return (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_;
       }
-      return io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+      return io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
     }
 
     public static final int IMAGE_CONTENT_FIELD_NUMBER = 8;
@@ -3900,7 +3900,7 @@ public final class ChatMessage {
      * 图片消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
      * @return Whether the imageContent field is set.
      */
     @java.lang.Override
@@ -3912,29 +3912,29 @@ public final class ChatMessage {
      * 图片消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
      * @return The imageContent.
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.ImageContent getImageContent() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getImageContent() {
       if (contentCase_ == 8) {
-         return (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_;
+         return (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_;
       }
-      return io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+      return io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
     }
     /**
      * <pre>
      * 图片消息内容
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+     * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
       if (contentCase_ == 8) {
-         return (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_;
+         return (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_;
       }
-      return io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+      return io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
     }
 
     public static final int TEXT_AND_IMAGE_CONTENT_FIELD_NUMBER = 9;
@@ -3943,7 +3943,7 @@ public final class ChatMessage {
      * 复合消息（文本 + 图片）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
      * @return Whether the textAndImageContent field is set.
      */
     @java.lang.Override
@@ -3955,29 +3955,29 @@ public final class ChatMessage {
      * 复合消息（文本 + 图片）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
      * @return The textAndImageContent.
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent getTextAndImageContent() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent getTextAndImageContent() {
       if (contentCase_ == 9) {
-         return (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_;
+         return (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_;
       }
-      return io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+      return io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
     }
     /**
      * <pre>
      * 复合消息（文本 + 图片）
      * </pre>
      *
-     * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+     * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder getTextAndImageContentOrBuilder() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder getTextAndImageContentOrBuilder() {
       if (contentCase_ == 9) {
-         return (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_;
+         return (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_;
       }
-      return io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+      return io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3997,7 +3997,7 @@ public final class ChatMessage {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(messageId_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 1, messageId_);
       }
-      if (messageType_ != io.github.xiaotang.entity.im.ChatMessage.MessageType.TEXT.getNumber()) {
+      if (messageType_ != io.github.xiaotang.novartc.netty.ChatMessage.MessageType.TEXT.getNumber()) {
         output.writeEnum(2, messageType_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
@@ -4013,13 +4013,13 @@ public final class ChatMessage {
         output.writeBool(6, isGroup_);
       }
       if (contentCase_ == 7) {
-        output.writeMessage(7, (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_);
+        output.writeMessage(7, (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_);
       }
       if (contentCase_ == 8) {
-        output.writeMessage(8, (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_);
+        output.writeMessage(8, (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_);
       }
       if (contentCase_ == 9) {
-        output.writeMessage(9, (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_);
+        output.writeMessage(9, (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4033,7 +4033,7 @@ public final class ChatMessage {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(messageId_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(1, messageId_);
       }
-      if (messageType_ != io.github.xiaotang.entity.im.ChatMessage.MessageType.TEXT.getNumber()) {
+      if (messageType_ != io.github.xiaotang.novartc.netty.ChatMessage.MessageType.TEXT.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, messageType_);
       }
@@ -4055,15 +4055,15 @@ public final class ChatMessage {
       }
       if (contentCase_ == 7) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(7, (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_);
+          .computeMessageSize(7, (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_);
       }
       if (contentCase_ == 8) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(8, (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_);
+          .computeMessageSize(8, (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_);
       }
       if (contentCase_ == 9) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_);
+          .computeMessageSize(9, (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4075,10 +4075,10 @@ public final class ChatMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof io.github.xiaotang.entity.im.ChatMessage.MsgBody)) {
+      if (!(obj instanceof io.github.xiaotang.novartc.netty.ChatMessage.MsgBody)) {
         return super.equals(obj);
       }
-      io.github.xiaotang.entity.im.ChatMessage.MsgBody other = (io.github.xiaotang.entity.im.ChatMessage.MsgBody) obj;
+      io.github.xiaotang.novartc.netty.ChatMessage.MsgBody other = (io.github.xiaotang.novartc.netty.ChatMessage.MsgBody) obj;
 
       if (!getMessageId()
           .equals(other.getMessageId())) return false;
@@ -4161,44 +4161,44 @@ public final class ChatMessage {
       return hash;
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(byte[] data)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -4206,26 +4206,26 @@ public final class ChatMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseDelimitedFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseDelimitedFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -4238,7 +4238,7 @@ public final class ChatMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(io.github.xiaotang.entity.im.ChatMessage.MsgBody prototype) {
+    public static Builder newBuilder(io.github.xiaotang.novartc.netty.ChatMessage.MsgBody prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -4258,26 +4258,26 @@ public final class ChatMessage {
      * 消息体
      * </pre>
      *
-     * Protobuf type {@code io.github.xiaotang.entity.im.MsgBody}
+     * Protobuf type {@code io.github.xiaotang.novartc.netty.MsgBody}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.entity.im.MsgBody)
-        io.github.xiaotang.entity.im.ChatMessage.MsgBodyOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.novartc.netty.MsgBody)
+        io.github.xiaotang.novartc.netty.ChatMessage.MsgBodyOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_MsgBody_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_MsgBody_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_MsgBody_fieldAccessorTable
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_MsgBody_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.github.xiaotang.entity.im.ChatMessage.MsgBody.class, io.github.xiaotang.entity.im.ChatMessage.MsgBody.Builder.class);
+                io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.class, io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.Builder.class);
       }
 
-      // Construct using io.github.xiaotang.entity.im.ChatMessage.MsgBody.newBuilder()
+      // Construct using io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4331,17 +4331,17 @@ public final class ChatMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_MsgBody_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_MsgBody_descriptor;
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.MsgBody getDefaultInstanceForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.MsgBody.getDefaultInstance();
+      public io.github.xiaotang.novartc.netty.ChatMessage.MsgBody getDefaultInstanceForType() {
+        return io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.MsgBody build() {
-        io.github.xiaotang.entity.im.ChatMessage.MsgBody result = buildPartial();
+      public io.github.xiaotang.novartc.netty.ChatMessage.MsgBody build() {
+        io.github.xiaotang.novartc.netty.ChatMessage.MsgBody result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -4349,8 +4349,8 @@ public final class ChatMessage {
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.MsgBody buildPartial() {
-        io.github.xiaotang.entity.im.ChatMessage.MsgBody result = new io.github.xiaotang.entity.im.ChatMessage.MsgBody(this);
+      public io.github.xiaotang.novartc.netty.ChatMessage.MsgBody buildPartial() {
+        io.github.xiaotang.novartc.netty.ChatMessage.MsgBody result = new io.github.xiaotang.novartc.netty.ChatMessage.MsgBody(this);
         buildPartialRepeatedFields(result);
         if (bitField0_ != 0) { buildPartial0(result); }
         buildPartialOneofs(result);
@@ -4358,7 +4358,7 @@ public final class ChatMessage {
         return result;
       }
 
-      private void buildPartialRepeatedFields(io.github.xiaotang.entity.im.ChatMessage.MsgBody result) {
+      private void buildPartialRepeatedFields(io.github.xiaotang.novartc.netty.ChatMessage.MsgBody result) {
         if (recipientsBuilder_ == null) {
           if (((bitField0_ & 0x00000010) != 0)) {
             recipients_ = java.util.Collections.unmodifiableList(recipients_);
@@ -4370,7 +4370,7 @@ public final class ChatMessage {
         }
       }
 
-      private void buildPartial0(io.github.xiaotang.entity.im.ChatMessage.MsgBody result) {
+      private void buildPartial0(io.github.xiaotang.novartc.netty.ChatMessage.MsgBody result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.messageId_ = messageId_;
@@ -4394,7 +4394,7 @@ public final class ChatMessage {
         result.bitField0_ |= to_bitField0_;
       }
 
-      private void buildPartialOneofs(io.github.xiaotang.entity.im.ChatMessage.MsgBody result) {
+      private void buildPartialOneofs(io.github.xiaotang.novartc.netty.ChatMessage.MsgBody result) {
         result.contentCase_ = contentCase_;
         result.content_ = this.content_;
         if (contentCase_ == 7 &&
@@ -4413,16 +4413,16 @@ public final class ChatMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.github.xiaotang.entity.im.ChatMessage.MsgBody) {
-          return mergeFrom((io.github.xiaotang.entity.im.ChatMessage.MsgBody)other);
+        if (other instanceof io.github.xiaotang.novartc.netty.ChatMessage.MsgBody) {
+          return mergeFrom((io.github.xiaotang.novartc.netty.ChatMessage.MsgBody)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(io.github.xiaotang.entity.im.ChatMessage.MsgBody other) {
-        if (other == io.github.xiaotang.entity.im.ChatMessage.MsgBody.getDefaultInstance()) return this;
+      public Builder mergeFrom(io.github.xiaotang.novartc.netty.ChatMessage.MsgBody other) {
+        if (other == io.github.xiaotang.novartc.netty.ChatMessage.MsgBody.getDefaultInstance()) return this;
         if (!other.getMessageId().isEmpty()) {
           messageId_ = other.messageId_;
           bitField0_ |= 0x00000001;
@@ -4532,9 +4532,9 @@ public final class ChatMessage {
                 break;
               } // case 32
               case 42: {
-                io.github.xiaotang.entity.im.ChatMessage.User m =
+                io.github.xiaotang.novartc.netty.ChatMessage.User m =
                     input.readMessage(
-                        io.github.xiaotang.entity.im.ChatMessage.User.parser(),
+                        io.github.xiaotang.novartc.netty.ChatMessage.User.parser(),
                         extensionRegistry);
                 if (recipientsBuilder_ == null) {
                   ensureRecipientsIsMutable();
@@ -4700,7 +4700,7 @@ public final class ChatMessage {
        * 消息类型（文本、图片、复合消息等）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
        * @return The enum numeric value on the wire for messageType.
        */
       @java.lang.Override public int getMessageTypeValue() {
@@ -4711,7 +4711,7 @@ public final class ChatMessage {
        * 消息类型（文本、图片、复合消息等）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
        * @param value The enum numeric value on the wire for messageType to set.
        * @return This builder for chaining.
        */
@@ -4726,24 +4726,24 @@ public final class ChatMessage {
        * 消息类型（文本、图片、复合消息等）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
        * @return The messageType.
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.MessageType getMessageType() {
-        io.github.xiaotang.entity.im.ChatMessage.MessageType result = io.github.xiaotang.entity.im.ChatMessage.MessageType.forNumber(messageType_);
-        return result == null ? io.github.xiaotang.entity.im.ChatMessage.MessageType.UNRECOGNIZED : result;
+      public io.github.xiaotang.novartc.netty.ChatMessage.MessageType getMessageType() {
+        io.github.xiaotang.novartc.netty.ChatMessage.MessageType result = io.github.xiaotang.novartc.netty.ChatMessage.MessageType.forNumber(messageType_);
+        return result == null ? io.github.xiaotang.novartc.netty.ChatMessage.MessageType.UNRECOGNIZED : result;
       }
       /**
        * <pre>
        * 消息类型（文本、图片、复合消息等）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
        * @param value The messageType to set.
        * @return This builder for chaining.
        */
-      public Builder setMessageType(io.github.xiaotang.entity.im.ChatMessage.MessageType value) {
+      public Builder setMessageType(io.github.xiaotang.novartc.netty.ChatMessage.MessageType value) {
         if (value == null) { throw new NullPointerException(); }
         bitField0_ |= 0x00000002;
         messageType_ = value.getNumber();
@@ -4755,7 +4755,7 @@ public final class ChatMessage {
        * 消息类型（文本、图片、复合消息等）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.MessageType message_type = 2;</code>
+       * <code>.io.github.xiaotang.novartc.netty.MessageType message_type = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearMessageType() {
@@ -4765,15 +4765,15 @@ public final class ChatMessage {
         return this;
       }
 
-      private io.github.xiaotang.entity.im.ChatMessage.User sender_;
+      private io.github.xiaotang.novartc.netty.ChatMessage.User sender_;
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> senderBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> senderBuilder_;
       /**
        * <pre>
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        * @return Whether the sender field is set.
        */
       public boolean hasSender() {
@@ -4784,12 +4784,12 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        * @return The sender.
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User getSender() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.User getSender() {
         if (senderBuilder_ == null) {
-          return sender_ == null ? io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance() : sender_;
+          return sender_ == null ? io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance() : sender_;
         } else {
           return senderBuilder_.getMessage();
         }
@@ -4799,9 +4799,9 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
-      public Builder setSender(io.github.xiaotang.entity.im.ChatMessage.User value) {
+      public Builder setSender(io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (senderBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -4819,10 +4819,10 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
       public Builder setSender(
-          io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (senderBuilder_ == null) {
           sender_ = builderForValue.build();
         } else {
@@ -4837,13 +4837,13 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
-      public Builder mergeSender(io.github.xiaotang.entity.im.ChatMessage.User value) {
+      public Builder mergeSender(io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (senderBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
             sender_ != null &&
-            sender_ != io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance()) {
+            sender_ != io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance()) {
             getSenderBuilder().mergeFrom(value);
           } else {
             sender_ = value;
@@ -4862,7 +4862,7 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
       public Builder clearSender() {
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -4879,9 +4879,9 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder getSenderBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder getSenderBuilder() {
         bitField0_ |= 0x00000004;
         onChanged();
         return internalGetSenderFieldBuilder().getBuilder();
@@ -4891,14 +4891,14 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getSenderOrBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getSenderOrBuilder() {
         if (senderBuilder_ != null) {
           return senderBuilder_.getMessageOrBuilder();
         } else {
           return sender_ == null ?
-              io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance() : sender_;
+              io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance() : sender_;
         }
       }
       /**
@@ -4906,14 +4906,14 @@ public final class ChatMessage {
        * 发送者信息
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.User sender = 3;</code>
+       * <code>.io.github.xiaotang.novartc.netty.User sender = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
           internalGetSenderFieldBuilder() {
         if (senderBuilder_ == null) {
           senderBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder>(
+              io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder>(
                   getSender(),
                   getParentForChildren(),
                   isClean());
@@ -4966,26 +4966,26 @@ public final class ChatMessage {
         return this;
       }
 
-      private java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> recipients_ =
+      private java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> recipients_ =
         java.util.Collections.emptyList();
       private void ensureRecipientsIsMutable() {
         if (!((bitField0_ & 0x00000010) != 0)) {
-          recipients_ = new java.util.ArrayList<io.github.xiaotang.entity.im.ChatMessage.User>(recipients_);
+          recipients_ = new java.util.ArrayList<io.github.xiaotang.novartc.netty.ChatMessage.User>(recipients_);
           bitField0_ |= 0x00000010;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> recipientsBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> recipientsBuilder_;
 
       /**
        * <pre>
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> getRecipientsList() {
+      public java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> getRecipientsList() {
         if (recipientsBuilder_ == null) {
           return java.util.Collections.unmodifiableList(recipients_);
         } else {
@@ -4997,7 +4997,7 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public int getRecipientsCount() {
         if (recipientsBuilder_ == null) {
@@ -5011,9 +5011,9 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User getRecipients(int index) {
+      public io.github.xiaotang.novartc.netty.ChatMessage.User getRecipients(int index) {
         if (recipientsBuilder_ == null) {
           return recipients_.get(index);
         } else {
@@ -5025,10 +5025,10 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder setRecipients(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User value) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (recipientsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5046,10 +5046,10 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder setRecipients(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (recipientsBuilder_ == null) {
           ensureRecipientsIsMutable();
           recipients_.set(index, builderForValue.build());
@@ -5064,9 +5064,9 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public Builder addRecipients(io.github.xiaotang.entity.im.ChatMessage.User value) {
+      public Builder addRecipients(io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (recipientsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5084,10 +5084,10 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder addRecipients(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User value) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (recipientsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5105,10 +5105,10 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder addRecipients(
-          io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (recipientsBuilder_ == null) {
           ensureRecipientsIsMutable();
           recipients_.add(builderForValue.build());
@@ -5123,10 +5123,10 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder addRecipients(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (recipientsBuilder_ == null) {
           ensureRecipientsIsMutable();
           recipients_.add(index, builderForValue.build());
@@ -5141,10 +5141,10 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder addAllRecipients(
-          java.lang.Iterable<? extends io.github.xiaotang.entity.im.ChatMessage.User> values) {
+          java.lang.Iterable<? extends io.github.xiaotang.novartc.netty.ChatMessage.User> values) {
         if (recipientsBuilder_ == null) {
           ensureRecipientsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -5160,7 +5160,7 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder clearRecipients() {
         if (recipientsBuilder_ == null) {
@@ -5177,7 +5177,7 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
       public Builder removeRecipients(int index) {
         if (recipientsBuilder_ == null) {
@@ -5194,9 +5194,9 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder getRecipientsBuilder(
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder getRecipientsBuilder(
           int index) {
         return internalGetRecipientsFieldBuilder().getBuilder(index);
       }
@@ -5205,9 +5205,9 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getRecipientsOrBuilder(
+      public io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getRecipientsOrBuilder(
           int index) {
         if (recipientsBuilder_ == null) {
           return recipients_.get(index);  } else {
@@ -5219,9 +5219,9 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public java.util.List<? extends io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+      public java.util.List<? extends io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
            getRecipientsOrBuilderList() {
         if (recipientsBuilder_ != null) {
           return recipientsBuilder_.getMessageOrBuilderList();
@@ -5234,41 +5234,41 @@ public final class ChatMessage {
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder addRecipientsBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder addRecipientsBuilder() {
         return internalGetRecipientsFieldBuilder().addBuilder(
-            io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance());
+            io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance());
       }
       /**
        * <pre>
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder addRecipientsBuilder(
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder addRecipientsBuilder(
           int index) {
         return internalGetRecipientsFieldBuilder().addBuilder(
-            index, io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance());
+            index, io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance());
       }
       /**
        * <pre>
        * 接收者列表（单聊为1，群聊为多个）
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User recipients = 5;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User recipients = 5;</code>
        */
-      public java.util.List<io.github.xiaotang.entity.im.ChatMessage.User.Builder> 
+      public java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User.Builder> 
            getRecipientsBuilderList() {
         return internalGetRecipientsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
           internalGetRecipientsFieldBuilder() {
         if (recipientsBuilder_ == null) {
           recipientsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder>(
+              io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder>(
                   recipients_,
                   ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
@@ -5323,13 +5323,13 @@ public final class ChatMessage {
       }
 
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.TextContent, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder> textContentBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.TextContent, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder> textContentBuilder_;
       /**
        * <pre>
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        * @return Whether the textContent field is set.
        */
       @java.lang.Override
@@ -5341,21 +5341,21 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        * @return The textContent.
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent getTextContent() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent getTextContent() {
         if (textContentBuilder_ == null) {
           if (contentCase_ == 7) {
-            return (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_;
+            return (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_;
           }
-          return io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
         } else {
           if (contentCase_ == 7) {
             return textContentBuilder_.getMessage();
           }
-          return io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
         }
       }
       /**
@@ -5363,9 +5363,9 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
-      public Builder setTextContent(io.github.xiaotang.entity.im.ChatMessage.TextContent value) {
+      public Builder setTextContent(io.github.xiaotang.novartc.netty.ChatMessage.TextContent value) {
         if (textContentBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5383,10 +5383,10 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
       public Builder setTextContent(
-          io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder builderForValue) {
         if (textContentBuilder_ == null) {
           content_ = builderForValue.build();
           onChanged();
@@ -5401,13 +5401,13 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
-      public Builder mergeTextContent(io.github.xiaotang.entity.im.ChatMessage.TextContent value) {
+      public Builder mergeTextContent(io.github.xiaotang.novartc.netty.ChatMessage.TextContent value) {
         if (textContentBuilder_ == null) {
           if (contentCase_ == 7 &&
-              content_ != io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance()) {
-            content_ = io.github.xiaotang.entity.im.ChatMessage.TextContent.newBuilder((io.github.xiaotang.entity.im.ChatMessage.TextContent) content_)
+              content_ != io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance()) {
+            content_ = io.github.xiaotang.novartc.netty.ChatMessage.TextContent.newBuilder((io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_)
                 .mergeFrom(value).buildPartial();
           } else {
             content_ = value;
@@ -5428,7 +5428,7 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
       public Builder clearTextContent() {
         if (textContentBuilder_ == null) {
@@ -5451,9 +5451,9 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder getTextContentBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder getTextContentBuilder() {
         return internalGetTextContentFieldBuilder().getBuilder();
       }
       /**
@@ -5461,17 +5461,17 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder getTextContentOrBuilder() {
         if ((contentCase_ == 7) && (textContentBuilder_ != null)) {
           return textContentBuilder_.getMessageOrBuilder();
         } else {
           if (contentCase_ == 7) {
-            return (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_;
+            return (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_;
           }
-          return io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
         }
       }
       /**
@@ -5479,18 +5479,18 @@ public final class ChatMessage {
        * 文本消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextContent text_content = 7;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextContent text_content = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.TextContent, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.TextContent, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder> 
           internalGetTextContentFieldBuilder() {
         if (textContentBuilder_ == null) {
           if (!(contentCase_ == 7)) {
-            content_ = io.github.xiaotang.entity.im.ChatMessage.TextContent.getDefaultInstance();
+            content_ = io.github.xiaotang.novartc.netty.ChatMessage.TextContent.getDefaultInstance();
           }
           textContentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.TextContent, io.github.xiaotang.entity.im.ChatMessage.TextContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextContentOrBuilder>(
-                  (io.github.xiaotang.entity.im.ChatMessage.TextContent) content_,
+              io.github.xiaotang.novartc.netty.ChatMessage.TextContent, io.github.xiaotang.novartc.netty.ChatMessage.TextContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextContentOrBuilder>(
+                  (io.github.xiaotang.novartc.netty.ChatMessage.TextContent) content_,
                   getParentForChildren(),
                   isClean());
           content_ = null;
@@ -5501,13 +5501,13 @@ public final class ChatMessage {
       }
 
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.ImageContent, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder> imageContentBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.ImageContent, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder> imageContentBuilder_;
       /**
        * <pre>
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        * @return Whether the imageContent field is set.
        */
       @java.lang.Override
@@ -5519,21 +5519,21 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        * @return The imageContent.
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent getImageContent() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent getImageContent() {
         if (imageContentBuilder_ == null) {
           if (contentCase_ == 8) {
-            return (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_;
+            return (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_;
           }
-          return io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
         } else {
           if (contentCase_ == 8) {
             return imageContentBuilder_.getMessage();
           }
-          return io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
         }
       }
       /**
@@ -5541,9 +5541,9 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
-      public Builder setImageContent(io.github.xiaotang.entity.im.ChatMessage.ImageContent value) {
+      public Builder setImageContent(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent value) {
         if (imageContentBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5561,10 +5561,10 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
       public Builder setImageContent(
-          io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder builderForValue) {
         if (imageContentBuilder_ == null) {
           content_ = builderForValue.build();
           onChanged();
@@ -5579,13 +5579,13 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
-      public Builder mergeImageContent(io.github.xiaotang.entity.im.ChatMessage.ImageContent value) {
+      public Builder mergeImageContent(io.github.xiaotang.novartc.netty.ChatMessage.ImageContent value) {
         if (imageContentBuilder_ == null) {
           if (contentCase_ == 8 &&
-              content_ != io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance()) {
-            content_ = io.github.xiaotang.entity.im.ChatMessage.ImageContent.newBuilder((io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_)
+              content_ != io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance()) {
+            content_ = io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.newBuilder((io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_)
                 .mergeFrom(value).buildPartial();
           } else {
             content_ = value;
@@ -5606,7 +5606,7 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
       public Builder clearImageContent() {
         if (imageContentBuilder_ == null) {
@@ -5629,9 +5629,9 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder getImageContentBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder getImageContentBuilder() {
         return internalGetImageContentFieldBuilder().getBuilder();
       }
       /**
@@ -5639,17 +5639,17 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder getImageContentOrBuilder() {
         if ((contentCase_ == 8) && (imageContentBuilder_ != null)) {
           return imageContentBuilder_.getMessageOrBuilder();
         } else {
           if (contentCase_ == 8) {
-            return (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_;
+            return (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_;
           }
-          return io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
         }
       }
       /**
@@ -5657,18 +5657,18 @@ public final class ChatMessage {
        * 图片消息内容
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.ImageContent image_content = 8;</code>
+       * <code>.io.github.xiaotang.novartc.netty.ImageContent image_content = 8;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.ImageContent, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.ImageContent, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder> 
           internalGetImageContentFieldBuilder() {
         if (imageContentBuilder_ == null) {
           if (!(contentCase_ == 8)) {
-            content_ = io.github.xiaotang.entity.im.ChatMessage.ImageContent.getDefaultInstance();
+            content_ = io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.getDefaultInstance();
           }
           imageContentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.ImageContent, io.github.xiaotang.entity.im.ChatMessage.ImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.ImageContentOrBuilder>(
-                  (io.github.xiaotang.entity.im.ChatMessage.ImageContent) content_,
+              io.github.xiaotang.novartc.netty.ChatMessage.ImageContent, io.github.xiaotang.novartc.netty.ChatMessage.ImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.ImageContentOrBuilder>(
+                  (io.github.xiaotang.novartc.netty.ChatMessage.ImageContent) content_,
                   getParentForChildren(),
                   isClean());
           content_ = null;
@@ -5679,13 +5679,13 @@ public final class ChatMessage {
       }
 
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder> textAndImageContentBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder> textAndImageContentBuilder_;
       /**
        * <pre>
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        * @return Whether the textAndImageContent field is set.
        */
       @java.lang.Override
@@ -5697,21 +5697,21 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        * @return The textAndImageContent.
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent getTextAndImageContent() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent getTextAndImageContent() {
         if (textAndImageContentBuilder_ == null) {
           if (contentCase_ == 9) {
-            return (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_;
+            return (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_;
           }
-          return io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
         } else {
           if (contentCase_ == 9) {
             return textAndImageContentBuilder_.getMessage();
           }
-          return io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
         }
       }
       /**
@@ -5719,9 +5719,9 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
-      public Builder setTextAndImageContent(io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent value) {
+      public Builder setTextAndImageContent(io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent value) {
         if (textAndImageContentBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -5739,10 +5739,10 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
       public Builder setTextAndImageContent(
-          io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder builderForValue) {
         if (textAndImageContentBuilder_ == null) {
           content_ = builderForValue.build();
           onChanged();
@@ -5757,13 +5757,13 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
-      public Builder mergeTextAndImageContent(io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent value) {
+      public Builder mergeTextAndImageContent(io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent value) {
         if (textAndImageContentBuilder_ == null) {
           if (contentCase_ == 9 &&
-              content_ != io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance()) {
-            content_ = io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.newBuilder((io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_)
+              content_ != io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance()) {
+            content_ = io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.newBuilder((io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_)
                 .mergeFrom(value).buildPartial();
           } else {
             content_ = value;
@@ -5784,7 +5784,7 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
       public Builder clearTextAndImageContent() {
         if (textAndImageContentBuilder_ == null) {
@@ -5807,9 +5807,9 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder getTextAndImageContentBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder getTextAndImageContentBuilder() {
         return internalGetTextAndImageContentFieldBuilder().getBuilder();
       }
       /**
@@ -5817,17 +5817,17 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder getTextAndImageContentOrBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder getTextAndImageContentOrBuilder() {
         if ((contentCase_ == 9) && (textAndImageContentBuilder_ != null)) {
           return textAndImageContentBuilder_.getMessageOrBuilder();
         } else {
           if (contentCase_ == 9) {
-            return (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_;
+            return (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_;
           }
-          return io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+          return io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
         }
       }
       /**
@@ -5835,18 +5835,18 @@ public final class ChatMessage {
        * 复合消息（文本 + 图片）
        * </pre>
        *
-       * <code>.io.github.xiaotang.entity.im.TextAndImageContent text_and_image_content = 9;</code>
+       * <code>.io.github.xiaotang.novartc.netty.TextAndImageContent text_and_image_content = 9;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder> 
           internalGetTextAndImageContentFieldBuilder() {
         if (textAndImageContentBuilder_ == null) {
           if (!(contentCase_ == 9)) {
-            content_ = io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.getDefaultInstance();
+            content_ = io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.getDefaultInstance();
           }
           textAndImageContentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent.Builder, io.github.xiaotang.entity.im.ChatMessage.TextAndImageContentOrBuilder>(
-                  (io.github.xiaotang.entity.im.ChatMessage.TextAndImageContent) content_,
+              io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent.Builder, io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContentOrBuilder>(
+                  (io.github.xiaotang.novartc.netty.ChatMessage.TextAndImageContent) content_,
                   getParentForChildren(),
                   isClean());
           content_ = null;
@@ -5856,16 +5856,16 @@ public final class ChatMessage {
         return textAndImageContentBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.entity.im.MsgBody)
+      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.novartc.netty.MsgBody)
     }
 
-    // @@protoc_insertion_point(class_scope:io.github.xiaotang.entity.im.MsgBody)
-    private static final io.github.xiaotang.entity.im.ChatMessage.MsgBody DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.github.xiaotang.novartc.netty.MsgBody)
+    private static final io.github.xiaotang.novartc.netty.ChatMessage.MsgBody DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.github.xiaotang.entity.im.ChatMessage.MsgBody();
+      DEFAULT_INSTANCE = new io.github.xiaotang.novartc.netty.ChatMessage.MsgBody();
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.MsgBody getDefaultInstance() {
+    public static io.github.xiaotang.novartc.netty.ChatMessage.MsgBody getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -5901,14 +5901,14 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.MsgBody getDefaultInstanceForType() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.MsgBody getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
   public interface GroupChatInfoOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.entity.im.GroupChatInfo)
+      // @@protoc_insertion_point(interface_extends:io.github.xiaotang.novartc.netty.GroupChatInfo)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -5956,24 +5956,24 @@ public final class ChatMessage {
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
-    java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> 
+    java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> 
         getGroupMembersList();
     /**
      * <pre>
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.User getGroupMembers(int index);
+    io.github.xiaotang.novartc.netty.ChatMessage.User getGroupMembers(int index);
     /**
      * <pre>
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
     int getGroupMembersCount();
     /**
@@ -5981,18 +5981,18 @@ public final class ChatMessage {
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
-    java.util.List<? extends io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+    java.util.List<? extends io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
         getGroupMembersOrBuilderList();
     /**
      * <pre>
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
-    io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getGroupMembersOrBuilder(
+    io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getGroupMembersOrBuilder(
         int index);
   }
   /**
@@ -6000,11 +6000,11 @@ public final class ChatMessage {
    * 群聊消息附加信息（可选）
    * </pre>
    *
-   * Protobuf type {@code io.github.xiaotang.entity.im.GroupChatInfo}
+   * Protobuf type {@code io.github.xiaotang.novartc.netty.GroupChatInfo}
    */
   public static final class GroupChatInfo extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:io.github.xiaotang.entity.im.GroupChatInfo)
+      // @@protoc_insertion_point(message_implements:io.github.xiaotang.novartc.netty.GroupChatInfo)
       GroupChatInfoOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
@@ -6028,15 +6028,15 @@ public final class ChatMessage {
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_GroupChatInfo_descriptor;
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_GroupChatInfo_fieldAccessorTable
+      return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.class, io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.Builder.class);
+              io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.class, io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.Builder.class);
     }
 
     public static final int GROUP_ID_FIELD_NUMBER = 1;
@@ -6135,16 +6135,16 @@ public final class ChatMessage {
 
     public static final int GROUP_MEMBERS_FIELD_NUMBER = 3;
     @SuppressWarnings("serial")
-    private java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> groupMembers_;
+    private java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> groupMembers_;
     /**
      * <pre>
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
     @java.lang.Override
-    public java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> getGroupMembersList() {
+    public java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> getGroupMembersList() {
       return groupMembers_;
     }
     /**
@@ -6152,10 +6152,10 @@ public final class ChatMessage {
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+    public java.util.List<? extends io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
         getGroupMembersOrBuilderList() {
       return groupMembers_;
     }
@@ -6164,7 +6164,7 @@ public final class ChatMessage {
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
     @java.lang.Override
     public int getGroupMembersCount() {
@@ -6175,10 +6175,10 @@ public final class ChatMessage {
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.User getGroupMembers(int index) {
+    public io.github.xiaotang.novartc.netty.ChatMessage.User getGroupMembers(int index) {
       return groupMembers_.get(index);
     }
     /**
@@ -6186,10 +6186,10 @@ public final class ChatMessage {
      * 群组成员
      * </pre>
      *
-     * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+     * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
      */
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getGroupMembersOrBuilder(
+    public io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getGroupMembersOrBuilder(
         int index) {
       return groupMembers_.get(index);
     }
@@ -6246,10 +6246,10 @@ public final class ChatMessage {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo)) {
+      if (!(obj instanceof io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo)) {
         return super.equals(obj);
       }
-      io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo other = (io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo) obj;
+      io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo other = (io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo) obj;
 
       if (!getGroupId()
           .equals(other.getGroupId())) return false;
@@ -6281,44 +6281,44 @@ public final class ChatMessage {
       return hash;
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(byte[] data)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -6326,26 +6326,26 @@ public final class ChatMessage {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseDelimitedFrom(java.io.InputStream input)
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseDelimitedFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo parseFrom(
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -6358,7 +6358,7 @@ public final class ChatMessage {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo prototype) {
+    public static Builder newBuilder(io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -6378,26 +6378,26 @@ public final class ChatMessage {
      * 群聊消息附加信息（可选）
      * </pre>
      *
-     * Protobuf type {@code io.github.xiaotang.entity.im.GroupChatInfo}
+     * Protobuf type {@code io.github.xiaotang.novartc.netty.GroupChatInfo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.entity.im.GroupChatInfo)
-        io.github.xiaotang.entity.im.ChatMessage.GroupChatInfoOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.github.xiaotang.novartc.netty.GroupChatInfo)
+        io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_GroupChatInfo_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_GroupChatInfo_fieldAccessorTable
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.class, io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.Builder.class);
+                io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.class, io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.Builder.class);
       }
 
-      // Construct using io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.newBuilder()
+      // Construct using io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.newBuilder()
       private Builder() {
 
       }
@@ -6426,17 +6426,17 @@ public final class ChatMessage {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.internal_static_io_github_xiaotang_entity_im_GroupChatInfo_descriptor;
+        return io.github.xiaotang.novartc.netty.ChatMessage.internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_descriptor;
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo getDefaultInstanceForType() {
-        return io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.getDefaultInstance();
+      public io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo getDefaultInstanceForType() {
+        return io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo build() {
-        io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo result = buildPartial();
+      public io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo build() {
+        io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -6444,15 +6444,15 @@ public final class ChatMessage {
       }
 
       @java.lang.Override
-      public io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo buildPartial() {
-        io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo result = new io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo(this);
+      public io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo buildPartial() {
+        io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo result = new io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo(this);
         buildPartialRepeatedFields(result);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartialRepeatedFields(io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo result) {
+      private void buildPartialRepeatedFields(io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo result) {
         if (groupMembersBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0)) {
             groupMembers_ = java.util.Collections.unmodifiableList(groupMembers_);
@@ -6464,7 +6464,7 @@ public final class ChatMessage {
         }
       }
 
-      private void buildPartial0(io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo result) {
+      private void buildPartial0(io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.groupId_ = groupId_;
@@ -6476,16 +6476,16 @@ public final class ChatMessage {
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo) {
-          return mergeFrom((io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo)other);
+        if (other instanceof io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo) {
+          return mergeFrom((io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo other) {
-        if (other == io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo.getDefaultInstance()) return this;
+      public Builder mergeFrom(io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo other) {
+        if (other == io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo.getDefaultInstance()) return this;
         if (!other.getGroupId().isEmpty()) {
           groupId_ = other.groupId_;
           bitField0_ |= 0x00000001;
@@ -6559,9 +6559,9 @@ public final class ChatMessage {
                 break;
               } // case 18
               case 26: {
-                io.github.xiaotang.entity.im.ChatMessage.User m =
+                io.github.xiaotang.novartc.netty.ChatMessage.User m =
                     input.readMessage(
-                        io.github.xiaotang.entity.im.ChatMessage.User.parser(),
+                        io.github.xiaotang.novartc.netty.ChatMessage.User.parser(),
                         extensionRegistry);
                 if (groupMembersBuilder_ == null) {
                   ensureGroupMembersIsMutable();
@@ -6772,26 +6772,26 @@ public final class ChatMessage {
         return this;
       }
 
-      private java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> groupMembers_ =
+      private java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> groupMembers_ =
         java.util.Collections.emptyList();
       private void ensureGroupMembersIsMutable() {
         if (!((bitField0_ & 0x00000004) != 0)) {
-          groupMembers_ = new java.util.ArrayList<io.github.xiaotang.entity.im.ChatMessage.User>(groupMembers_);
+          groupMembers_ = new java.util.ArrayList<io.github.xiaotang.novartc.netty.ChatMessage.User>(groupMembers_);
           bitField0_ |= 0x00000004;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> groupMembersBuilder_;
+          io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> groupMembersBuilder_;
 
       /**
        * <pre>
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public java.util.List<io.github.xiaotang.entity.im.ChatMessage.User> getGroupMembersList() {
+      public java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User> getGroupMembersList() {
         if (groupMembersBuilder_ == null) {
           return java.util.Collections.unmodifiableList(groupMembers_);
         } else {
@@ -6803,7 +6803,7 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public int getGroupMembersCount() {
         if (groupMembersBuilder_ == null) {
@@ -6817,9 +6817,9 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User getGroupMembers(int index) {
+      public io.github.xiaotang.novartc.netty.ChatMessage.User getGroupMembers(int index) {
         if (groupMembersBuilder_ == null) {
           return groupMembers_.get(index);
         } else {
@@ -6831,10 +6831,10 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder setGroupMembers(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User value) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (groupMembersBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6852,10 +6852,10 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder setGroupMembers(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (groupMembersBuilder_ == null) {
           ensureGroupMembersIsMutable();
           groupMembers_.set(index, builderForValue.build());
@@ -6870,9 +6870,9 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public Builder addGroupMembers(io.github.xiaotang.entity.im.ChatMessage.User value) {
+      public Builder addGroupMembers(io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (groupMembersBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6890,10 +6890,10 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder addGroupMembers(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User value) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User value) {
         if (groupMembersBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -6911,10 +6911,10 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder addGroupMembers(
-          io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (groupMembersBuilder_ == null) {
           ensureGroupMembersIsMutable();
           groupMembers_.add(builderForValue.build());
@@ -6929,10 +6929,10 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder addGroupMembers(
-          int index, io.github.xiaotang.entity.im.ChatMessage.User.Builder builderForValue) {
+          int index, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder builderForValue) {
         if (groupMembersBuilder_ == null) {
           ensureGroupMembersIsMutable();
           groupMembers_.add(index, builderForValue.build());
@@ -6947,10 +6947,10 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder addAllGroupMembers(
-          java.lang.Iterable<? extends io.github.xiaotang.entity.im.ChatMessage.User> values) {
+          java.lang.Iterable<? extends io.github.xiaotang.novartc.netty.ChatMessage.User> values) {
         if (groupMembersBuilder_ == null) {
           ensureGroupMembersIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -6966,7 +6966,7 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder clearGroupMembers() {
         if (groupMembersBuilder_ == null) {
@@ -6983,7 +6983,7 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
       public Builder removeGroupMembers(int index) {
         if (groupMembersBuilder_ == null) {
@@ -7000,9 +7000,9 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder getGroupMembersBuilder(
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder getGroupMembersBuilder(
           int index) {
         return internalGetGroupMembersFieldBuilder().getBuilder(index);
       }
@@ -7011,9 +7011,9 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder getGroupMembersOrBuilder(
+      public io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder getGroupMembersOrBuilder(
           int index) {
         if (groupMembersBuilder_ == null) {
           return groupMembers_.get(index);  } else {
@@ -7025,9 +7025,9 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public java.util.List<? extends io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+      public java.util.List<? extends io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
            getGroupMembersOrBuilderList() {
         if (groupMembersBuilder_ != null) {
           return groupMembersBuilder_.getMessageOrBuilderList();
@@ -7040,41 +7040,41 @@ public final class ChatMessage {
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder addGroupMembersBuilder() {
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder addGroupMembersBuilder() {
         return internalGetGroupMembersFieldBuilder().addBuilder(
-            io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance());
+            io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance());
       }
       /**
        * <pre>
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public io.github.xiaotang.entity.im.ChatMessage.User.Builder addGroupMembersBuilder(
+      public io.github.xiaotang.novartc.netty.ChatMessage.User.Builder addGroupMembersBuilder(
           int index) {
         return internalGetGroupMembersFieldBuilder().addBuilder(
-            index, io.github.xiaotang.entity.im.ChatMessage.User.getDefaultInstance());
+            index, io.github.xiaotang.novartc.netty.ChatMessage.User.getDefaultInstance());
       }
       /**
        * <pre>
        * 群组成员
        * </pre>
        *
-       * <code>repeated .io.github.xiaotang.entity.im.User group_members = 3;</code>
+       * <code>repeated .io.github.xiaotang.novartc.netty.User group_members = 3;</code>
        */
-      public java.util.List<io.github.xiaotang.entity.im.ChatMessage.User.Builder> 
+      public java.util.List<io.github.xiaotang.novartc.netty.ChatMessage.User.Builder> 
            getGroupMembersBuilderList() {
         return internalGetGroupMembersFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder> 
+          io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder> 
           internalGetGroupMembersFieldBuilder() {
         if (groupMembersBuilder_ == null) {
           groupMembersBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              io.github.xiaotang.entity.im.ChatMessage.User, io.github.xiaotang.entity.im.ChatMessage.User.Builder, io.github.xiaotang.entity.im.ChatMessage.UserOrBuilder>(
+              io.github.xiaotang.novartc.netty.ChatMessage.User, io.github.xiaotang.novartc.netty.ChatMessage.User.Builder, io.github.xiaotang.novartc.netty.ChatMessage.UserOrBuilder>(
                   groupMembers_,
                   ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
@@ -7084,16 +7084,16 @@ public final class ChatMessage {
         return groupMembersBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.entity.im.GroupChatInfo)
+      // @@protoc_insertion_point(builder_scope:io.github.xiaotang.novartc.netty.GroupChatInfo)
     }
 
-    // @@protoc_insertion_point(class_scope:io.github.xiaotang.entity.im.GroupChatInfo)
-    private static final io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.github.xiaotang.novartc.netty.GroupChatInfo)
+    private static final io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo();
+      DEFAULT_INSTANCE = new io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo();
     }
 
-    public static io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo getDefaultInstance() {
+    public static io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
@@ -7129,42 +7129,42 @@ public final class ChatMessage {
     }
 
     @java.lang.Override
-    public io.github.xiaotang.entity.im.ChatMessage.GroupChatInfo getDefaultInstanceForType() {
+    public io.github.xiaotang.novartc.netty.ChatMessage.GroupChatInfo getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_github_xiaotang_entity_im_User_descriptor;
+    internal_static_io_github_xiaotang_novartc_netty_User_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_github_xiaotang_entity_im_User_fieldAccessorTable;
+      internal_static_io_github_xiaotang_novartc_netty_User_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_github_xiaotang_entity_im_ImageContent_descriptor;
+    internal_static_io_github_xiaotang_novartc_netty_ImageContent_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_github_xiaotang_entity_im_ImageContent_fieldAccessorTable;
+      internal_static_io_github_xiaotang_novartc_netty_ImageContent_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_github_xiaotang_entity_im_TextContent_descriptor;
+    internal_static_io_github_xiaotang_novartc_netty_TextContent_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_github_xiaotang_entity_im_TextContent_fieldAccessorTable;
+      internal_static_io_github_xiaotang_novartc_netty_TextContent_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_github_xiaotang_entity_im_TextAndImageContent_descriptor;
+    internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_github_xiaotang_entity_im_TextAndImageContent_fieldAccessorTable;
+      internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_github_xiaotang_entity_im_MsgBody_descriptor;
+    internal_static_io_github_xiaotang_novartc_netty_MsgBody_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_github_xiaotang_entity_im_MsgBody_fieldAccessorTable;
+      internal_static_io_github_xiaotang_novartc_netty_MsgBody_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_io_github_xiaotang_entity_im_GroupChatInfo_descriptor;
+    internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_io_github_xiaotang_entity_im_GroupChatInfo_fieldAccessorTable;
+      internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -7174,74 +7174,75 @@ public final class ChatMessage {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\021ChatMessage.proto\022\034io.github.xiaotang." +
-      "entity.im\"=\n\004User\022\017\n\007user_id\030\001 \001(\t\022\020\n\010us" +
-      "ername\030\002 \001(\t\022\022\n\navatar_url\030\003 \001(\t\"<\n\014Imag" +
-      "eContent\022\021\n\timage_url\030\001 \001(\t\022\031\n\021image_des" +
-      "cription\030\002 \001(\t\"\033\n\013TextContent\022\014\n\004text\030\001 " +
-      "\001(\t\"\231\001\n\023TextAndImageContent\022?\n\014text_cont" +
-      "ent\030\001 \001(\0132).io.github.xiaotang.entity.im" +
-      ".TextContent\022A\n\rimage_content\030\002 \001(\0132*.io" +
-      ".github.xiaotang.entity.im.ImageContent\"" +
-      "\327\003\n\007MsgBody\022\022\n\nmessage_id\030\001 \001(\t\022?\n\014messa" +
-      "ge_type\030\002 \001(\0162).io.github.xiaotang.entit" +
-      "y.im.MessageType\0222\n\006sender\030\003 \001(\0132\".io.gi" +
-      "thub.xiaotang.entity.im.User\022\021\n\ttimestam" +
-      "p\030\004 \001(\003\0226\n\nrecipients\030\005 \003(\0132\".io.github." +
-      "xiaotang.entity.im.User\022\020\n\010is_group\030\006 \001(" +
-      "\010\022A\n\014text_content\030\007 \001(\0132).io.github.xiao" +
-      "tang.entity.im.TextContentH\000\022C\n\rimage_co" +
-      "ntent\030\010 \001(\0132*.io.github.xiaotang.entity." +
-      "im.ImageContentH\000\022S\n\026text_and_image_cont" +
-      "ent\030\t \001(\01321.io.github.xiaotang.entity.im" +
-      ".TextAndImageContentH\000B\t\n\007content\"p\n\rGro" +
-      "upChatInfo\022\020\n\010group_id\030\001 \001(\t\022\022\n\ngroup_na" +
-      "me\030\002 \001(\t\0229\n\rgroup_members\030\003 \003(\0132\".io.git" +
-      "hub.xiaotang.entity.im.User*V\n\013MessageTy" +
+      "\n\021ChatMessage.proto\022 io.github.xiaotang." +
+      "novartc.netty\"=\n\004User\022\017\n\007user_id\030\001 \001(\t\022\020" +
+      "\n\010username\030\002 \001(\t\022\022\n\navatar_url\030\003 \001(\t\"<\n\014" +
+      "ImageContent\022\021\n\timage_url\030\001 \001(\t\022\031\n\021image" +
+      "_description\030\002 \001(\t\"\033\n\013TextContent\022\014\n\004tex" +
+      "t\030\001 \001(\t\"\241\001\n\023TextAndImageContent\022C\n\014text_" +
+      "content\030\001 \001(\0132-.io.github.xiaotang.novar" +
+      "tc.netty.TextContent\022E\n\rimage_content\030\002 " +
+      "\001(\0132..io.github.xiaotang.novartc.netty.I" +
+      "mageContent\"\357\003\n\007MsgBody\022\022\n\nmessage_id\030\001 " +
+      "\001(\t\022C\n\014message_type\030\002 \001(\0162-.io.github.xi" +
+      "aotang.novartc.netty.MessageType\0226\n\006send" +
+      "er\030\003 \001(\0132&.io.github.xiaotang.novartc.ne" +
+      "tty.User\022\021\n\ttimestamp\030\004 \001(\003\022:\n\nrecipient" +
+      "s\030\005 \003(\0132&.io.github.xiaotang.novartc.net" +
+      "ty.User\022\020\n\010is_group\030\006 \001(\010\022E\n\014text_conten" +
+      "t\030\007 \001(\0132-.io.github.xiaotang.novartc.net" +
+      "ty.TextContentH\000\022G\n\rimage_content\030\010 \001(\0132" +
+      "..io.github.xiaotang.novartc.netty.Image" +
+      "ContentH\000\022W\n\026text_and_image_content\030\t \001(" +
+      "\01325.io.github.xiaotang.novartc.netty.Tex" +
+      "tAndImageContentH\000B\t\n\007content\"t\n\rGroupCh" +
+      "atInfo\022\020\n\010group_id\030\001 \001(\t\022\022\n\ngroup_name\030\002" +
+      " \001(\t\022=\n\rgroup_members\030\003 \003(\0132&.io.github." +
+      "xiaotang.novartc.netty.User*V\n\013MessageTy" +
       "pe\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\t\n\005VIDEO\020\002\022\t\n\005AU" +
-      "DIO\020\003\022\010\n\004FILE\020\004\022\022\n\016TEXT_AND_IMAGE\020\005B-\n\034i" +
-      "o.github.xiaotang.entity.imB\013ChatMessage" +
-      "P\000b\006proto3"
+      "DIO\020\003\022\010\n\004FILE\020\004\022\022\n\016TEXT_AND_IMAGE\020\005B1\n i" +
+      "o.github.xiaotang.novartc.nettyB\013ChatMes" +
+      "sageP\000b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_io_github_xiaotang_entity_im_User_descriptor =
+    internal_static_io_github_xiaotang_novartc_netty_User_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_io_github_xiaotang_entity_im_User_fieldAccessorTable = new
+    internal_static_io_github_xiaotang_novartc_netty_User_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_github_xiaotang_entity_im_User_descriptor,
+        internal_static_io_github_xiaotang_novartc_netty_User_descriptor,
         new java.lang.String[] { "UserId", "Username", "AvatarUrl", });
-    internal_static_io_github_xiaotang_entity_im_ImageContent_descriptor =
+    internal_static_io_github_xiaotang_novartc_netty_ImageContent_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_io_github_xiaotang_entity_im_ImageContent_fieldAccessorTable = new
+    internal_static_io_github_xiaotang_novartc_netty_ImageContent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_github_xiaotang_entity_im_ImageContent_descriptor,
+        internal_static_io_github_xiaotang_novartc_netty_ImageContent_descriptor,
         new java.lang.String[] { "ImageUrl", "ImageDescription", });
-    internal_static_io_github_xiaotang_entity_im_TextContent_descriptor =
+    internal_static_io_github_xiaotang_novartc_netty_TextContent_descriptor =
       getDescriptor().getMessageTypes().get(2);
-    internal_static_io_github_xiaotang_entity_im_TextContent_fieldAccessorTable = new
+    internal_static_io_github_xiaotang_novartc_netty_TextContent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_github_xiaotang_entity_im_TextContent_descriptor,
+        internal_static_io_github_xiaotang_novartc_netty_TextContent_descriptor,
         new java.lang.String[] { "Text", });
-    internal_static_io_github_xiaotang_entity_im_TextAndImageContent_descriptor =
+    internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_io_github_xiaotang_entity_im_TextAndImageContent_fieldAccessorTable = new
+    internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_github_xiaotang_entity_im_TextAndImageContent_descriptor,
+        internal_static_io_github_xiaotang_novartc_netty_TextAndImageContent_descriptor,
         new java.lang.String[] { "TextContent", "ImageContent", });
-    internal_static_io_github_xiaotang_entity_im_MsgBody_descriptor =
+    internal_static_io_github_xiaotang_novartc_netty_MsgBody_descriptor =
       getDescriptor().getMessageTypes().get(4);
-    internal_static_io_github_xiaotang_entity_im_MsgBody_fieldAccessorTable = new
+    internal_static_io_github_xiaotang_novartc_netty_MsgBody_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_github_xiaotang_entity_im_MsgBody_descriptor,
+        internal_static_io_github_xiaotang_novartc_netty_MsgBody_descriptor,
         new java.lang.String[] { "MessageId", "MessageType", "Sender", "Timestamp", "Recipients", "IsGroup", "TextContent", "ImageContent", "TextAndImageContent", "Content", });
-    internal_static_io_github_xiaotang_entity_im_GroupChatInfo_descriptor =
+    internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_descriptor =
       getDescriptor().getMessageTypes().get(5);
-    internal_static_io_github_xiaotang_entity_im_GroupChatInfo_fieldAccessorTable = new
+    internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_io_github_xiaotang_entity_im_GroupChatInfo_descriptor,
+        internal_static_io_github_xiaotang_novartc_netty_GroupChatInfo_descriptor,
         new java.lang.String[] { "GroupId", "GroupName", "GroupMembers", });
     descriptor.resolveAllFeaturesImmutable();
   }

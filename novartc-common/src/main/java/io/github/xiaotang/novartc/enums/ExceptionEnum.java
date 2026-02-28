@@ -1,4 +1,4 @@
-package io.github.xiaotang.enums;
+package io.github.xiaotang.novartc.enums;
 
 import lombok.Getter;
 

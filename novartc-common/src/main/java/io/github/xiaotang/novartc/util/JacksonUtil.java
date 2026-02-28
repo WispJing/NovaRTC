@@ -1,4 +1,4 @@
-package io.github.xiaotang.util;
+package io.github.xiaotang.novartc.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

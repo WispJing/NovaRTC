@@ -1,4 +1,4 @@
-package io.github.xiaotang.netty.core;
+package io.github.xiaotang.novartc.core;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

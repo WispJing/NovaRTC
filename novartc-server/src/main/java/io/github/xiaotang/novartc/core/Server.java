@@ -1,4 +1,4 @@
-package io.github.xiaotang.netty.core;
+package io.github.xiaotang.novartc.core;
 
 /**
  * Created on 2026/2/28 9:02

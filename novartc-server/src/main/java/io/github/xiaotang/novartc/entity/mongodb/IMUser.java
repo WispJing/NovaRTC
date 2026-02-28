@@ -1,4 +1,4 @@
-package io.github.xiaotang.entity.mongodb;
+package io.github.xiaotang.novartc.entity.mongodb;
 
 import lombok.Data;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
