@@ -14,6 +14,7 @@ enum MessageType {
   AUDIO = 3;          // 音频消息
   FILE = 4;           // 文件消息
   TEXT_AND_IMAGE = 5; // 复合消息类型：文本 + 图片
+  SYSTEM = 6;         // 系统消息
 }
 
 // 用户信息

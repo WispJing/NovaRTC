@@ -23,14 +23,16 @@ import java.util.Date;
 public class IMUser {
     @MongoId
     private String id;
-    @Field("user_id")
-    private String userId;
+    @Field("user_num")
+    private String userNum;
     @Field("username")
     private String username;
     @Field("password")
     private String password;
     @Field("email")
     private String email;
+    @Field("avatar_url")
+    private String avatarUrl;
     @Field("created_at")
     private Date createdAt;
 }

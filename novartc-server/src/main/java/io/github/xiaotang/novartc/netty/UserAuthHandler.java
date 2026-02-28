@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.netty;
 import com.alibaba.fastjson.JSONObject;
 import io.github.xiaotang.novartc.constant.IMConstant;
 import io.github.xiaotang.novartc.util.NettyUtil;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -37,9 +38,9 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            IdleStateEvent evnet = (IdleStateEvent) evt;
+            IdleStateEvent event = (IdleStateEvent) evt;
             // 判断Channel是否读空闲, 读空闲时移除Channel
-            if (evnet.state().equals(IdleState.READER_IDLE)) {
+            if (event.state().equals(IdleState.READER_IDLE)) {
                 final String remoteAddress = NettyUtil.parseChannelRemoteAddr(ctx.channel());
                 logger.warn("NETTY SERVER PIPELINE: IDLE exception [{}]", remoteAddress);
                 UserInfoManager.removeChannel(ctx.channel());
@@ -88,46 +89,72 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<Object> {
             return;
         }
 
-        // 本程序目前只支持文本消息
-        if (!(frame instanceof TextWebSocketFrame)) {
+        // 本程序目前只支持Protobuf消息
+        if (!(frame instanceof BinaryWebSocketFrame)) {
             throw new UnsupportedOperationException(frame.getClass().getName() + " frame type not supported");
         }
-        String message = ((TextWebSocketFrame) frame).text();
-        JSONObject json;
+        // 解析Protobuf消息
+        BinaryWebSocketFrame binaryFrame = (BinaryWebSocketFrame) frame;
+        byte[] byteArray = new byte[binaryFrame.content().readableBytes()];
+        binaryFrame.content().readBytes(byteArray);
+
+        ChatMessage.MsgBody msgBody;
         try {
-            json = JSONObject.parseObject(message);
-            if (Objects.isNull(json)) {
-                throw new RuntimeException();
-            }
+            msgBody = ChatMessage.MsgBody.parseFrom(byteArray);
         } catch (Exception e) {
-            ctx.writeAndFlush(new TextWebSocketFrame(ChatProto.buildSystProto(ChatProto.EROR_PROTO, "msg type not supported")));
+            logger.error("Failed to parse protobuf message", e);
+            ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(ChatMessage.MsgBody.newBuilder()
+                    .setMessageType(ChatMessage.MessageType.SYSTEM)
+                    .setTextContent(ChatMessage.TextContent.newBuilder().setText("msg type not supported")).build().toByteArray())));
             return;
         }
-        int code = json.getInteger("code");
+
         Channel channel = ctx.channel();
-        switch (code) {
-            case ChatCode.PING_CODE:
+        switch (msgBody.getMessageType()) {
+            case TEXT:
+                // 文本消息的处理
+                handleTextMessage(channel, msgBody);
+                break;
+            case IMAGE:
+                // 图片消息的处理
+                handleImageMessage(channel, msgBody);
+                break;
+            case PING:
                 logger.info("receive ping message");
                 return;
-            case ChatCode.PONG_CODE:
+            case PONG:
                 UserInfoManager.updateUserTime(channel);
-//                UserInfoManager.sendPong(ctx.channel());
-                logger.info("receive pong message, address: {}",NettyUtil.parseChannelRemoteAddr(channel));
+                logger.info("receive pong message, address: {}", NettyUtil.parseChannelRemoteAddr(channel));
                 return;
-            case ChatCode.AUTH_CODE:
-                boolean isSuccess = UserInfoManager.saveUser(channel, json.getString("nick"), json.getString("password"));
-                UserInfoManager.sendInfo(channel,ChatCode.SYS_AUTH_STATE,isSuccess);
-                if (isSuccess) {
-                    UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT,UserInfoManager.getAuthUserCount());
-                }
+            case AUTH:
+                handleAuthMessage(channel, msgBody);
                 return;
-            case ChatCode.MESS_CODE: //普通的消息留给MessageHandler处理
-                break;
             default:
-                logger.warn("The code [{}] can't be auth!!!", code);
+                logger.warn("The message type [{}] can't be auth!!!", msgBody.getMessageType());
                 return;
         }
-        //后续消息交给MessageHandler处理
+        // 交给下一个处理器
         ctx.fireChannelRead(frame.retain());
+    }
+
+    private void handleTextMessage(Channel channel, ChatMessage.MsgBody msgBody) {
+        logger.info("Received TEXT message: {}", msgBody.getTextContent().getText());
+        // 这里可以处理文本消息，或者交给消息处理器进一步处理
+    }
+
+    private void handleImageMessage(Channel channel, ChatMessage.MsgBody msgBody) {
+        logger.info("Received IMAGE message: {}", msgBody.getImageContent().getImageUrl());
+        // 这里可以处理图片消息
+    }
+
+    private void handleAuthMessage(Channel channel, ChatMessage.MsgBody msgBody) {
+        String userId = msgBody.getSender().getUserId();
+        String username = msgBody.getSender().getUsername();
+        String password = msgBody.getSender().getAvatarUrl();
+        boolean isSuccess = UserInfoManager.saveUser(channel, username, password);
+        UserInfoManager.sendInfo(channel, ChatCode.SYS_AUTH_STATE, isSuccess);
+        if (isSuccess) {
+            UserInfoManager.broadCastInfo(ChatCode.SYS_USER_COUNT, UserInfoManager.getAuthUserCount());
+        }
     }
 }

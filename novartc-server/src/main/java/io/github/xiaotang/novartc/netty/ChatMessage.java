@@ -83,6 +83,14 @@ public final class ChatMessage {
      * <code>TEXT_AND_IMAGE = 5;</code>
      */
     TEXT_AND_IMAGE(5),
+    /**
+     * <pre>
+     * 系统消息
+     * </pre>
+     *
+     * <code>SYSTEM = 6;</code>
+     */
+    SYSTEM(6),
     UNRECOGNIZED(-1),
     ;
 
@@ -143,6 +151,14 @@ public final class ChatMessage {
      * <code>TEXT_AND_IMAGE = 5;</code>
      */
     public static final int TEXT_AND_IMAGE_VALUE = 5;
+    /**
+     * <pre>
+     * 系统消息
+     * </pre>
+     *
+     * <code>SYSTEM = 6;</code>
+     */
+    public static final int SYSTEM_VALUE = 6;
 
 
     public final int getNumber() {
@@ -175,6 +191,7 @@ public final class ChatMessage {
         case 3: return AUDIO;
         case 4: return FILE;
         case 5: return TEXT_AND_IMAGE;
+        case 6: return SYSTEM;
         default: return null;
       }
     }
@@ -7198,11 +7215,11 @@ public final class ChatMessage {
       "tAndImageContentH\000B\t\n\007content\"t\n\rGroupCh" +
       "atInfo\022\020\n\010group_id\030\001 \001(\t\022\022\n\ngroup_name\030\002" +
       " \001(\t\022=\n\rgroup_members\030\003 \003(\0132&.io.github." +
-      "xiaotang.novartc.netty.User*V\n\013MessageTy" +
+      "xiaotang.novartc.netty.User*b\n\013MessageTy" +
       "pe\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\t\n\005VIDEO\020\002\022\t\n\005AU" +
-      "DIO\020\003\022\010\n\004FILE\020\004\022\022\n\016TEXT_AND_IMAGE\020\005B1\n i" +
-      "o.github.xiaotang.novartc.nettyB\013ChatMes" +
-      "sageP\000b\006proto3"
+      "DIO\020\003\022\010\n\004FILE\020\004\022\022\n\016TEXT_AND_IMAGE\020\005\022\n\n\006S" +
+      "YSTEM\020\006B1\n io.github.xiaotang.novartc.ne" +
+      "ttyB\013ChatMessageP\000b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
