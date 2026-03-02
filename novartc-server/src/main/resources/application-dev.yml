@@ -12,3 +12,11 @@ spring:
   data:
     mongodb:
       uri: mongodb://127.0.0.1:27017/novartc
+
+logging:
+  level:
+    root: INFO
+    io.github.xiaotang: INFO
+    io.netty: INFO
+    org.mongodb.driver: WARN
+    org.springframework: WARN

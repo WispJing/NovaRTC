@@ -29,7 +29,6 @@
     <lombok.version>1.18.30</lombok.version>
     <fastjson2.version>2.0.43</fastjson2.version>
     <jackson.version>2.15.4</jackson.version>
-    <slf4j.version>1.7.30</slf4j.version>
     <lang3.version>3.20.0</lang3.version>
     <beanutils.version>1.11.0</beanutils.version>
   </properties>
@@ -167,11 +166,39 @@
         <version>${jackson.version}</version>
       </dependency>
 
+      <!-- slf4j API -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.17</version>
+      </dependency>
+
+      <!-- logback 实现 -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.4.14</version>
+      </dependency>
+
       <!-- 将log4j转换为slf4j实现 -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
+        <version>2.0.17</version>
+      </dependency>
+
+      <!-- JUL 转 slf4j -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>2.0.17</version>
+      </dependency>
+
+      <!-- commons-logging 转 slf4j -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>2.0.17</version>
       </dependency>
 
       <dependency>
