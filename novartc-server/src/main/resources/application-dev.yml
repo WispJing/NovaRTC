@@ -19,4 +19,4 @@ logging:
     io.github.xiaotang: INFO
     io.netty: INFO
     org.mongodb.driver: WARN
-    org.springframework: WARN
+    org.springframework: INFO

@@ -231,11 +231,13 @@
 
   <!-- 连接日志 -->
   <logger name="im.access" level="INFO" additivity="false">
+    <appender-ref ref="CONSOLE"/>
     <appender-ref ref="ASYNC_ACCESS"/>
   </logger>
 
   <!-- 消息日志 -->
   <logger name="im.msg" level="INFO" additivity="false">
+    <appender-ref ref="CONSOLE"/>
     <appender-ref ref="ASYNC_MSG"/>
   </logger>
 
