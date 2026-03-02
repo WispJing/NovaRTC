@@ -5,11 +5,15 @@
 
   <property name="LOG_HOME" value="./logs"/>
 
-  <!-- ================= 日志格式 ================= -->
+  <!-- ================= 控制台彩色日志 ================= -->
 
-  <property name="LOG_PATTERN"
+  <property name="CONSOLE_PATTERN"
+            value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n"/>
+
+  <!-- ================= 文件日志格式 ================= -->
+
+  <property name="FILE_PATTERN"
             value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-
 
   <!-- ================= 控制台 ================= -->
 
@@ -17,13 +21,13 @@
             class="ch.qos.logback.core.ConsoleAppender">
 
     <encoder>
-      <pattern>${LOG_PATTERN}</pattern>
+      <pattern>${CONSOLE_PATTERN}</pattern>
     </encoder>
 
   </appender>
 
 
-  <!-- ================= 普通日志 ================= -->
+  <!-- ================= 系统日志 ================= -->
 
   <appender name="FILE"
             class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -46,7 +50,7 @@
     </rollingPolicy>
 
     <encoder>
-      <pattern>${LOG_PATTERN}</pattern>
+      <pattern>${FILE_PATTERN}</pattern>
     </encoder>
 
   </appender>
@@ -73,17 +77,67 @@
     </rollingPolicy>
 
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
-
       <level>ERROR</level>
-
       <onMatch>ACCEPT</onMatch>
-
       <onMismatch>DENY</onMismatch>
-
     </filter>
 
     <encoder>
-      <pattern>${LOG_PATTERN}</pattern>
+      <pattern>${FILE_PATTERN}</pattern>
+    </encoder>
+
+  </appender>
+
+
+  <!-- ================= access.log 连接日志 ================= -->
+
+  <appender name="ACCESS_FILE"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <file>${LOG_HOME}/access.log</file>
+
+    <rollingPolicy
+        class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+      <fileNamePattern>
+        ${LOG_HOME}/access.%d{yyyy-MM-dd}.%i.log
+      </fileNamePattern>
+
+      <maxFileSize>100MB</maxFileSize>
+
+      <maxHistory>30</maxHistory>
+
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>${FILE_PATTERN}</pattern>
+    </encoder>
+
+  </appender>
+
+
+  <!-- ================= msg.log 消息日志 ================= -->
+
+  <appender name="MSG_FILE"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <file>${LOG_HOME}/msg.log</file>
+
+    <rollingPolicy
+        class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+      <fileNamePattern>
+        ${LOG_HOME}/msg.%d{yyyy-MM-dd}.%i.log
+      </fileNamePattern>
+
+      <maxFileSize>200MB</maxFileSize>
+
+      <maxHistory>30</maxHistory>
+
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>${FILE_PATTERN}</pattern>
     </encoder>
 
   </appender>
@@ -117,9 +171,9 @@
   </appender>
 
 
-  <!-- ================= ROOT ================= -->
+  <!-- ================= root ================= -->
 
-  <root>
+  <root level="INFO">
 
     <appender-ref ref="CONSOLE"/>
 
@@ -128,5 +182,24 @@
     <appender-ref ref="ASYNC_ERROR"/>
 
   </root>
+
+
+  <!-- ================= access日志 ================= -->
+
+  <logger name="im.access" level="INFO" additivity="false">
+
+    <appender-ref ref="ACCESS_FILE"/>
+
+  </logger>
+
+
+  <!-- ================= msg日志 ================= -->
+
+  <logger name="im.msg" level="INFO" additivity="false">
+
+    <appender-ref ref="MSG_FILE"/>
+
+  </logger>
+
 
 </configuration>
