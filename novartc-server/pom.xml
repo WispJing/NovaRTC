@@ -33,6 +33,10 @@
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -45,6 +49,10 @@
         <exclusion>
           <groupId>io.netty</groupId>
           <artifactId>netty-all</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -87,6 +95,10 @@
         <exclusion>
           <groupId>io.netty</groupId>
           <artifactId>netty-tcnative</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -191,16 +203,22 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
-    <!-- logback 实现 -->
+    <!-- Log4j2 实现 -->
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
     </dependency>
 
-    <!-- 将log4j转换为slf4j实现 -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+
+    <!-- Log4j2 与 SLF4J 集成 -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <!-- JUL 转 slf4j -->

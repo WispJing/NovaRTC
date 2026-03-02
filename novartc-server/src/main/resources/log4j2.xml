@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="60">
+
+  <Properties>
+    <Property name="LOG_HOME">./logs</Property>
+    <Property name="CONSOLE_PATTERN">
+      %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} [method:%M] [line:%L] - %msg%n
+    </Property>
+    <Property name="FILE_PATTERN">
+      %d{yyyy-MM-dd HH:mm:ss.SSS} %5level %pid --- [%thread] %logger{36} [method:%M] [line:%L] - %msg%n
+    </Property>
+    <!--<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+    <Property name="LOG_LEVEL_PATTERN">%5p</Property>
+    <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
+    <Property name="CONSOLE_PATTERN">%clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{-&#45;&#45;}{faint} %clr{${sys:LOGGED_APPLICATION_NAME:-}[%15.15t]}{faint} %clr{${sys:LOG_CORRELATION_PATTERN:-}}{faint}%clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    <Property name="FILE_PATTERN">%d{${sys:LOG_DATEFORMAT_PATTERN}} ${sys:LOG_LEVEL_PATTERN} %pid -&#45;&#45; ${sys:LOGGED_APPLICATION_NAME:-}[%t] ${sys:LOG_CORRELATION_PATTERN:-}%-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>-->
+  </Properties>
+
+  <Appenders>
+    <!-- 控制台 -->
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <PatternLayout pattern="${CONSOLE_PATTERN}"/>
+    </Console>
+
+    <!-- 系统日志 -->
+    <RollingFile name="FILE"
+                 fileName="${LOG_HOME}/nova-rtc.log"
+                 filePattern="${LOG_HOME}/nova-rtc.%d{yyyy-MM-dd}.%i.log">
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="100MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+      <PatternLayout pattern="${FILE_PATTERN}"/>
+    </RollingFile>
+
+    <!-- ERROR 日志 -->
+    <RollingFile name="ERROR_FILE"
+                 fileName="${LOG_HOME}/error.log"
+                 filePattern="${LOG_HOME}/error.%d{yyyy-MM-dd}.%i.log">
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="50MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+      <PatternLayout pattern="${FILE_PATTERN}"/>
+      <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+    </RollingFile>
+
+    <!-- Access 日志 -->
+    <RollingFile name="ACCESS_FILE"
+                 fileName="${LOG_HOME}/access.log"
+                 filePattern="${LOG_HOME}/access.%d{yyyy-MM-dd}.%i.log">
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="100MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+      <PatternLayout pattern="${FILE_PATTERN}"/>
+    </RollingFile>
+
+    <!-- 消息日志 -->
+    <RollingFile name="MSG_FILE"
+                 fileName="${LOG_HOME}/msg.log"
+                 filePattern="${LOG_HOME}/msg.%d{yyyy-MM-dd}.%i.log">
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="200MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+      <PatternLayout pattern="${FILE_PATTERN}"/>
+    </RollingFile>
+
+    <!-- 异步包装器 -->
+    <Async name="ASYNC_FILE" bufferSize="8192" blocking="false">
+      <AppenderRef ref="FILE"/>
+    </Async>
+    <Async name="ASYNC_ERROR" bufferSize="2048" blocking="false">
+      <AppenderRef ref="ERROR_FILE"/>
+    </Async>
+    <Async name="ASYNC_ACCESS" bufferSize="8192" blocking="false">
+      <AppenderRef ref="ACCESS_FILE"/>
+    </Async>
+    <Async name="ASYNC_MSG" bufferSize="8192" blocking="false">
+      <AppenderRef ref="MSG_FILE"/>
+    </Async>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="im.access" level="INFO" additivity="false">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="ASYNC_ACCESS"/>
+    </Logger>
+    <Logger name="im.msg" level="INFO" additivity="false">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="ASYNC_MSG"/>
+    </Logger>
+    <Root level="INFO">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="ASYNC_FILE"/>
+      <AppenderRef ref="ASYNC_ERROR"/>
+    </Root>
+  </Loggers>
+
+</Configuration>
