@@ -5,10 +5,13 @@
 
   <property name="LOG_HOME" value="./logs"/>
 
+  <conversionRule conversionWord="clr"
+                  converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+
   <!-- ================= 控制台彩色日志 ================= -->
 
   <property name="CONSOLE_PATTERN"
-            value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n"/>
+            value="%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(%5level) %clr(${PID:-}){magenta} --- [%thread] %clr(%logger{36}){cyan} - %msg%n"/>
 
   <!-- ================= 文件日志格式 ================= -->
 
