@@ -168,27 +168,27 @@
       blocking=false -> 队列满时丢弃日志（提高吞吐）
     -->
 
-    <Async name="ASYNC_FILE" bufferSize="8192" blocking="false">
+    <Async name="ASYNC_FILE" bufferSize="8192" blocking="true">
       <AppenderRef ref="FILE"/>
     </Async>
 
-    <Async name="ASYNC_ERROR" bufferSize="2048" blocking="false">
+    <Async name="ASYNC_ERROR" bufferSize="8192" blocking="true">
       <AppenderRef ref="ERROR_FILE"/>
     </Async>
 
-    <Async name="IM_ASYNC_APP" bufferSize="8192" blocking="false">
+    <Async name="IM_ASYNC_APP" bufferSize="8192" blocking="true">
       <AppenderRef ref="IM_APP_FILE"/>
     </Async>
 
-    <Async name="IM_ASYNC_ACCESS" bufferSize="8192" blocking="false">
+    <Async name="IM_ASYNC_ACCESS" bufferSize="8192" blocking="true">
       <AppenderRef ref="IM_ACCESS_FILE"/>
     </Async>
 
-    <Async name="IM_ASYNC_MSG" bufferSize="8192" blocking="false">
+    <Async name="IM_ASYNC_MSG" bufferSize="8192" blocking="true">
       <AppenderRef ref="IM_MSG_FILE"/>
     </Async>
 
-    <Async name="IM_ASYNC_ERROR" bufferSize="8192" blocking="false">
+    <Async name="IM_ASYNC_ERROR" bufferSize="8192" blocking="true">
       <AppenderRef ref="IM_ERROR_FILE"/>
     </Async>
 
