@@ -24,8 +24,7 @@
       %n                     -> 换行
     -->
     <Property name="CONSOLE_PATTERN">
-      %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} -
-      %msg%n
+      %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} - %msg%n
     </Property>
 
     <!-- 文件日志格式（无颜色，便于采集） -->
