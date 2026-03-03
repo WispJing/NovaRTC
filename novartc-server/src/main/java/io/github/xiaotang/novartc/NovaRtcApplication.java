@@ -1,6 +1,6 @@
 package io.github.xiaotang.novartc;
 
-import io.github.xiaotang.novartc.config.ChatAccessLog;
+import io.github.xiaotang.novartc.config.ChatAppLog;
 import io.github.xiaotang.novartc.netty.core.NovaRTCServer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,7 +27,7 @@ public class NovaRtcApplication implements CommandLineRunner {
         server.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             server.shutdown();
-            ChatAccessLog.log.info(">>>>>>>>> jvm shutdown");
+            ChatAppLog.log.info("NovaRTC IM server is stopping");
         }));
     }
 }
