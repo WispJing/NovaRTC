@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * @author tangj
  * @description
  */
-public class ChatMessageLog {
+public class ChatMsgLog {
     private static final Logger logger = LoggerFactory.getLogger("im.msg");
 
     public static void send(String from, String to, String msgId) {

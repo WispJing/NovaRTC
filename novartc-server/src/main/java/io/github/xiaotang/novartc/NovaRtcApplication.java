@@ -25,7 +25,6 @@ public class NovaRtcApplication implements CommandLineRunner {
         final NovaRTCServer server = new NovaRTCServer();
         server.init();
         server.start();
-        ChatAccessLog.log.info("NovaRTC IM server is running...");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             server.shutdown();
             ChatAccessLog.log.info(">>>>>>>>> jvm shutdown");

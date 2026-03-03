@@ -1,9 +1,10 @@
 package io.github.xiaotang.novartc.netty.core;
 
+import io.github.xiaotang.novartc.config.ChatAppLog;
+import io.github.xiaotang.novartc.config.ChatErrorLog;
 import io.github.xiaotang.novartc.constant.IMConstant;
-import io.github.xiaotang.novartc.netty.UserAuthHandler;
-import io.github.xiaotang.novartc.netty.core.BaseServer;
 import io.github.xiaotang.novartc.netty.ChatMessage;
+import io.github.xiaotang.novartc.netty.UserAuthHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
@@ -73,7 +74,7 @@ public class NovaRTCServer extends BaseServer {
         try {
             cf = b.bind().sync();
             InetSocketAddress addr = (InetSocketAddress) cf.channel().localAddress();
-            logger.info("WebSocketServer start success, port is:{}", addr.getPort());
+            ChatAppLog.log.info("NovaRTC IM server is running, port is: {}", addr.getPort());
 
             // 定时扫描所有的Channel，关闭失效的Channel
             executorService.scheduleAtFixedRate(new Runnable() {
@@ -93,7 +94,7 @@ public class NovaRTCServer extends BaseServer {
             }, 3, 50, TimeUnit.SECONDS);
 
         } catch (InterruptedException e) {
-            logger.error("WebSocketServer start fail,", e);
+            ChatErrorLog.log.error("NovaRTC IM server start fail,", e);
         }
     }
 }

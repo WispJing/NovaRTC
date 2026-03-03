@@ -10,6 +10,7 @@
   <Properties>
     <!-- 日志根目录 -->
     <Property name="LOG_HOME">./logs</Property>
+    <Property name="LOG_IM_HOME">./logs/IM</Property>
     <Property name="pid">${pid}</Property>
   </Properties>
 
@@ -19,7 +20,8 @@
     <!-- ========= 控制台输出 ========= -->
     <!-- target="SYSTEM_OUT" -> 输出到标准输出 -->
     <Console name="CONSOLE" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} - %msg%n"/>
+      <PatternLayout
+          pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} - %msg%n"/>
     </Console>
 
 
@@ -78,12 +80,9 @@
       <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
     </RollingFile>
 
-
-    <!-- ========= Access 访问日志 ========= -->
-    <!-- 一般用于记录接口访问、HTTP请求、连接信息等 -->
-    <RollingFile name="ACCESS_FILE"
-                 fileName="${LOG_HOME}/access.log"
-                 filePattern="${LOG_HOME}/access.%d{yyyy-MM-dd}.%i.log"
+    <RollingFile name="IM_APP_FILE"
+                 fileName="${LOG_IM_HOME}/app.log"
+                 filePattern="${LOG_IM_HOME}/app.%d{yyyy-MM-dd}.%i.log"
                  append="false">
 
       <Policies>
@@ -92,7 +91,28 @@
       </Policies>
 
       <DefaultRolloverStrategy max="30">
-        <Delete basePath="logs">
+        <Delete basePath="${LOG_IM_HOME}">
+          <IfFileName glob="*.log"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+
+      <JsonTemplateLayout eventTemplateUri="classpath:log4j2-json-template.json"/>
+    </RollingFile>
+
+    <!-- ========= Access 访问日志 ========= -->
+    <!-- 一般用于记录接口访问、HTTP请求、连接信息等 -->
+    <RollingFile name="IM_ACCESS_FILE"
+                 fileName="${LOG_IM_HOME}/access.log"
+                 filePattern="${LOG_IM_HOME}/access.%d{yyyy-MM-dd}.%i.log"
+                 append="false">
+
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="100MB"/>
+      </Policies>
+
+      <DefaultRolloverStrategy max="30">
+        <Delete basePath="${LOG_IM_HOME}">
           <IfFileName glob="*.log"/>
         </Delete>
       </DefaultRolloverStrategy>
@@ -103,9 +123,9 @@
 
     <!-- ========= 消息日志（如 IM 消息） ========= -->
     <!-- 单独拆分，防止大量业务消息污染系统日志 -->
-    <RollingFile name="MSG_FILE"
-                 fileName="${LOG_HOME}/msg.log"
-                 filePattern="${LOG_HOME}/msg.%d{yyyy-MM-dd}.%i.log"
+    <RollingFile name="IM_MSG_FILE"
+                 fileName="${LOG_IM_HOME}/msg.log"
+                 filePattern="${LOG_IM_HOME}/msg.%d{yyyy-MM-dd}.%i.log"
                  append="false">
 
       <Policies>
@@ -114,7 +134,7 @@
       </Policies>
 
       <DefaultRolloverStrategy max="30">
-        <Delete basePath="logs">
+        <Delete basePath="${LOG_IM_HOME}">
           <IfFileName glob="*.log"/>
         </Delete>
       </DefaultRolloverStrategy>
@@ -122,6 +142,24 @@
       <JsonTemplateLayout eventTemplateUri="classpath:log4j2-json-template.json"/>
     </RollingFile>
 
+    <RollingFile name="IM_ERROR_FILE"
+                 fileName="${LOG_IM_HOME}/error.log"
+                 filePattern="${LOG_IM_HOME}/error.%d{yyyy-MM-dd}.%i.log"
+                 append="false">
+
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="200MB"/>
+      </Policies>
+
+      <DefaultRolloverStrategy max="30">
+        <Delete basePath="${LOG_IM_HOME}">
+          <IfFileName glob="*.log"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+
+      <JsonTemplateLayout eventTemplateUri="classpath:log4j2-json-template.json"/>
+    </RollingFile>
 
     <!-- ================= 异步包装器 ================= -->
     <!--
@@ -138,12 +176,20 @@
       <AppenderRef ref="ERROR_FILE"/>
     </Async>
 
-    <Async name="ASYNC_ACCESS" bufferSize="8192" blocking="false">
-      <AppenderRef ref="ACCESS_FILE"/>
+    <Async name="IM_ASYNC_APP" bufferSize="8192" blocking="false">
+      <AppenderRef ref="IM_APP_FILE"/>
     </Async>
 
-    <Async name="ASYNC_MSG" bufferSize="8192" blocking="false">
-      <AppenderRef ref="MSG_FILE"/>
+    <Async name="IM_ASYNC_ACCESS" bufferSize="8192" blocking="false">
+      <AppenderRef ref="IM_ACCESS_FILE"/>
+    </Async>
+
+    <Async name="IM_ASYNC_MSG" bufferSize="8192" blocking="false">
+      <AppenderRef ref="IM_MSG_FILE"/>
+    </Async>
+
+    <Async name="IM_ASYNC_ERROR" bufferSize="8192" blocking="false">
+      <AppenderRef ref="IM_ERROR_FILE"/>
     </Async>
 
   </Appenders>
@@ -152,6 +198,11 @@
   <!-- ================= Logger 定义区域 ================= -->
   <Loggers>
 
+    <Logger name="im.app" level="INFO" additivity="false">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="IM_ASYNC_APP"/>
+    </Logger>
+
     <!--
       Access 专用 Logger
       additivity="false" 表示不向 Root 传递日志
@@ -159,13 +210,18 @@
     -->
     <Logger name="im.access" level="INFO" additivity="false">
       <AppenderRef ref="CONSOLE"/>
-      <AppenderRef ref="ASYNC_ACCESS"/>
+      <AppenderRef ref="IM_ASYNC_ACCESS"/>
     </Logger>
 
     <!-- IM 消息日志 -->
     <Logger name="im.msg" level="INFO" additivity="false">
       <AppenderRef ref="CONSOLE"/>
-      <AppenderRef ref="ASYNC_MSG"/>
+      <AppenderRef ref="IM_ASYNC_MSG"/>
+    </Logger>
+
+    <Logger name="im.error" level="INFO" additivity="false">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="IM_ASYNC_ERROR"/>
     </Logger>
 
     <!-- Root Logger -->
