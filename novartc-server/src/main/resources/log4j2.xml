@@ -1,105 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Log4j2 主配置文件
+  status="WARN"             -> Log4j2 内部日志级别（只影响框架自身日志）
+  monitorInterval="60"      -> 每 60 秒检测配置文件是否变更，支持热加载
+-->
 <Configuration status="WARN" monitorInterval="60">
 
+  <!-- ================= 全局变量定义 ================= -->
   <Properties>
+
+    <!-- 日志根目录 -->
     <Property name="LOG_HOME">./logs</Property>
+
+    <!-- 控制台日志格式（带颜色） -->
+    <!--
+      %d                     -> 时间
+      %highlight             -> 按级别高亮
+      %5level                -> 日志级别（右对齐5位）
+      %pid                   -> 进程ID
+      %thread                -> 线程名
+      %logger{36}            -> 类名（最多36字符）
+      %msg                   -> 日志内容
+      %n                     -> 换行
+    -->
     <Property name="CONSOLE_PATTERN">
-      %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} - %msg%n
+      %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} -
+      %msg%n
     </Property>
+
+    <!-- 文件日志格式（无颜色，便于采集） -->
     <Property name="FILE_PATTERN">
       %d{yyyy-MM-dd HH:mm:ss.SSS} %5level %pid --- [%thread] %logger{36} - %msg%n
     </Property>
-    <!--<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
-    <Property name="LOG_LEVEL_PATTERN">%5p</Property>
-    <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
-    <Property name="CONSOLE_PATTERN">%clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{-&#45;&#45;}{faint} %clr{${sys:LOGGED_APPLICATION_NAME:-}[%15.15t]}{faint} %clr{${sys:LOG_CORRELATION_PATTERN:-}}{faint}%clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
-    <Property name="FILE_PATTERN">%d{${sys:LOG_DATEFORMAT_PATTERN}} ${sys:LOG_LEVEL_PATTERN} %pid -&#45;&#45; ${sys:LOGGED_APPLICATION_NAME:-}[%t] ${sys:LOG_CORRELATION_PATTERN:-}%-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>-->
+
   </Properties>
 
+  <!-- ================= Appender 定义区域 ================= -->
   <Appenders>
-    <!-- 控制台 -->
+
+    <!-- ========= 控制台输出 ========= -->
+    <!-- target="SYSTEM_OUT" -> 输出到标准输出 -->
     <Console name="CONSOLE" target="SYSTEM_OUT">
       <PatternLayout pattern="${CONSOLE_PATTERN}"/>
     </Console>
 
-    <!-- 系统日志 -->
+
+    <!-- ========= 主系统日志 ========= -->
+    <!--
+      fileName      -> 当前正在写入的日志文件
+      filePattern   -> 滚动后的归档文件命名规则
+    -->
     <RollingFile name="FILE"
                  fileName="${LOG_HOME}/nova-rtc.log"
                  filePattern="${LOG_HOME}/nova-rtc.%d{yyyy-MM-dd}.%i.log">
+
+      <!-- 滚动策略 -->
       <Policies>
+        <!-- 每天滚动一次 -->
         <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <!-- 单文件超过 100MB 也会滚动 -->
         <SizeBasedTriggeringPolicy size="100MB"/>
       </Policies>
+
+      <!-- 最多保留 30 个历史文件 -->
       <DefaultRolloverStrategy max="30"/>
+
       <PatternLayout pattern="${FILE_PATTERN}"/>
     </RollingFile>
 
-    <!-- ERROR 日志 -->
+
+    <!-- ========= ERROR 专用日志 ========= -->
     <RollingFile name="ERROR_FILE"
                  fileName="${LOG_HOME}/error.log"
                  filePattern="${LOG_HOME}/error.%d{yyyy-MM-dd}.%i.log">
+
       <Policies>
         <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
         <SizeBasedTriggeringPolicy size="50MB"/>
       </Policies>
+
       <DefaultRolloverStrategy max="30"/>
+
       <PatternLayout pattern="${FILE_PATTERN}"/>
+
+      <!--
+        ThresholdFilter:
+        只接收 ERROR 及以上级别日志
+      -->
       <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
     </RollingFile>
 
-    <!-- Access 日志 -->
+
+    <!-- ========= Access 访问日志 ========= -->
+    <!-- 一般用于记录接口访问、HTTP请求、连接信息等 -->
     <RollingFile name="ACCESS_FILE"
                  fileName="${LOG_HOME}/access.log"
                  filePattern="${LOG_HOME}/access.%d{yyyy-MM-dd}.%i.log">
+
       <Policies>
         <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
         <SizeBasedTriggeringPolicy size="100MB"/>
       </Policies>
+
       <DefaultRolloverStrategy max="30"/>
+
       <PatternLayout pattern="${FILE_PATTERN}"/>
     </RollingFile>
 
-    <!-- 消息日志 -->
+
+    <!-- ========= 消息日志（如 IM 消息） ========= -->
+    <!-- 单独拆分，防止大量业务消息污染系统日志 -->
     <RollingFile name="MSG_FILE"
                  fileName="${LOG_HOME}/msg.log"
                  filePattern="${LOG_HOME}/msg.%d{yyyy-MM-dd}.%i.log">
+
       <Policies>
         <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
         <SizeBasedTriggeringPolicy size="200MB"/>
       </Policies>
+
       <DefaultRolloverStrategy max="30"/>
+
       <PatternLayout pattern="${FILE_PATTERN}"/>
     </RollingFile>
 
-    <!-- 异步包装器 -->
+
+    <!-- ================= 异步包装器 ================= -->
+    <!--
+      使用 Async 可以提升性能（异步写盘）
+      bufferSize  -> 队列大小
+      blocking=false -> 队列满时丢弃日志（提高吞吐）
+    -->
+
     <Async name="ASYNC_FILE" bufferSize="8192" blocking="false">
       <AppenderRef ref="FILE"/>
     </Async>
+
     <Async name="ASYNC_ERROR" bufferSize="2048" blocking="false">
       <AppenderRef ref="ERROR_FILE"/>
     </Async>
+
     <Async name="ASYNC_ACCESS" bufferSize="8192" blocking="false">
       <AppenderRef ref="ACCESS_FILE"/>
     </Async>
+
     <Async name="ASYNC_MSG" bufferSize="8192" blocking="false">
       <AppenderRef ref="MSG_FILE"/>
     </Async>
+
   </Appenders>
 
+
+  <!-- ================= Logger 定义区域 ================= -->
   <Loggers>
+
+    <!--
+      Access 专用 Logger
+      additivity="false" 表示不向 Root 传递日志
+      否则会重复写入
+    -->
     <Logger name="im.access" level="INFO" additivity="false">
       <AppenderRef ref="CONSOLE"/>
       <AppenderRef ref="ASYNC_ACCESS"/>
     </Logger>
+
+    <!-- IM 消息日志 -->
     <Logger name="im.msg" level="INFO" additivity="false">
       <AppenderRef ref="CONSOLE"/>
       <AppenderRef ref="ASYNC_MSG"/>
     </Logger>
+
+    <!-- Root Logger -->
+    <!--
+      所有未单独配置的 Logger 都会走 Root
+    -->
     <Root level="INFO">
       <AppenderRef ref="CONSOLE"/>
       <AppenderRef ref="ASYNC_FILE"/>
       <AppenderRef ref="ASYNC_ERROR"/>
     </Root>
+
   </Loggers>
 
 </Configuration>
