@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
+
 /**
  * @author Tang_J on 2025/3/2 2:03
  * @Description TODO
@@ -21,5 +23,5 @@ public class IMSingleChat {
     @Field("user2_id")
     private String user2Id;
     @Field("created_at")
-    private String createdAt;
+    private Instant createdAt;
 }

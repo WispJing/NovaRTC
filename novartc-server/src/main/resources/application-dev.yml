@@ -9,6 +9,9 @@ server:
 spring:
   application:
     name: NovaRTC
+  jackson:
+    time-zone: UTC
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX
   data:
     mongodb:
       uri: mongodb://127.0.0.1:27017/novartc

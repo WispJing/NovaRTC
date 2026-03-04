@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Created on 2025/2/28 13:56
@@ -34,5 +34,5 @@ public class IMUser {
     @Field("avatar_url")
     private String avatarUrl;
     @Field("created_at")
-    private Date createdAt;
+    private Instant createdAt;
 }

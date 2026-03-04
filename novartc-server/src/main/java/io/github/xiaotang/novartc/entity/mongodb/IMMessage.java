@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * @author Tang_J on 2025/3/2 1:34
@@ -25,7 +25,7 @@ public class IMMessage {
     @Field("message_text")
     private String messageText;
     @Field("created_at")
-    private Date createdAt;
+    private Instant createdAt;
     @Field("chat_type")
     private Integer chatType;
 }

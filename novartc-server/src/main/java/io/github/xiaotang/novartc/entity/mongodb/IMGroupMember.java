@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Created on 2025/2/28 15:36
@@ -23,5 +23,5 @@ public class IMGroupMember {
     @Field("user_id")
     private String userId;
     @Field("joined_at")
-    private Date joinedAt;
+    private Instant joinedAt;
 }

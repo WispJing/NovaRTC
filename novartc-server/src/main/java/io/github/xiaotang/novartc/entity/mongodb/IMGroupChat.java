@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Created on 2025/2/28 15:31
@@ -25,5 +25,5 @@ public class IMGroupChat {
     @Field("group_name")
     private String groupName;
     @Field("created_at")
-    private Date createdAt;
+    private Instant createdAt;
 }

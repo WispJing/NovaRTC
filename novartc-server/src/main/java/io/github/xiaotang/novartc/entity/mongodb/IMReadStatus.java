@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.time.Instant;
+
 /**
  * @author Tang_J on 2025/3/2 2:11
  * @Description TODO
@@ -21,5 +23,5 @@ public class IMReadStatus {
     @Field("user_id")
     private String user_id;
     @Field("read_at")
-    private String read_at;
+    private Instant read_at;
 }
