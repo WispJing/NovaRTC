@@ -9,10 +9,12 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.TimeZone;
 
 /**
@@ -20,6 +22,7 @@ import java.util.TimeZone;
  *
  * @author tangj
  */
+@EnableMongoAuditing
 @EnableConfigurationProperties
 @SpringBootApplication
 public class NovaRtcApplication implements CommandLineRunner {

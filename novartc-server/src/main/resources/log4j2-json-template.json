@@ -12,7 +12,9 @@
   },
   "pid": {
     "$resolver": "pattern",
-    "pattern": "%pid"
+    "pattern": "%pid",
+    "disableAnsi": true,
+    "stackTraceEnabled": false
   },
   "thread": {
     "$resolver": "thread",
@@ -30,7 +32,7 @@
     "$resolver": "exception",
     "field": "stackTrace",
     "stackTrace": {
-      "stringified": false
+      "stringified": true
     }
   }
 }
