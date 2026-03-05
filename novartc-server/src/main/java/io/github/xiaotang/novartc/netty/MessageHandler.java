@@ -1,11 +1,11 @@
 package io.github.xiaotang.novartc.netty;
 
+import io.github.xiaotang.novartc.config.ChatMsgLog;
 import io.github.xiaotang.novartc.proto.ChatMessage;
+import io.github.xiaotang.novartc.util.JacksonUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created on 2026/3/5 14:07
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
  * @description
  */
 public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
-    private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -25,10 +24,15 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
         String userId = channel.attr(NettyAttributes.USER_ID).get();
 
         if (userId == null) {
-            logger.warn("unauthorized message");
+            ChatMsgLog.log.warn("unauthorized message: {}", JacksonUtil.toJson(msgBody));
             channel.close();
             return;
         }
+        ctx.channel()
+                .attr(NettyAttributes.LAST_HEARTBEAT)
+                .set(System.currentTimeMillis());
+
+        ChatMsgLog.msg(msgBody);
 
         switch (msgBody.getMessageType()) {
 
@@ -36,25 +40,19 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
 
             case IMAGE -> handleImageMessage(userId, msgBody);
 
-            case PING -> logger.info("receive ping {}", userId);
+            case PING -> ChatMsgLog.log.info("receive ping {}", userId);
 
-            case PONG -> logger.info("receive pong {}", userId);
+            case PONG -> ChatMsgLog.log.info("receive pong {}", userId);
 
-            default -> logger.warn("unsupported type {}", msgBody.getMessageType());
+            default -> ChatMsgLog.log.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
         }
     }
 
     private void handleTextMessage(String userId, ChatMessage.MsgBody msgBody) {
 
-        logger.info("TEXT from {} : {}",
-                userId,
-                msgBody.getTextContent().getText());
     }
 
     private void handleImageMessage(String userId, ChatMessage.MsgBody msgBody) {
 
-        logger.info("IMAGE from {} : {}",
-                userId,
-                msgBody.getImageContent().getImageUrl());
     }
 }

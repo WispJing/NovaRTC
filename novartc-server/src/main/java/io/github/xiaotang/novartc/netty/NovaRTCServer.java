@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  * @description
  */
 public class NovaRTCServer extends BaseServer {
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
 
     @Override
     public void start() {
@@ -36,11 +35,7 @@ public class NovaRTCServer extends BaseServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
-                        ch.pipeline().addLast(defLoopGroup,
-                                //检测链路是否读空闲,配合心跳handler检测channel是否正常
-                                new IdleStateHandler(60, 0, 0),
-                                new ProtocolDetectHandler()
-                        );
+                        ch.pipeline().addLast(new ProtocolDetectHandler());
                     }
                 });
 
@@ -48,24 +43,6 @@ public class NovaRTCServer extends BaseServer {
             cf = b.bind().sync();
             InetSocketAddress addr = (InetSocketAddress) cf.channel().localAddress();
             ChatAppLog.log.info("NovaRTC IM server is running, port is: {}", addr.getPort());
-
-            // 定时扫描所有的Channel，关闭失效的Channel
-            executorService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    logger.info("scanNotActiveChannel --------");
-//                    UserInfoManager.scanNotActiveChannel();
-                }
-            }, 3, 60, TimeUnit.SECONDS);
-
-            // 定时向所有客户端发送Ping消息,3秒后执行，每次执行间隔50s
-            executorService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-//                    UserInfoManager.broadCastPing();
-                }
-            }, 3, 50, TimeUnit.SECONDS);
-
         } catch (InterruptedException e) {
             ChatErrorLog.log.error("NovaRTC IM server start fail,", e);
         }

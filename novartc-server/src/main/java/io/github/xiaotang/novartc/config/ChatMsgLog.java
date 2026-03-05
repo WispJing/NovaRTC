@@ -1,5 +1,8 @@
 package io.github.xiaotang.novartc.config;
 
+import io.github.xiaotang.novartc.netty.MessageLogConverter;
+import io.github.xiaotang.novartc.proto.ChatMessage;
+import io.github.xiaotang.novartc.util.JacksonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,13 +13,9 @@ import org.slf4j.LoggerFactory;
  * @description
  */
 public class ChatMsgLog {
-    private static final Logger logger = LoggerFactory.getLogger("im.msg");
+    public static final Logger log = LoggerFactory.getLogger("im.msg");
 
-    public static void send(String from, String to, String msgId) {
-        logger.info("[MSG_SEND] from={} to={} msgId={}", from, to, msgId);
-    }
-
-    public static void receive(String from, String to, String msgId) {
-        logger.info("[MSG_RECEIVE] from={} to={} msgId={}", from, to, msgId);
+    public static void msg(ChatMessage.MsgBody msg) {
+        log.info("{}", JacksonUtil.toJson(MessageLogConverter.convert(msg)));
     }
 }

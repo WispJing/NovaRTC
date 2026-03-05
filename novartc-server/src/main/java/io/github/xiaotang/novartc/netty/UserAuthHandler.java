@@ -1,11 +1,12 @@
 package io.github.xiaotang.novartc.netty;
 
+import io.github.xiaotang.novartc.config.ChatAccessLog;
 import io.github.xiaotang.novartc.proto.ChatMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 2026/2/28 14:32
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
  * @description
  */
 public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
-    private static final Logger logger = LoggerFactory.getLogger(UserAuthHandler.class);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -27,7 +27,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
             // 未认证用户直接关闭
             if (channel.attr(NettyAttributes.USER_ID).get() == null) {
-                logger.warn("unauthorized connection {}", channel.remoteAddress());
+                ChatAccessLog.log.warn("unauthorized connection {}", channel.remoteAddress());
                 channel.close();
                 return;
             }
@@ -52,7 +52,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         boolean success = verifyToken(userId, token);
 
         if (!success) {
-            logger.warn("auth failed {}", userId);
+            ChatAccessLog.log.warn("auth failed {}", userId);
             channel.close();
             return;
         }
@@ -60,10 +60,19 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         // 绑定 Channel Attribute
         channel.attr(NettyAttributes.USER_ID).set(userId);
 
+        channel.attr(NettyAttributes.LAST_HEARTBEAT)
+                .set(System.currentTimeMillis());
+
+        HeartbeatTimer.TIMER.newTimeout(
+                new HeartbeatCheckTask(channel),
+                60,
+                TimeUnit.SECONDS
+        );
+
         // 绑定用户 Channel
         UserChannelManager.bind(userId, channel);
 
-        logger.info("user login success {}", userId);
+        ChatAccessLog.log.info("user login success {}", userId);
 
         // 认证成功后移除 AuthHandler
         ctx.pipeline().remove(this);
@@ -73,6 +82,13 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
         // 示例逻辑
         return token != null && !token.isEmpty();
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        String userId = ctx.channel().attr(NettyAttributes.USER_ID).get();
+        UserChannelManager.remove(userId);
+        ChatAccessLog.log.info("用户下线 {}", userId);
     }
 
 }
