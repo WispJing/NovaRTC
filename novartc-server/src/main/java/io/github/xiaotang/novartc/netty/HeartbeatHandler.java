@@ -1,14 +1,13 @@
 package io.github.xiaotang.novartc.netty;
 
+import io.github.xiaotang.novartc.config.ChatAccessLog;
 import io.github.xiaotang.novartc.proto.ChatMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.AttributeKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 
@@ -19,10 +18,44 @@ import java.util.UUID;
  * @description
  */
 public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger log =
-            LoggerFactory.getLogger(HeartbeatHandler.class);
 
-    private static final AttributeKey<Integer> HEARTBEAT_COUNT = AttributeKey.valueOf("heartbeatCount");
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
+        if (msg instanceof ChatMessage.MsgBody body) {
+
+            if (body.getMessageType() == ChatMessage.MessageType.PING) {
+                handlePing(ctx, body);
+                return;
+            }
+
+            if (body.getMessageType() == ChatMessage.MessageType.PONG) {
+                resetHeartbeat(ctx.channel());
+                return;
+            }
+        }
+
+        super.channelRead(ctx, msg);
+    }
+
+    private void handlePing(ChannelHandlerContext ctx, ChatMessage.MsgBody ping) {
+        Channel channel = ctx.channel();
+        resetHeartbeat(channel);
+        ChatMessage.MsgBody pong =
+                ChatMessage.MsgBody.newBuilder()
+                        .setMessageType(ChatMessage.MessageType.PONG)
+                        .setPongResponse(
+                                ChatMessage.Pong.newBuilder()
+                                        .setPingId(ping.getPongPing().getPingId())
+                                        .build()
+                        )
+                        .build();
+        channel.writeAndFlush(pong);
+    }
+
+    private void resetHeartbeat(Channel channel) {
+        channel.attr(NettyAttributes.HEARTBEAT_COUNT).set(0);
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
@@ -30,32 +63,25 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent event) {
 
             if (event.state() == IdleState.READER_IDLE) {
-
                 Channel channel = ctx.channel();
-
-                Integer count =
-                        channel.attr(HEARTBEAT_COUNT).get();
+                Integer count = channel.attr(NettyAttributes.HEARTBEAT_COUNT).get();
 
                 if (count == null) {
                     count = 0;
                 }
-
                 count++;
 
-                channel.attr(HEARTBEAT_COUNT).set(count);
+                channel.attr(NettyAttributes.HEARTBEAT_COUNT).set(count);
 
                 if (count >= 2) {
-
-                    log.warn("心跳超时关闭连接 {}", channel.id());
-
-                    UserChannelManager.remove(channel.attr(NettyAttributes.USER_ID).get());
-
+                    ChatAccessLog.log.warn("心跳超时关闭连接 {}", channel.id());
+                    String userId = channel.attr(NettyAttributes.USER_ID).get();
+                    if (StringUtils.isNotBlank(userId)) {
+                        UserChannelManager.remove(userId);
+                    }
                     channel.close();
-
                 } else {
-
-                    log.warn("检测到读空闲，发送Ping {}", channel.id());
-
+                    ChatAccessLog.log.warn("检测到读空闲，发送Ping {}", channel.id());
                     sendPing(channel);
                 }
             }

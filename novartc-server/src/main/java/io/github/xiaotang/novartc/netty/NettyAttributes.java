@@ -15,7 +15,5 @@ public class NettyAttributes {
     // 用户名
     public static final AttributeKey<String> USERNAME = AttributeKey.valueOf("username");
 
-    public static final AttributeKey<Long> LAST_HEARTBEAT = AttributeKey.valueOf("lastHeartbeat");
-
     public static final AttributeKey<Integer> HEARTBEAT_COUNT = AttributeKey.valueOf("heartbeatCount");
 }

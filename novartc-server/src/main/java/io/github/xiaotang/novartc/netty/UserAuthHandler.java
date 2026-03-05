@@ -60,15 +60,6 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         // 绑定 Channel Attribute
         channel.attr(NettyAttributes.USER_ID).set(userId);
 
-        channel.attr(NettyAttributes.LAST_HEARTBEAT)
-                .set(System.currentTimeMillis());
-
-        HeartbeatTimer.TIMER.newTimeout(
-                new HeartbeatCheckTask(channel),
-                60,
-                TimeUnit.SECONDS
-        );
-
         // 绑定用户 Channel
         UserChannelManager.bind(userId, channel);
 

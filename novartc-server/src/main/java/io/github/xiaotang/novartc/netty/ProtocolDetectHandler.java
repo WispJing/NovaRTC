@@ -97,11 +97,12 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
         p.addLast(new ProtobufDecoder(ChatMessage.MsgBody.getDefaultInstance()));
         p.addLast(new ProtobufEncoder());
 
+        p.addLast(new HeartbeatHandler());
         p.addLast(new UserAuthHandler());
         p.addLast(new MessageHandler());
 
         // 重新触发read
-        ctx.fireChannelRead(in.readBytes(in.readableBytes()));
+        ctx.fireChannelRead(in.retain());
     }
 
     /**
@@ -125,9 +126,10 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
 
         p.addLast(new ByteBufToWebSocketFrameEncoder());
 
+        p.addLast(new HeartbeatHandler());
         p.addLast(new UserAuthHandler());
         p.addLast(new MessageHandler());
 
-        ctx.fireChannelRead(in.readBytes(in.readableBytes()));
+        ctx.fireChannelRead(in.retain());
     }
 }

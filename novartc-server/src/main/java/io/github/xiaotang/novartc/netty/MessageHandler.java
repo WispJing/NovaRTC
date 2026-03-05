@@ -28,31 +28,20 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
             channel.close();
             return;
         }
-        ctx.channel()
-                .attr(NettyAttributes.LAST_HEARTBEAT)
-                .set(System.currentTimeMillis());
-
-        ChatMsgLog.msg(msgBody);
 
         switch (msgBody.getMessageType()) {
-
-            case TEXT -> handleTextMessage(userId, msgBody);
-
-            case IMAGE -> handleImageMessage(userId, msgBody);
-
             case PING -> ChatMsgLog.log.info("receive ping {}", userId);
 
             case PONG -> ChatMsgLog.log.info("receive pong {}", userId);
+
+            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE  -> handleMessage(userId, msgBody);
 
             default -> ChatMsgLog.log.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
         }
     }
 
-    private void handleTextMessage(String userId, ChatMessage.MsgBody msgBody) {
-
-    }
-
-    private void handleImageMessage(String userId, ChatMessage.MsgBody msgBody) {
+    private void handleMessage(String userId, ChatMessage.MsgBody msgBody) {
+        ChatMsgLog.msg(msgBody);
 
     }
 }

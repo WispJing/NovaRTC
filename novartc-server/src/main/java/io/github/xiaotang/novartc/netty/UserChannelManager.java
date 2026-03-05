@@ -11,8 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description
  */
 public class UserChannelManager {
-    private static final ConcurrentHashMap<String, Channel> USER_CHANNEL_MAP =
-            new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Channel> USER_CHANNEL_MAP = new ConcurrentHashMap<>();
 
     public static void bind(String userId, Channel channel) {
         USER_CHANNEL_MAP.put(userId, channel);
