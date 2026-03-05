@@ -1,20 +1,12 @@
-package io.github.xiaotang.novartc.netty.core;
+package io.github.xiaotang.novartc.netty;
 
 import io.github.xiaotang.novartc.config.ChatAppLog;
 import io.github.xiaotang.novartc.config.ChatErrorLog;
 import io.github.xiaotang.novartc.constant.IMConstant;
-import io.github.xiaotang.novartc.netty.ChatMessage;
-import io.github.xiaotang.novartc.netty.UserAuthHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.protobuf.ProtobufDecoder;
-import io.netty.handler.codec.protobuf.ProtobufEncoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.net.InetSocketAddress;
@@ -43,30 +35,11 @@ public class NovaRTCServer extends BaseServer {
                 .localAddress(new InetSocketAddress(IMConstant.port))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
+                    protected void initChannel(SocketChannel ch) {
                         ch.pipeline().addLast(defLoopGroup,
-                                // 解决粘包拆包
-                                new ProtobufVarint32FrameDecoder(),
-                                // 解码
-                                new ProtobufDecoder(ChatMessage.MsgBody.getDefaultInstance()),
-                                // 长度字段
-                                new ProtobufVarint32LengthFieldPrepender(),
-                                // 编码
-                                new ProtobufEncoder(),
-                                //将多个消息转换成单一的消息对象
-                                new HttpObjectAggregator(65536),
-                                // 消息压缩
-                                // new WebSocketServerCompressionHandler(),
-                                // 分块传输
-                                // new ChunkedWriteHandler(),
-                                //支持异步发送大的码流，一般用于发送文件流
-                                new ChunkedWriteHandler(),
                                 //检测链路是否读空闲,配合心跳handler检测channel是否正常
                                 new IdleStateHandler(60, 0, 0),
-                                //处理握手和认证
-                                new UserAuthHandler()
-                                //处理消息的发送
-//                                new MessageHandler()
+                                new ProtocolDetectHandler()
                         );
                     }
                 });
