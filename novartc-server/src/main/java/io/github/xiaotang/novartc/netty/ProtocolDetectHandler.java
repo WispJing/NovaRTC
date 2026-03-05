@@ -27,7 +27,7 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
 
-        if (in.readableBytes() < 5) {
+        if (in.readableBytes() < 2) {
             return;
         }
 
