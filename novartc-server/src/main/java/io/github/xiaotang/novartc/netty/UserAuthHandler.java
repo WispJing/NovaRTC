@@ -78,7 +78,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         String userId = ctx.channel().attr(NettyAttributes.USER_ID).get();
-        UserChannelManager.remove(userId);
+        UserChannelManager.remove(userId, ctx.channel());
         ChatAccessLog.log.info("用户下线 {}", userId);
     }
 

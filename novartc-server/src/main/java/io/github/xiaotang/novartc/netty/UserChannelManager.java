@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.netty;
 
 import io.netty.channel.Channel;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -11,17 +12,40 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description
  */
 public class UserChannelManager {
-    private static final ConcurrentHashMap<String, Channel> USER_CHANNEL_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Set<Channel>> USER_CHANNELS = new ConcurrentHashMap<>();
 
     public static void bind(String userId, Channel channel) {
-        USER_CHANNEL_MAP.put(userId, channel);
+        USER_CHANNELS
+                .computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet())
+                .add(channel);
     }
 
-    public static Channel getChannel(String userId) {
-        return USER_CHANNEL_MAP.get(userId);
+    public static void send(String userId, Object msg) {
+        Set<Channel> channels = USER_CHANNELS.get(userId);
+
+        if (channels == null) {
+            return;
+        }
+        for (Channel ch : channels) {
+            if (ch.isActive()) {
+                ch.writeAndFlush(msg);
+            }
+        }
     }
 
-    public static void remove(String userId) {
-        USER_CHANNEL_MAP.remove(userId);
+    public static Set<Channel> getChannel(String userId) {
+        return USER_CHANNELS.get(userId);
+    }
+
+    public static void remove(String userId, Channel channel) {
+        Set<Channel> channels = USER_CHANNELS.get(userId);
+        if (channels == null) {
+            return;
+        }
+        channels.remove(channel);
+
+        if (channels.isEmpty()) {
+            USER_CHANNELS.remove(userId);
+        }
     }
 }
