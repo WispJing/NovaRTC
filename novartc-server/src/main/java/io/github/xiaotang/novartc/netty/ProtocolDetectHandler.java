@@ -12,8 +12,6 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 
 import java.util.List;
 
@@ -114,8 +112,6 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
         ChannelPipeline p = ctx.pipeline();
 
         p.remove(this);
-
-        p.addLast(new LoggingHandler(LogLevel.DEBUG));
 
         p.addLast(new HttpServerCodec());
         p.addLast(new HttpObjectAggregator(65536));
