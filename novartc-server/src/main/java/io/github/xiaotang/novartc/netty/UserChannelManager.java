@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.netty;
 
 import io.netty.channel.Channel;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,9 @@ public class UserChannelManager {
     }
 
     public static void remove(String userId, Channel channel) {
+        if (StringUtils.isBlank(userId)) {
+            return;
+        }
         Set<Channel> channels = USER_CHANNELS.get(userId);
         if (channels == null) {
             return;

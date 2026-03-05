@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>NovaRTC IM Protobuf Debug</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/protobufjs/dist/protobuf.min.js"></script>
+
+    <style>
+
+        body {
+            background: #1e1e1e;
+            color: #eee;
+            font-family: Arial;
+        }
+
+        .container {
+            width: 1000px;
+            margin: auto;
+        }
+
+        .panel {
+            background: #2b2b2b;
+            border: 1px solid #444;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 6px 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 6px;
+            margin: 5px;
+        }
+
+        #log {
+            height: 350px;
+            overflow: auto;
+            background: black;
+            padding: 10px;
+            font-family: monospace;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>🚀 NovaRTC IM Protobuf 调试控制台</h2>
+
+    <div class="panel">
+
+        服务器
+
+        <label for="url"></label><input id="url" value="ws://localhost:9688/ws" style="width:300px">
+
+        <button onclick="connect()">连接</button>
+        <button onclick="disconnect()">断开</button>
+
+        <span id="status">未连接</span>
+
+    </div>
+
+    <div class="panel">
+
+        用户ID
+
+        <input id="userId" value="1001">
+
+        Token
+
+        <input id="token" value="test_token">
+
+        <button onclick="auth()">AUTH</button>
+
+    </div>
+
+    <div class="panel">
+
+        发送给
+
+        <input id="toUserId" value="1002">
+
+        消息
+
+        <input id="msg" value="hello">
+
+        <button onclick="sendText()">TEXT</button>
+        <button onclick="sendImage()">IMAGE</button>
+
+    </div>
+
+    <div class="panel">
+
+        <button onclick="ping()">PING</button>
+
+    </div>
+
+    <div class="panel">
+
+        <h3>日志</h3>
+
+        <div id="log"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+    let ws
+    let MsgBody
+    let root
+
+    function log(msg) {
+
+        let logDiv = document.getElementById("log")
+
+        let time = new Date().toLocaleTimeString()
+
+        logDiv.innerHTML += time + " " + msg + "<br>"
+
+        logDiv.scrollTop = logDiv.scrollHeight
+
+    }
+
+
+    // 加载proto
+
+    protobuf.load("ChatMessage.proto", (err, rootObj) => {
+
+        if (err) {
+
+            console.error(err)
+
+            return
+
+        }
+
+        root = rootObj
+
+        MsgBody = root.lookupType("io.github.xiaotang.novartc.proto.MsgBody")
+
+        log("✅ proto loaded")
+
+    })
+
+
+    function connect() {
+
+        let url = document.getElementById("url").value
+
+        ws = new WebSocket(url)
+
+        ws.binaryType = "arraybuffer"
+
+        ws.onopen = () => {
+
+            document.getElementById("status").innerText = "已连接"
+
+            log("✅ websocket connected")
+
+        }
+
+        ws.onmessage = (event) => {
+
+            let buffer = new Uint8Array(event.data)
+
+            let msg = MsgBody.decode(buffer)
+
+            log("📩 receive: " + JSON.stringify(msg))
+
+        }
+
+        ws.onclose = () => {
+
+            document.getElementById("status").innerText = "已断开"
+
+            log("🔌 websocket closed")
+
+        }
+
+    }
+
+
+    function disconnect() {
+
+        if (ws) ws.close()
+
+    }
+
+
+    function sendProto(payload) {
+
+        let err = MsgBody.verify(payload)
+
+        if (err) {
+
+            log("❌ verify error " + err)
+
+            return
+
+        }
+
+        let message = MsgBody.create(payload)
+
+        let buffer = MsgBody.encode(message).finish()
+
+        ws.send(buffer)
+
+        log("📤 send " + JSON.stringify(payload))
+
+    }
+
+
+    function auth() {
+
+        let userId = document.getElementById("userId").value
+
+        let token = document.getElementById("token").value
+
+        sendProto({
+
+            message_type: 9,
+
+            auth_message: {
+
+                user_id: userId,
+
+                token: token
+
+            }
+
+        })
+
+    }
+
+
+    function sendText() {
+
+        let userId = document.getElementById("userId").value
+
+        let toUserId = document.getElementById("toUserId").value
+
+        let text = document.getElementById("msg").value
+
+        sendProto({
+
+            message_id: Date.now().toString(),
+
+            message_type: 0,
+
+            timestamp: Date.now(),
+
+            is_group: false,
+
+            sender: {
+
+                user_id: userId
+
+            },
+
+            single_chat_info: {
+
+                user1_id: userId,
+
+                user2_id: toUserId
+
+            },
+
+            text_content: {
+
+                text: text
+
+            }
+
+        })
+
+    }
+
+
+    function sendImage() {
+
+        let userId = document.getElementById("userId").value
+
+        let toUserId = document.getElementById("toUserId").value
+
+        sendProto({
+
+            message_id: Date.now().toString(),
+
+            message_type: 1,
+
+            timestamp: Date.now(),
+
+            is_group: false,
+
+            sender: {
+
+                user_id: userId
+
+            },
+
+            single_chat_info: {
+
+                user1_id: userId,
+
+                user2_id: toUserId
+
+            },
+
+            image_content: {
+
+                image_url: "https://test.com/a.png",
+
+                image_description: "test"
+
+            }
+
+        })
+
+    }
+
+
+    function ping() {
+
+        sendProto({
+
+            message_type: 7,
+
+            pong_ping: {
+
+                ping_id: Date.now().toString()
+
+            }
+
+        })
+
+    }
+
+
+    // 自动心跳
+
+    setInterval(() => {
+
+        if (ws && ws.readyState === 1) {
+
+            ping()
+
+        }
+
+    }, 30000)
+
+</script>
+
+</body>
+</html>

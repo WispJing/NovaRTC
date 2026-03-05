@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.netty;
 import io.github.xiaotang.novartc.entity.mongodb.IMGroupChat;
 import io.github.xiaotang.novartc.entity.mongodb.IMSingleChat;
 import io.github.xiaotang.novartc.entity.mongodb.IMUser;
+import io.github.xiaotang.novartc.proto.ChatMessage;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
