@@ -253,29 +253,29 @@
 
         sendProto({
 
-            message_id: Date.now().toString(),
+            messageId: Date.now().toString(),
 
-            message_type: 0,
+            messageType: 0,
 
             timestamp: Date.now(),
 
-            is_group: false,
+            isGroup: false,
 
             sender: {
 
-                user_id: userId
+                userId: userId
 
             },
 
-            single_chat_info: {
+            singleChatInfo: {
 
-                user1_id: userId,
+                user1Id: userId,
 
-                user2_id: toUserId
+                user2Id: toUserId
 
             },
 
-            text_content: {
+            textContent: {
 
                 text: text
 
@@ -294,33 +294,33 @@
 
         sendProto({
 
-            message_id: Date.now().toString(),
+            messageId: Date.now().toString(),
 
-            message_type: 1,
+            messageType: 1,
 
             timestamp: Date.now(),
 
-            is_group: false,
+            isGroup: false,
 
             sender: {
 
-                user_id: userId
+                userId: userId
 
             },
 
-            single_chat_info: {
+            singleChatInfo: {
 
-                user1_id: userId,
+                user1Id: userId,
 
-                user2_id: toUserId
+                user2Id: toUserId
 
             },
 
-            image_content: {
+            imageContent: {
 
-                image_url: "https://test.com/a.png",
+                imageUrl: "https://test.com/a.png",
 
-                image_description: "test"
+                imageDescription: "test"
 
             }
 
