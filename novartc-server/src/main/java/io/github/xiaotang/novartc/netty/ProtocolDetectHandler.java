@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.netty;
 import io.github.xiaotang.novartc.proto.ChatMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -21,22 +22,37 @@ import java.util.List;
  * @author tangj
  * @description
  */
-public class ProtocolDetectHandler extends ByteToMessageDecoder {
+public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
     private static final short MAGIC = (short) 0xCAFE;
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if (!(msg instanceof ByteBuf in)) {
+            ctx.fireChannelRead(msg);
+            return;
+        }
 
-        if (in.readableBytes() < 2) {
+        if (in.readableBytes() < 4) {
+            ctx.fireChannelRead(msg);
             return;
         }
 
         if (isHttp(in)) {
-            switchToWebSocket(ctx, in);
+
+            switchToWebSocket(ctx);
+
+            ctx.fireChannelRead(msg);
+
         } else if (isTcpMagic(in)) {
-            switchToTcp(ctx, in);
+
+            switchToTcp(ctx);
+
+            ctx.fireChannelRead(msg);
+
         } else {
-            // 未知协议
+
+            in.release();
+
             ctx.close();
         }
     }
@@ -78,8 +94,7 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
     /**
      * 切换TCP pipeline
      */
-    private void switchToTcp(ChannelHandlerContext ctx, ByteBuf in) {
-
+    private void switchToTcp(ChannelHandlerContext ctx) {
         ChannelPipeline p = ctx.pipeline();
 
         p.remove(this);
@@ -100,15 +115,12 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
         p.addLast(new HeartbeatHandler());
         p.addLast(new UserAuthHandler());
         p.addLast(new MessageHandler());
-
-        ctx.fireChannelRead(in.readRetainedSlice(in.readableBytes()));
     }
 
     /**
      * 切换WebSocket pipeline
      */
-    private void switchToWebSocket(ChannelHandlerContext ctx, ByteBuf in) {
-
+    private void switchToWebSocket(ChannelHandlerContext ctx) {
         ChannelPipeline p = ctx.pipeline();
 
         p.remove(this);
@@ -128,7 +140,5 @@ public class ProtocolDetectHandler extends ByteToMessageDecoder {
         p.addLast(new HeartbeatHandler());
         p.addLast(new UserAuthHandler());
         p.addLast(new MessageHandler());
-
-        ctx.fireChannelRead(in.readRetainedSlice(in.readableBytes()));
     }
 }

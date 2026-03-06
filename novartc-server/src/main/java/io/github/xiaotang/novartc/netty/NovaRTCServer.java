@@ -29,8 +29,8 @@ public class NovaRTCServer extends BaseServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline().addLast(
-                                new IdleStateHandler(60, 0, 0),
-                                new ProtocolDetectHandler()
+                                new ProtocolDetectHandler(),
+                                new IdleStateHandler(60, 0, 0)
                         );
                     }
                 });
