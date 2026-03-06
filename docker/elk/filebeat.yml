@@ -7,7 +7,7 @@ filebeat.inputs:
       - /data/logs/nova-rtc*.log
     ignore_older: 72h
     close_inactive: 5m
-    clean_inactive: 72h
+    clean_inactive: 96h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -23,7 +23,7 @@ filebeat.inputs:
       - /data/logs/error*.log
     ignore_older: 72h
     close_inactive: 5m
-    clean_inactive: 72h
+    clean_inactive: 96h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -39,7 +39,7 @@ filebeat.inputs:
       - /data/logs/IM/app*.log
     ignore_older: 72h
     close_inactive: 5m
-    clean_inactive: 72h
+    clean_inactive: 96h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -60,7 +60,7 @@ filebeat.inputs:
       - /data/logs/IM/access*.log
     ignore_older: 72h
     close_inactive: 5m
-    clean_inactive: 72h
+    clean_inactive: 96h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -81,7 +81,7 @@ filebeat.inputs:
       - /data/logs/IM/msg*.log
     ignore_older: 72h
     close_inactive: 5m
-    clean_inactive: 72h
+    clean_inactive: 96h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -102,7 +102,7 @@ filebeat.inputs:
       - /data/logs/IM/error*.log
     ignore_older: 72h
     close_inactive: 5m
-    clean_inactive: 72h
+    clean_inactive: 96h
     parsers:
       - ndjson:
           overwrite_keys: true
