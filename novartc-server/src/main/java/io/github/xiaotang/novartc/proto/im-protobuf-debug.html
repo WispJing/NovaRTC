@@ -228,11 +228,11 @@
 
         sendProto({
 
-            message_type: 9,
+            messageType: 9,
 
-            auth_message: {
+            authMessage: {
 
-                user_id: userId,
+                userId: userId,
 
                 token: token
 
@@ -333,11 +333,11 @@
 
         sendProto({
 
-            message_type: 7,
+            messageType: 7,
 
-            pong_ping: {
+            pongPing: {
 
-                ping_id: Date.now().toString()
+                pingId: Date.now().toString()
 
             }
 

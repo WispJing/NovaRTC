@@ -1,5 +1,6 @@
 package io.github.xiaotang.novartc.netty;
 
+import io.github.xiaotang.novartc.proto.ChatMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
@@ -13,12 +14,17 @@ import java.util.List;
  * @author tangj
  * @description
  */
-public class ByteBufToWebSocketFrameEncoder extends MessageToMessageEncoder<ByteBuf> {
+public class ByteBufToWebSocketFrameEncoder extends MessageToMessageEncoder<ChatMessage.MsgBody> {
     @Override
     protected void encode(ChannelHandlerContext ctx,
-                          ByteBuf msg,
+                          ChatMessage.MsgBody msg,
                           List<Object> out) {
 
-        out.add(new BinaryWebSocketFrame(msg.retain()));
+        byte[] bytes = msg.toByteArray();
+
+        ByteBuf buf = ctx.alloc().buffer(bytes.length);
+        buf.writeBytes(bytes);
+
+        out.add(new BinaryWebSocketFrame(buf));
     }
 }
