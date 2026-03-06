@@ -4,7 +4,10 @@ filebeat.inputs:
   - type: filestream
     id: nova_app
     paths:
-      - /data/logs/nova-rtc.log
+      - /data/logs/nova-rtc*.log
+    ignore_older: 72h
+    close_inactive: 5m
+    clean_inactive: 72h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -17,7 +20,10 @@ filebeat.inputs:
   - type: filestream
     id: nova_error
     paths:
-      - /data/logs/error.log
+      - /data/logs/error*.log
+    ignore_older: 72h
+    close_inactive: 5m
+    clean_inactive: 72h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -30,7 +36,10 @@ filebeat.inputs:
   - type: filestream
     id: im_app
     paths:
-      - /data/logs/IM/app.log
+      - /data/logs/IM/app*.log
+    ignore_older: 72h
+    close_inactive: 5m
+    clean_inactive: 72h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -38,12 +47,20 @@ filebeat.inputs:
       log_type: im_app
     fields_under_root: true
     scan_frequency: 1s
+    processors:
+      - add_fields:
+          target: ""
+          fields:
+            service: im
 
   # ================= IM 访问日志 =================
   - type: filestream
     id: im_access
     paths:
-      - /data/logs/IM/access.log
+      - /data/logs/IM/access*.log
+    ignore_older: 72h
+    close_inactive: 5m
+    clean_inactive: 72h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -51,12 +68,20 @@ filebeat.inputs:
       log_type: im_access
     fields_under_root: true
     scan_frequency: 1s
+    processors:
+      - add_fields:
+          target: ""
+          fields:
+            service: im
 
   # ================= IM 消息日志 =================
   - type: filestream
     id: im_msg
     paths:
-      - /data/logs/IM/msg.log
+      - /data/logs/IM/msg*.log
+    ignore_older: 72h
+    close_inactive: 5m
+    clean_inactive: 72h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -64,12 +89,20 @@ filebeat.inputs:
       log_type: im_msg
     fields_under_root: true
     scan_frequency: 1s
+    processors:
+      - add_fields:
+          target: ""
+          fields:
+            service: im
 
   # ================= IM 错误日志 =================
   - type: filestream
     id: im_error
     paths:
-      - /data/logs/IM/error.log
+      - /data/logs/IM/error*.log
+    ignore_older: 72h
+    close_inactive: 5m
+    clean_inactive: 72h
     parsers:
       - ndjson:
           overwrite_keys: true
@@ -77,6 +110,11 @@ filebeat.inputs:
       log_type: im_error
     fields_under_root: true
     scan_frequency: 1s
+    processors:
+      - add_fields:
+          target: ""
+          fields:
+            service: im
 
 queue.mem:
   events: 8192
