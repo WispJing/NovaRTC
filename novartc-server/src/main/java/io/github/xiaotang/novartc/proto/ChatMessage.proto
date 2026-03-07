@@ -6,6 +6,8 @@ option java_multiple_files = false;  // 生成每个消息类独立文件
 option java_package = "io.github.xiaotang.novartc.proto";  // 指定 Java 包名
 option java_outer_classname = "ChatMessage";  // 控制外部类名
 
+option csharp_namespace = "NovaRTC.Protocol";
+
 // 消息类型枚举
 enum MessageType {
   TEXT = 0;           // 文本消息

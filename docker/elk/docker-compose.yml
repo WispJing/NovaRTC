@@ -33,7 +33,7 @@ services:
     command: ["--strict.perms=false"]
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - D:/Project/NovaRTC/logs:/data/logs
+      - D:/project/NovaRTC/logs:/data/logs
     depends_on:
       - elasticsearch
 

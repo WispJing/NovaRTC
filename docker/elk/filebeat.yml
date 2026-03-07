@@ -80,14 +80,14 @@ filebeat.inputs:
 
 queue.mem:
   events: 8192
-  flush.min_events: 1024
+  flush.min_events: 1
   flush.timeout: 1s
 
 # ================= 输出到 ES =================
 output.elasticsearch:
   hosts: ["http://elasticsearch:9200"]
   worker: 2
-  bulk_max_size: 2048
+  bulk_max_size: 10
   indices:
     - index: "nova-app-%{+yyyy.MM.dd}"
       when.equals:

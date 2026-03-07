@@ -6,8 +6,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created on 2026/2/28 14:32
  *
@@ -53,6 +51,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
         if (!success) {
             ChatAccessLog.log.warn("auth failed {}", userId);
+            sendAuthResult(channel, false, "auth failed");
             channel.close();
             return;
         }
@@ -65,6 +64,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
         ChatAccessLog.log.info("user login success {}", userId);
 
+        sendAuthResult(channel, true, "user login success");
         // 认证成功后移除 AuthHandler
         ctx.pipeline().remove(this);
     }
@@ -73,6 +73,22 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
         // 示例逻辑
         return token != null && !token.isEmpty();
+    }
+
+    private void sendAuthResult(Channel channel, Boolean isSuccess, String message) {
+
+        ChatMessage.MsgBody authResult =
+                ChatMessage.MsgBody.newBuilder()
+                        .setMessageType(ChatMessage.MessageType.AUTH)
+                        .setAuthMessage(
+                                ChatMessage.Auth.newBuilder()
+                                        .setSuccess(isSuccess)
+                                        .setMessage(message)
+                                        .build()
+                        )
+                        .build();
+
+        channel.writeAndFlush(authResult);
     }
 
     @Override

@@ -30,7 +30,8 @@ public class NovaRTCServer extends BaseServer {
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline().addLast(
                                 new ProtocolDetectHandler(),
-                                new IdleStateHandler(60, 0, 0)
+                                new IdleStateHandler(60, 0, 0),
+                                new NettyExceptionHandler()
                         );
                     }
                 });
