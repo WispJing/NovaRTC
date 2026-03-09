@@ -30,7 +30,7 @@ services:
     image: docker.elastic.co/beats/filebeat:8.13.4
     container_name: filebeat
     user: root
-    command: ["--strict.perms=false"]
+    command: [ "--strict.perms=false" ]
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
       - D:/project/NovaRTC/logs:/data/logs
