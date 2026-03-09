@@ -1,8 +1,8 @@
 package io.github.xiaotang.novartc.server.repository.mongodb.impl;
 
 import io.github.xiaotang.novartc.server.entity.mongodb.IMUser;
-import io.github.xiaotang.novartc.server.repository.mongodb.IMUserRepository;
 import io.github.xiaotang.novartc.server.repository.mongodb.BaseMongoDaoIMpl;
+import io.github.xiaotang.novartc.server.repository.mongodb.IMUserRepository;
 import org.springframework.stereotype.Repository;
 
 /**

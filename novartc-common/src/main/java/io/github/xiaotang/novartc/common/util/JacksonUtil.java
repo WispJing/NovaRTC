@@ -17,7 +17,7 @@ import java.io.IOException;
  * @description
  */
 public class JacksonUtil {
-    
+
     private static ObjectMapper objectMapper;
 
     private static ObjectMapper getJackson() {

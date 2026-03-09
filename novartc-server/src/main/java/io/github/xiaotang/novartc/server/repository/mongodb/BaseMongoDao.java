@@ -17,8 +17,8 @@ import java.util.List;
 /**
  * BaseMongoDao 接口定义通用 MongoDB CRUD、分页、更新和聚合操作
  *
- * @author tangj
  * @param <T> 实体类型
+ * @author tangj
  */
 public interface BaseMongoDao<T> {
 

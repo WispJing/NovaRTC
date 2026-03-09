@@ -1,8 +1,8 @@
 package io.github.xiaotang.novartc.server.netty;
 
+import io.github.xiaotang.novartc.common.constant.IMConstant;
 import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.config.ChatErrorLog;
-import io.github.xiaotang.novartc.common.constant.IMConstant;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;

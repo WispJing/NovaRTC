@@ -1,7 +1,7 @@
 package io.github.xiaotang.novartc.server.netty;
 
-import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
+import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,7 +34,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
 
             case PONG -> ChatMsgLog.log.info("receive pong {}", userId);
 
-            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE  -> handleMessage(userId, msgBody);
+            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE -> handleMessage(userId, msgBody);
 
             default -> ChatMsgLog.log.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
         }
