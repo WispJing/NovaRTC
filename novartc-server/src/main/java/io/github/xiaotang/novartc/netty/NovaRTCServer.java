@@ -24,7 +24,12 @@ public class NovaRTCServer extends BaseServer {
         b.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 4096)
+                .option(ChannelOption.SO_REUSEADDR, true)
                 .childOption(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.SO_SNDBUF, 1024 * 1024)
+                .childOption(ChannelOption.SO_RCVBUF, 1024 * 1024)
+                .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {

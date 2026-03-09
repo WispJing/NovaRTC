@@ -7,6 +7,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
@@ -57,22 +58,27 @@ public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
     /**
      * 检测HTTP协议
      */
+    // 优化后的HTTP检测
     private boolean isHttp(ByteBuf buf) {
-
         if (buf.readableBytes() < 4) {
             return false;
         }
-
-        char c0 = (char) buf.getByte(0);
-        char c1 = (char) buf.getByte(1);
-        char c2 = (char) buf.getByte(2);
-        char c3 = (char) buf.getByte(3);
-
-        return (c0 == 'G' && c1 == 'E' && c2 == 'T') ||
-                (c0 == 'P' && c1 == 'O' && c2 == 'S' && c3 == 'T') ||
-                (c0 == 'P' && c1 == 'U' && c2 == 'T') ||
-                (c0 == 'D' && c1 == 'E' && c2 == 'L') ||
-                (c0 == 'O' && c1 == 'P' && c2 == 'T');
+        // 保存当前读取位置
+        int readerIndex = buf.readerIndex();
+        try {
+            // 读取前几个字节，判断是否为HTTP方法
+            byte[] bytes = new byte[Math.min(buf.readableBytes(), 10)];
+            buf.readBytes(bytes);
+            String method = new String(bytes).trim();
+            return method.equals(HttpMethod.GET.name()) ||
+                    method.equals(HttpMethod.POST.name()) ||
+                    method.equals(HttpMethod.PUT.name()) ||
+                    method.equals(HttpMethod.DELETE.name()) ||
+                    method.equals(HttpMethod.OPTIONS.name());
+        } finally {
+            // 恢复读取位置
+            buf.readerIndex(readerIndex);
+        }
     }
 
     /**
