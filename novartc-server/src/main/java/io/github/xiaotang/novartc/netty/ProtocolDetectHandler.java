@@ -36,21 +36,13 @@ public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (isHttp(in)) {
-
             switchToWebSocket(ctx);
-
             ctx.fireChannelRead(msg);
-
         } else if (isTcpMagic(in)) {
-
             switchToTcp(ctx);
-
             ctx.fireChannelRead(msg);
-
         } else {
-
             in.release();
-
             ctx.close();
         }
     }

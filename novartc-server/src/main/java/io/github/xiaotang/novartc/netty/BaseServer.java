@@ -25,8 +25,7 @@ public abstract class BaseServer implements Server {
     protected ServerBootstrap b;
 
     public void init() {
-        //处理pipline上的handler线程数量，因为pipline上有HttpServerCodec、HttpObjectAggregator、ChunkedWriterHandler
-        //IdleStateHandler、UserAuthHandler、MessageHandler共6种，所以线程数量跟6差不多的8
+        // 处理pipline上的handler线程数量
         defLoopGroup = new MultiThreadIoEventLoopGroup(
                 Math.max(10, Runtime.getRuntime().availableProcessors()),
                 new ThreadFactory() {
@@ -39,7 +38,7 @@ public abstract class BaseServer implements Server {
                 },
                 NioIoHandler.newFactory()
         );
-        //接收连接的线程数量为可用处理器
+        // 接收连接的线程数量为可用处理器
         bossGroup = new MultiThreadIoEventLoopGroup(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
             private final AtomicInteger index = new AtomicInteger(0);
 
@@ -48,7 +47,7 @@ public abstract class BaseServer implements Server {
                 return new Thread(r, "BOSS_" + index.incrementAndGet());
             }
         }, NioIoHandler.newFactory());
-        //处理连接的线程数量为可用处理器的10倍
+        // 处理连接的线程数量为可用处理器的10倍
         workGroup = new MultiThreadIoEventLoopGroup(Runtime.getRuntime().availableProcessors() * 10, new ThreadFactory() {
             private final AtomicInteger index = new AtomicInteger(0);
 
