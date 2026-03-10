@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,15 +25,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ChannelHandler.Sharable
+@RequiredArgsConstructor
 public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
     private static final short MAGIC = (short) 0xCAFE;
 
-    @Autowired
-    private HeartbeatHandler heartbeatHandler;
-    @Autowired
-    private UserAuthHandler userAuthHandler;
-    @Autowired
-    private MessageHandler messageHandler;
+    private final HeartbeatHandler heartbeatHandler;
+    private final UserAuthHandler userAuthHandler;
+    private final MessageHandler messageHandler;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {

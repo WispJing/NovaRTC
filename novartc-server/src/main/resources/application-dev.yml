@@ -23,6 +23,12 @@ spring:
     mongodb:
       uri: mongodb://127.0.0.1:27017/novartc
 
+im:
+  host: localhost
+  port: 9688
+  userInstancesKeyPreFix: 'im:user:instances:'
+  instanceKeyPreFix: 'im:user:instance:'
+
 logging:
   level:
     root: INFO

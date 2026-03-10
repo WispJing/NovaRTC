@@ -6,7 +6,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.netty.NovaRTCServer;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +23,7 @@ import java.util.TimeZone;
 @EnableMongoAuditing
 @EnableConfigurationProperties
 @SpringBootApplication
+@RequiredArgsConstructor
 public class NovaRtcApplication implements CommandLineRunner {
 
     @PostConstruct
@@ -36,8 +37,7 @@ public class NovaRtcApplication implements CommandLineRunner {
         JSONObject.defaultTimeZone = TimeZone.getTimeZone("UTC");
     }
 
-    @Autowired
-    private NovaRTCServer novaRtcServer;
+    private final NovaRTCServer novaRtcServer;
 
     @Override
     public void run(String... args) {

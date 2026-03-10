@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.queue;
 
 import io.github.xiaotang.novartc.common.constant.IMConstant;
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
+import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,17 +22,17 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class UserRouteService {
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+    private final IMConfigProperties imConfigProperties;
+    private final StringRedisTemplate redisTemplate;
     // 1小时，可根据心跳续期
     private static final long EXPIRE_SECONDS = 3600;
 
     private String getUserInstancesKey(String userId) {
-        return IMConstant.USER_INSTANCES_KEY_PREFIX + userId;
+        return imConfigProperties.getUserInstancesKeyPreFix() + userId;
     }
 
     private String getInstanceKey(String userId, String instanceId) {
-        return IMConstant.INSTANCE_KEY_PREFIX + userId + ":" + instanceId;
+        return imConfigProperties.getInstanceKeyPreFix() + userId + ":" + instanceId;
     }
 
     /**

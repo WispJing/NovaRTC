@@ -1,11 +1,16 @@
 package io.github.xiaotang.novartc.server.queue;
 
 import io.github.xiaotang.novartc.common.constant.IMConstant;
+import io.github.xiaotang.novartc.server.config.IMConfigProperties;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.UUID;
 
 /**
  * Created on 2026/3/10 11:36
@@ -13,13 +18,20 @@ import java.net.UnknownHostException;
  * @author tangj
  * @description
  */
-@Component
 @Getter
+@Component
 public class InstanceIdProvider {
-    private final String instanceId;
+    @Autowired
+    private IMConfigProperties imConfigProperties;
 
-    public InstanceIdProvider() throws UnknownHostException {
-        String host = InetAddress.getLocalHost().getHostAddress();
-        this.instanceId = host + ":" + IMConstant.port;
+    private String instanceId;
+
+    @PostConstruct
+    public void init() {
+        try {
+            instanceId = InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            instanceId = UUID.randomUUID().toString();
+        }
     }
 }

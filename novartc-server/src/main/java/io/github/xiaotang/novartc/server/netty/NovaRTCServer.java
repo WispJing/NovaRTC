@@ -3,11 +3,13 @@ package io.github.xiaotang.novartc.server.netty;
 import io.github.xiaotang.novartc.common.constant.IMConstant;
 import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.config.ChatErrorLog;
+import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +22,11 @@ import java.net.InetSocketAddress;
  * @description
  */
 @Component
+@RequiredArgsConstructor
 public class NovaRTCServer extends BaseServer {
-    @Autowired
-    private ProtocolDetectHandler protocolDetectHandler;
-    @Autowired
-    private NettyExceptionHandler nettyExceptionHandler;
+    private final IMConfigProperties imConfigProperties;
+    private final ProtocolDetectHandler protocolDetectHandler;
+    private final NettyExceptionHandler nettyExceptionHandler;
 
     @Override
     public void start() {
@@ -48,7 +50,7 @@ public class NovaRTCServer extends BaseServer {
                     }
                 });
         try {
-            cf = b.bind(IMConstant.port).sync();
+            cf = b.bind(imConfigProperties.getPort()).sync();
             InetSocketAddress addr = (InetSocketAddress) cf.channel().localAddress();
             ChatAppLog.log.info("NovaRTC IM server is running, port is: {}", addr.getPort());
         } catch (InterruptedException e) {
