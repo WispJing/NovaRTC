@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -12,6 +13,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import org.springframework.stereotype.Component;
 
 /**
  * Created on 2026/3/5 11:03
@@ -19,6 +21,8 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
  * @author tangj
  * @description
  */
+@Component
+@ChannelHandler.Sharable
 public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
     private static final short MAGIC = (short) 0xCAFE;
 

@@ -56,9 +56,6 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
             return;
         }
 
-        // 绑定 Channel Attribute
-        channel.attr(NettyAttributes.USER_ID).set(userId);
-
         // 绑定用户 Channel
         UserChannelManager.bind(userId, channel);
 
@@ -94,7 +91,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         String userId = ctx.channel().attr(NettyAttributes.USER_ID).get();
-        UserChannelManager.remove(userId, ctx.channel());
+        UserChannelManager.remove(ctx.channel());
         ChatAccessLog.log.info("用户下线 {}", userId);
     }
 

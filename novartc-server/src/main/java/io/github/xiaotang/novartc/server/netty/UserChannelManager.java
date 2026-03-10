@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.netty;
 
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,7 @@ public class UserChannelManager {
         USER_CHANNELS
                 .computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet())
                 .add(channel);
+        channel.attr(NettyAttributes.USER_ID).set(userId);
     }
 
     public static void send(String userId, Object msg) {
@@ -38,7 +40,9 @@ public class UserChannelManager {
         return USER_CHANNELS.get(userId);
     }
 
-    public static void remove(String userId, Channel channel) {
+    public static void remove(Channel channel) {
+        String userId = channel.attr(NettyAttributes.USER_ID).get();
+
         if (StringUtils.isBlank(userId)) {
             return;
         }

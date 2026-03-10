@@ -23,7 +23,7 @@ public class NettyExceptionHandler extends ChannelInboundHandlerAdapter {
         } else {
             ChatErrorLog.log.error("Netty异常", cause);
         }
-        UserChannelManager.remove(ctx.channel().attr(NettyAttributes.USER_ID).get(), ctx.channel());
+        UserChannelManager.remove(ctx.channel());
         ctx.close();
     }
 }
