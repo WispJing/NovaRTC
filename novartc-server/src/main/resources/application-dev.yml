@@ -31,10 +31,10 @@ spring:
           min-idle: 4
           max-wait: 2000ms
     mongodb:
-      uri: mongodb://127.0.0.1:27017/novartc
+      uri: mongodb://localhost:27017/novartc
 
 rocketmq:
-  name-server: 127.0.0.1:9876
+  name-server: localhost:9876
 
 im:
   host: localhost
