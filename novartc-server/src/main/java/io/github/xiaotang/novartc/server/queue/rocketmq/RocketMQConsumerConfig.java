@@ -52,12 +52,15 @@ public class RocketMQConsumerConfig {
         consumer = new DefaultMQPushConsumer(consumerGroup);
         consumer.setNamesrvAddr(nameServer);
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
-        consumer.setMessageModel(MessageModel.CLUSTERING);
+        // consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setMessageModel(MessageModel.BROADCASTING);
 
         // 动态订阅：Tag 为当前实例 ID
         String instanceId = instanceIdProvider.getInstanceId();
-        consumer.subscribe(imConfigProperties.getImMsgTopic(), instanceId);
-        logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getImMsgTopic(), instanceId);
+        // consumer.subscribe(imConfigProperties.getImMsgTopic(), instanceId);
+        consumer.subscribe(imConfigProperties.getImMsgTopic(), "*");
+        // logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getImMsgTopic(), instanceId);
+        logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getImMsgTopic(), "*");
 
         consumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
@@ -66,6 +69,7 @@ public class RocketMQConsumerConfig {
                     String msgId = msg.getProperty(RocketMQHeader.MSG_ID);
                     String userStr = msg.getProperty(RocketMQHeader.TARGET_USER_ID);
                     Set<String> targetUserId = Arrays.stream(userStr.split(",")).collect(Collectors.toSet());
+                    targetUserId = targetUserId.stream().filter(userChannelManager::isLocalChannel).collect(Collectors.toSet());
                     for (String userId : targetUserId) {
                         userChannelManager.sendToUser(userId, msgBody);
                     }
