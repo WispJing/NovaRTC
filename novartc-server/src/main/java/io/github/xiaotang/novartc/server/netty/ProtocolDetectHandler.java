@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +26,13 @@ import org.springframework.stereotype.Component;
 @ChannelHandler.Sharable
 public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
     private static final short MAGIC = (short) 0xCAFE;
+
+    @Autowired
+    private HeartbeatHandler heartbeatHandler;
+    @Autowired
+    private UserAuthHandler userAuthHandler;
+    @Autowired
+    private MessageHandler messageHandler;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -105,9 +113,9 @@ public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
         p.addLast(new ProtobufDecoder(ChatMessage.MsgBody.getDefaultInstance()));
         p.addLast(new ProtobufEncoder());
 
-        p.addLast(new HeartbeatHandler());
-        p.addLast(new UserAuthHandler());
-        p.addLast(new MessageHandler());
+        p.addLast(heartbeatHandler);
+        p.addLast(userAuthHandler);
+        p.addLast(messageHandler);
     }
 
     /**
@@ -130,8 +138,8 @@ public class ProtocolDetectHandler extends ChannelInboundHandlerAdapter {
 
         p.addLast(new ByteBufToWebSocketFrameEncoder());
 
-        p.addLast(new HeartbeatHandler());
-        p.addLast(new UserAuthHandler());
-        p.addLast(new MessageHandler());
+        p.addLast(heartbeatHandler);
+        p.addLast(userAuthHandler);
+        p.addLast(messageHandler);
     }
 }

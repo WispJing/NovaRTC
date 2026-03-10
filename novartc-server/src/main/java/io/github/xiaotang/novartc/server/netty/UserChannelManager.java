@@ -1,9 +1,14 @@
 package io.github.xiaotang.novartc.server.netty;
 
+import io.github.xiaotang.novartc.server.config.ChatAccessLog;
+import io.github.xiaotang.novartc.server.queue.InstanceIdProvider;
+import io.github.xiaotang.novartc.server.queue.UserRouteService;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,47 +18,80 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author tangj
  * @description
  */
+@Component
 public class UserChannelManager {
-    private static final ConcurrentHashMap<String, Set<Channel>> USER_CHANNELS = new ConcurrentHashMap<>();
+    // 用户ID -> 该用户在本实例的所有Channel
+    private final Map<String, Set<Channel>> userChannels = new ConcurrentHashMap<>();
+    // 群组ID -> 群组成员ID集合（缓存）
+    private final Map<String, Set<String>> groupMembers = new ConcurrentHashMap<>();
 
-    public static void bind(String userId, Channel channel) {
-        USER_CHANNELS
-                .computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet())
-                .add(channel);
-        channel.attr(NettyAttributes.USER_ID).set(userId);
-    }
+    @Autowired
+    private UserRouteService userRouteService;
+    @Autowired
+    private InstanceIdProvider instanceIdProvider;
 
-    public static void send(String userId, Object msg) {
-        Set<Channel> channels = USER_CHANNELS.get(userId);
-
-        if (channels == null) {
+    // 绑定用户Channel（用户上线）
+    public void bind(Channel channel) {
+        String userId = channel.attr(NettyAttributes.USER_ID).get();
+        if (StringUtils.isBlank(userId)) {
             return;
         }
-        for (Channel ch : channels) {
-            if (ch.isActive()) {
-                ch.writeAndFlush(msg);
+        userChannels.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(channel);
+        // 向Redis注册该用户在本实例
+        userRouteService.registerUser(userId, instanceIdProvider.getInstanceId());
+        ChatAccessLog.log.info("User {} bound, channel: {}", userId, channel.id());
+    }
+
+    // 移除用户Channel（用户下线）
+    public void remove(Channel channel) {
+        String userId = channel.attr(NettyAttributes.USER_ID).get();
+        if (StringUtils.isEmpty(userId)) {
+            return;
+        }
+        Set<Channel> channels = userChannels.get(userId);
+        if (channels != null) {
+            channels.remove(channel);
+            if (channels.isEmpty()) {
+                userChannels.remove(userId);
+                // Redis中注销该实例
+                userRouteService.unregisterUser(userId, instanceIdProvider.getInstanceId());
+                ChatAccessLog.log.info("User {} fully removed", userId);
             }
         }
     }
 
-    public static Set<Channel> getChannel(String userId) {
-        return USER_CHANNELS.get(userId);
+    // 向指定用户发送消息（本地发送）
+    public void sendToUser(String userId, Object msg) {
+        Set<Channel> channels = userChannels.get(userId);
+        if (channels == null || channels.isEmpty()) {
+            return;
+        }
+        channels.stream()
+                .filter(Channel::isActive)
+                .forEach(ch -> ch.writeAndFlush(msg));
     }
 
-    public static void remove(Channel channel) {
-        String userId = channel.attr(NettyAttributes.USER_ID).get();
+    // 获取用户在本地的所有Channel
+    public Set<Channel> getLocalChannels(String userId) {
+        return userChannels.get(userId);
+    }
 
-        if (StringUtils.isBlank(userId)) {
-            return;
-        }
-        Set<Channel> channels = USER_CHANNELS.get(userId);
-        if (channels == null) {
-            return;
-        }
-        channels.remove(channel);
+    // 群组缓存操作
+    public void addGroupMember(String groupId, String userId) {
+        groupMembers.computeIfAbsent(groupId, k -> ConcurrentHashMap.newKeySet()).add(userId);
+    }
 
-        if (channels.isEmpty()) {
-            USER_CHANNELS.remove(userId);
+    public void removeGroupMember(String groupId, String userId) {
+        Set<String> members = groupMembers.get(groupId);
+        if (members != null) {
+            members.remove(userId);
+            if (members.isEmpty()) {
+                groupMembers.remove(groupId);
+            }
         }
+    }
+
+    public Set<String> getGroupMembers(String groupId) {
+        return groupMembers.getOrDefault(groupId, Set.of());
     }
 }

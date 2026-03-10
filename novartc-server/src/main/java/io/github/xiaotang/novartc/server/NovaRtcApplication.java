@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.netty.NovaRTCServer;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,13 +36,15 @@ public class NovaRtcApplication implements CommandLineRunner {
         JSONObject.defaultTimeZone = TimeZone.getTimeZone("UTC");
     }
 
+    @Autowired
+    private NovaRTCServer novaRtcServer;
+
     @Override
     public void run(String... args) {
-        final NovaRTCServer server = new NovaRTCServer();
-        server.init();
-        server.start();
+        novaRtcServer.init();
+        novaRtcServer.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            server.shutdown();
+            novaRtcServer.shutdown();
             ChatAppLog.log.info("NovaRTC IM server is stopping");
         }));
     }

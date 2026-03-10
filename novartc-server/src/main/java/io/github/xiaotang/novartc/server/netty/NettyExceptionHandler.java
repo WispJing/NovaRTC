@@ -1,9 +1,12 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatErrorLog;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.TimeoutException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -13,7 +16,12 @@ import java.io.IOException;
  * @author tangj
  * @description
  */
+@Component
+@ChannelHandler.Sharable
 public class NettyExceptionHandler extends ChannelInboundHandlerAdapter {
+    @Autowired
+    private UserChannelManager userChannelManager;
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (cause instanceof IOException) {
@@ -23,7 +31,7 @@ public class NettyExceptionHandler extends ChannelInboundHandlerAdapter {
         } else {
             ChatErrorLog.log.error("Netty异常", cause);
         }
-        UserChannelManager.remove(ctx.channel());
+        userChannelManager.remove(ctx.channel());
         ctx.close();
     }
 }

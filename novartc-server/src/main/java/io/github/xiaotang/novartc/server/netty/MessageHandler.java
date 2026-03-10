@@ -4,8 +4,10 @@ import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.springframework.stereotype.Component;
 
 /**
  * Created on 2026/3/5 14:07
@@ -13,6 +15,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author tangj
  * @description
  */
+@Component
+@ChannelHandler.Sharable
 public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
 
     @Override

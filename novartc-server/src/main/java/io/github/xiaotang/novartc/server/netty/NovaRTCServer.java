@@ -8,6 +8,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
@@ -17,7 +19,12 @@ import java.net.InetSocketAddress;
  * @author tangj
  * @description
  */
+@Component
 public class NovaRTCServer extends BaseServer {
+    @Autowired
+    private ProtocolDetectHandler protocolDetectHandler;
+    @Autowired
+    private NettyExceptionHandler nettyExceptionHandler;
 
     @Override
     public void start() {
@@ -34,9 +41,9 @@ public class NovaRTCServer extends BaseServer {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline().addLast(
-                                new ProtocolDetectHandler(),
+                                protocolDetectHandler,
                                 new IdleStateHandler(60, 0, 0),
-                                new NettyExceptionHandler()
+                                nettyExceptionHandler
                         );
                     }
                 });

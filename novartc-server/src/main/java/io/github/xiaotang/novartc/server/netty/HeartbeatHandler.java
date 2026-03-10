@@ -3,10 +3,13 @@ package io.github.xiaotang.novartc.server.netty;
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
@@ -16,7 +19,11 @@ import java.util.UUID;
  * @author tangj
  * @description
  */
+@Component
+@ChannelHandler.Sharable
 public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
+    @Autowired
+    private UserChannelManager userChannelManager;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -74,7 +81,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
                 if (count >= 2) {
                     ChatAccessLog.log.warn("心跳超时关闭连接 {}", channel.id());
-                    UserChannelManager.remove(channel);
+                    userChannelManager.remove(channel);
                     channel.close();
                 } else {
                     ChatAccessLog.log.warn("检测到读空闲，发送Ping {}", channel.id());

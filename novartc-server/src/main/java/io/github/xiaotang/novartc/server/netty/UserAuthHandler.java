@@ -3,8 +3,11 @@ package io.github.xiaotang.novartc.server.netty;
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Created on 2026/2/28 14:32
@@ -12,7 +15,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author tangj
  * @description
  */
+@Component
+@ChannelHandler.Sharable
 public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
+    @Autowired
+    private UserChannelManager userChannelManager;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -57,7 +64,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         }
 
         // 绑定用户 Channel
-        UserChannelManager.bind(userId, channel);
+        userChannelManager.bind(channel);
 
         ChatAccessLog.log.info("user login success {}", userId);
 
@@ -91,7 +98,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         String userId = ctx.channel().attr(NettyAttributes.USER_ID).get();
-        UserChannelManager.remove(ctx.channel());
+        userChannelManager.remove(ctx.channel());
         ChatAccessLog.log.info("用户下线 {}", userId);
     }
 
