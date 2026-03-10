@@ -31,11 +31,11 @@ public class UserChannelManager {
     private InstanceIdProvider instanceIdProvider;
 
     // 绑定用户Channel（用户上线）
-    public void bind(Channel channel) {
-        String userId = channel.attr(NettyAttributes.USER_ID).get();
+    public void bind(String userId, Channel channel) {
         if (StringUtils.isBlank(userId)) {
             return;
         }
+        channel.attr(NettyAttributes.USER_ID).set(userId);
         userChannels.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(channel);
         // 向Redis注册该用户在本实例
         userRouteService.registerUser(userId, instanceIdProvider.getInstanceId());

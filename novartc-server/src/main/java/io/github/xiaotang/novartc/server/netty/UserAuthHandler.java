@@ -64,7 +64,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         }
 
         // 绑定用户 Channel
-        userChannelManager.bind(channel);
+        userChannelManager.bind(userId, channel);
 
         ChatAccessLog.log.info("user login success {}", userId);
 

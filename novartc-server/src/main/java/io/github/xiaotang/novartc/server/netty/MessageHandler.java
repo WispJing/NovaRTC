@@ -32,7 +32,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
         String userId = channel.attr(NettyAttributes.USER_ID).get();
 
         if (userId == null) {
-            ChatMsgLog.log.warn("unauthorized message: {}", JacksonUtil.toJson(msgBody));
+            ChatMsgLog.log.warn("unauthorized message: {}", msgBody);
             channel.close();
             return;
         }
