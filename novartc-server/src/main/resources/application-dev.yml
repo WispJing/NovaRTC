@@ -23,11 +23,15 @@ spring:
     mongodb:
       uri: mongodb://127.0.0.1:27017/novartc
 
+rocketmq:
+  name-server: 127.0.0.1:9876
+
 im:
   host: localhost
   port: 9688
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
+  imMsgTopic: 'IM_MSG_TOPIC'
 
 logging:
   level:

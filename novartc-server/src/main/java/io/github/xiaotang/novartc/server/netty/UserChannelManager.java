@@ -1,8 +1,8 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
-import io.github.xiaotang.novartc.server.queue.InstanceIdProvider;
-import io.github.xiaotang.novartc.server.queue.UserRouteService;
+import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
+import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

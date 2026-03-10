@@ -1,11 +1,12 @@
 package io.github.xiaotang.novartc.server.queue.rocketmq;
 
-import io.github.xiaotang.novartc.common.enums.RTCTopic;
+import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.queue.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.MessageService;
-import io.github.xiaotang.novartc.server.queue.UserRouteService;
+import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
+import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
+import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -31,6 +32,7 @@ public class RocketMQMessageService implements MessageService {
     private final UserRouteService userRouteService;
     private final UserChannelManager userChannelManager;
     private final InstanceIdProvider instanceIdProvider;
+    private final IMConfigProperties iMConfigProperties;
 
     @Override
     public void sendMessage(ChatMessage.MsgBody message) {
@@ -60,18 +62,15 @@ public class RocketMQMessageService implements MessageService {
                 // 本地发送
                 users.forEach(userId -> userChannelManager.sendToUser(userId, message));
             } else {
-                // 构建RocketMQ消息，Tag为目标实例ID，消息体包含原始消息和接收者列表
-                Map<String, Object> payload = new HashMap<>();
-                payload.put("msgBody", message.toByteArray()); // 使用protobuf字节
-                payload.put("targetUserIds", users);
                 // 发送到RocketMQ
-                rocketMQTemplate.send(
-                        message.getIsGroup() ? RTCTopic.GROUP_MSG.getTopic() : RTCTopic.PRIVATE_MSG.getTopic()
-                                + ":" + targetInstance,
+                rocketMQTemplate.syncSendOrderly(
+                        iMConfigProperties.getImMsgTopic() + ":" + targetInstance,
                         MessageBuilder
-                                .withPayload(payload)
-                                .setHeader("msgId", message.getMessageId())
-                                .build()
+                                .withPayload(message.toByteArray())
+                                .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())
+                                .setHeader(RocketMQHeader.TARGET_USER_ID, String.join(",", users))
+                                .build(),
+                        message.getSender().getUserId()
                 );
             }
         }

@@ -1,10 +1,8 @@
-package io.github.xiaotang.novartc.server.queue;
+package io.github.xiaotang.novartc.server.queue.common;
 
-import io.github.xiaotang.novartc.common.constant.IMConstant;
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
