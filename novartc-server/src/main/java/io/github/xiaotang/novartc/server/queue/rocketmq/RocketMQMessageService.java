@@ -44,10 +44,10 @@ public class RocketMQMessageService implements MessageService {
 
         Set<String> mqToUsers = new HashSet<>();
         for (String userId : targetUserIds) {
-            /*if (userChannelManager.isLocalChannel(userId)) {
+            if (userChannelManager.isLocalChannel(userId)) {
                 userChannelManager.sendToUser(userId, message);
                 continue;
-            }*/
+            }
             mqToUsers.add(userId);
         }
         if (!CollectionUtils.isEmpty(mqToUsers)) {
