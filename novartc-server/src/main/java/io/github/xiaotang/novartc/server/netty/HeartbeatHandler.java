@@ -84,7 +84,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                     userChannelManager.remove(channel);
                     channel.close();
                 } else {
-                    ChatAccessLog.log.warn("检测到读空闲，发送Ping {}", channel.id());
+                    ChatAccessLog.log.info("检测到读空闲，发送Ping {}", channel.id());
                     sendPing(channel);
                 }
             }
