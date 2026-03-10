@@ -20,6 +20,16 @@ spring:
         jdbc:
           time_zone: UTC
   data:
+    redis:
+      host: localhost
+      database: 0
+      port: 6379
+      lettuce:
+        pool:
+          max-active: 32
+          max-idle: 16
+          min-idle: 4
+          max-wait: 2000ms
     mongodb:
       uri: mongodb://127.0.0.1:27017/novartc
 
