@@ -1,6 +1,5 @@
 package io.github.xiaotang.novartc.server.queue.rocketmq;
 
-import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
@@ -17,12 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +30,6 @@ import java.util.stream.Collectors;
  * @description
  */
 @Configuration
-@ConditionalOnBean(name = "rocketMQTemplate")
 public class RocketMQConsumerConfig {
     private final Logger logger = LoggerFactory.getLogger(RocketMQConsumerConfig.class);
 

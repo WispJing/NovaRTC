@@ -4,7 +4,7 @@ import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.MessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -16,7 +16,7 @@ import java.util.Set;
  * @description
  */
 @Service
-@ConditionalOnMissingBean(name = "rocketMQTemplate")
+@ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class LocalMessageService implements MessageService {
     private final UserChannelManager userChannelManager;

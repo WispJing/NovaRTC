@@ -9,7 +9,7 @@ import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ import java.util.Set;
  * @description
  */
 @Service
-@ConditionalOnBean(name = "rocketMQTemplate")
+@ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class RocketMQMessageService implements MessageService {
     private final RocketMQTemplate rocketMQTemplate;
