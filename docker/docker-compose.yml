@@ -62,12 +62,12 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: unless-stopped
     # 健康检查，确保服务正常
-    healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "your_strong_password_here", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+#    healthcheck:
+#      test: [ "CMD", "redis-cli", "-a", "your_strong_password_here", "ping" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
+#      start_period: 30s
 
   # MongoDB 8.0.5 服务
   mongodb:
