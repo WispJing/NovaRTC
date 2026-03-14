@@ -61,6 +61,33 @@ services:
       retries: 3
       start_period: 30s
 
+  # MongoDB 8.0.5 服务
+  mongodb:
+    image: mongo:8.0.5
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - rocketmq-net
+#    environment:
+      # 可选：初始化管理员账号（如开启认证）
+#      MONGO_INITDB_ROOT_USERNAME: root          # 请修改为自定义用户名
+#      MONGO_INITDB_ROOT_PASSWORD: abc123       # 请修改为强密码
+      # 可选：初始化一个普通数据库和用户（如需自动创建）
+      # MONGO_INITDB_DATABASE: mydb
+    volumes:
+      - ./mongodb/data:/data/db                    # 主数据目录
+      - ./mongodb/config:/data/configdb             # 配置数据目录（分片集群用，单实例也可留）
+      # 可选：挂载初始化脚本（自动创建用户/集合）
+      # - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
   namesrv:
     image: apache/rocketmq:4.9.6
     container_name: rmqnamesrv
@@ -104,6 +131,8 @@ services:
 volumes:
   es_data:
   redis-data:
+  mongodb-data:
+  mongodb-config:
   namesrv-logs:
   broker-logs:
   broker-store:
