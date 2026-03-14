@@ -39,5 +39,5 @@ build/
 ### Mac OS ###
 .DS_Store
 
-/docker/mongodb/data
-/docker/redis/data
+/docker/mongodb/data/
+/docker/redis/data/
