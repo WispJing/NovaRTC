@@ -124,7 +124,7 @@ services:
     image: apacherocketmq/rocketmq-dashboard:latest
     container_name: rocketmq-dashboard
     ports:
-      - "8080:8082"  # 浏览器访问端口
+      - "8082:8082"  # 浏览器访问端口
     networks:
       - rocketmq-net
     environment:
