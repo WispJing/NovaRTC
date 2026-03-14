@@ -40,3 +40,4 @@ build/
 .DS_Store
 
 /docker/mongodb/data
+/docker/redis/data
