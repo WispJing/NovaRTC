@@ -1,0 +1,111 @@
+version: '3.8'
+
+name: novartc
+
+networks:
+  rocketmq-net:
+    driver: bridge
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - TZ=Asia/Shanghai
+    ports:
+      - "9200:9200"
+    volumes:
+      - D:/elk/esdata/novartc:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.13.4
+    container_name: filebeat
+    user: root
+    command: [ "--strict.perms=false" ]
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - D:/project/NovaRTC/logs:/data/logs
+    depends_on:
+      - elasticsearch
+
+  redis:
+    image: redis:8.4.0
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      # 挂载数据目录以实现数据持久化
+      - "./redis/data:/data"
+      # 挂载自定义配置文件 (只读模式)
+      - "./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    # 健康检查，确保服务正常
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "your_strong_password_here", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  namesrv:
+    image: apache/rocketmq:4.9.6
+    container_name: rmqnamesrv
+    ports:
+      - "9876:9876"
+    command: sh mqnamesrv
+  broker:
+    image: apache/rocketmq:4.9.6
+    container_name: rmqbroker
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+    depends_on:
+      - namesrv
+    command: sh mqbroker -c /home/rocketmq/rocketmq-4.9.6/conf/broker.conf
+
+  # RocketMQ Dashboard（管理控制台）
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: rocketmq-dashboard
+    ports:
+      - "8080:8080"  # 浏览器访问端口
+    networks:
+      - rocketmq-ne t
+    environment:
+      # 关键配置：指定 NameServer 地址（使用服务名 namesrv）
+      JAVA_OPTS: >
+        -Drocketmq.namesrv.addr=namesrv:9876
+        -Drocketmq.config.loginRequired=true
+        -Xmx256M -Xms256M
+    volumes:
+      - ./dashboard/users.properties:/tmp/rocketmq-console/data/users.properties:ro  # 挂载用户文件
+      - dashboard-logs:/tmp/rocketmq-console/logs
+      - dashboard-data:/tmp/rocketmq-console/data
+    depends_on:
+      - namesrv
+    restart: unless-stopped
+
+volumes:
+  es_data:
+  redis-data:
+  namesrv-logs:
+  broker-logs:
+  broker-store:
+  dashboard-logs:
+  dashboard-data:
