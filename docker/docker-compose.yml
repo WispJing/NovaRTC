@@ -141,12 +141,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  es_data:
-  redis-data:
-  mongodb-data:
-  mongodb-config:
-  namesrv-logs:
-  broker-logs:
-  broker-store:
   dashboard-logs:
   dashboard-data:
