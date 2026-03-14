@@ -10,6 +10,8 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elasticsearch
+    networks:
+      - rocketmq-net
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -25,6 +27,8 @@ services:
     container_name: kibana
     ports:
       - "5601:5601"
+    networks:
+      - rocketmq-net
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
@@ -35,6 +39,8 @@ services:
     container_name: filebeat
     user: root
     command: [ "--strict.perms=false" ]
+    networks:
+      - rocketmq-net
     volumes:
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - D:/project/NovaRTC/logs:/data/logs
@@ -46,6 +52,8 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    networks:
+      - rocketmq-net
     volumes:
       # 挂载数据目录以实现数据持久化
       - "./redis/data:/data"
@@ -93,6 +101,8 @@ services:
     container_name: rmqnamesrv
     ports:
       - "9876:9876"
+    networks:
+      - rocketmq-net
     command: sh mqnamesrv
   broker:
     image: apache/rocketmq:4.9.6
@@ -100,6 +110,8 @@ services:
     ports:
       - "10909:10909"
       - "10911:10911"
+    networks:
+      - rocketmq-net
     environment:
       - NAMESRV_ADDR=namesrv:9876
     depends_on:
@@ -113,7 +125,7 @@ services:
     ports:
       - "8080:8080"  # 浏览器访问端口
     networks:
-      - rocketmq-ne t
+      - rocketmq-net
     environment:
       # 关键配置：指定 NameServer 地址（使用服务名 namesrv）
       JAVA_OPTS: >
