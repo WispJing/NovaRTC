@@ -7,6 +7,7 @@ networks:
     driver: bridge
 
 services:
+  # ES
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elasticsearch
@@ -21,7 +22,6 @@ services:
       - "9200:9200"
     volumes:
       - D:/elk/esdata/novartc:/usr/share/elasticsearch/data
-
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.4
     container_name: kibana
@@ -33,7 +33,6 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
       - elasticsearch
-
   filebeat:
     image: docker.elastic.co/beats/filebeat:8.13.4
     container_name: filebeat
@@ -47,6 +46,7 @@ services:
     depends_on:
       - elasticsearch
 
+  # Redis 8.4.0
   redis:
     image: redis:8.4.0
     container_name: redis
@@ -69,9 +69,9 @@ services:
 #      retries: 3
 #      start_period: 30s
 
-  # MongoDB 8.0.5 服务
+  # MongoDB 8.2.5 服务
   mongodb:
-    image: mongo:8.0.5
+    image: mongo:8.2.5
     container_name: mongodb
     ports:
       - "27017:27017"
@@ -96,6 +96,7 @@ services:
       retries: 3
       start_period: 40s
 
+  # RocketMQ 4.9.6
   namesrv:
     image: apache/rocketmq:4.9.6
     container_name: rmqnamesrv
