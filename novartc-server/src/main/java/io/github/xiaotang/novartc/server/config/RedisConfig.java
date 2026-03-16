@@ -1,5 +1,7 @@
 package io.github.xiaotang.novartc.server.config;
 
+import io.github.xiaotang.novartc.common.service.IRedisService;
+import io.github.xiaotang.novartc.common.service.impl.RedisServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -28,5 +30,10 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(jsonRedisSerializer);
 
         return redisTemplate;
+    }
+
+    @Bean
+    public IRedisService redisService() {
+        return new RedisServiceImpl();
     }
 }

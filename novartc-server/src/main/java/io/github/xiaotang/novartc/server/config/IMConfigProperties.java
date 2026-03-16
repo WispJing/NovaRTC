@@ -18,5 +18,6 @@ public class IMConfigProperties {
     private Integer port;
     private String userInstancesKeyPreFix;
     private String instanceKeyPreFix;
+    private String chatSeqKeyPreFix;
     private String imMsgTopic;
 }

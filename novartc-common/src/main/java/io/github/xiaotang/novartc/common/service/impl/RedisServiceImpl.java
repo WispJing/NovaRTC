@@ -1,6 +1,6 @@
-package io.github.xiaotang.novartc.server.service.impl;
+package io.github.xiaotang.novartc.common.service.impl;
 
-import io.github.xiaotang.novartc.server.service.IRedisService;
+import io.github.xiaotang.novartc.common.service.IRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

@@ -17,7 +17,9 @@ public class IMMessage {
     @MongoId
     private String id;
     @Field("message_id")
-    private String messageId;
+    private long messageId;
+    @Field("chat_seq")
+    private long chatSeq;
     @Field("chat_id")
     private String chatId;
     @Field("sender_id")

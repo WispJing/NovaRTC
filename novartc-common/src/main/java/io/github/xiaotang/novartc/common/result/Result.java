@@ -13,6 +13,10 @@ import java.io.Serializable;
 @Data
 public class Result<T> implements Serializable {
 
+    public static Integer RECODE_SUCCESS = 1;
+    public static Integer RECODE_ERROR = 0;
+    public static Integer RECODE_VALIDATE_ERROR = -1;
+
     /**
      * 状态码
      */

@@ -42,9 +42,10 @@ rocketmq:
 im:
   host: localhost
   port: 9688
+  imMsgTopic: 'IM_MSG_TOPIC'
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
-  imMsgTopic: 'IM_MSG_TOPIC'
+  chatSeqKeyPreFix: 'im:chatseq:'
 
 logging:
   level:

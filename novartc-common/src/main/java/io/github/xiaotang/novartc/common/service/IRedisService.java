@@ -1,4 +1,4 @@
-package io.github.xiaotang.novartc.server.service;
+package io.github.xiaotang.novartc.common.service;
 
 import java.util.List;
 import java.util.Map;

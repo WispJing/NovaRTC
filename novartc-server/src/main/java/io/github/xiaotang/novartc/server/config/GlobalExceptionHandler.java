@@ -1,5 +1,6 @@
 package io.github.xiaotang.novartc.server.config;
 
+import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public Result<?> handleBusinessException(BusinessException e) {
         return Result.of(e.getCode(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(ApplicationException.class)
+    public Result<?> handleApplicationException(ApplicationException e) {
+        return Result.of(e.getCode(), e.getMessage(), e.getData());
     }
 
     @ExceptionHandler(Exception.class)
