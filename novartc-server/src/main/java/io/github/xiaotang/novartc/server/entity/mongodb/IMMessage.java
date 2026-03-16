@@ -24,8 +24,10 @@ public class IMMessage {
     private String senderId;
     @Field("message_text")
     private String messageText;
-    @Field("created_at")
-    private Instant createdAt;
+    @Field("server_time")
+    private Instant serverTime;
+    @Field("client_time")
+    private Instant clientTime;
     @Field("chat_type")
     private Integer chatType;
 }
