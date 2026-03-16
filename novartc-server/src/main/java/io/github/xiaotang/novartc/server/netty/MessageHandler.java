@@ -1,6 +1,5 @@
 package io.github.xiaotang.novartc.server.netty;
 
-import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.MessageService;

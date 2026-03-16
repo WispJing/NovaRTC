@@ -1,7 +1,6 @@
 package io.github.xiaotang.novartc.common.util.asserts;
 
 import io.github.xiaotang.novartc.common.exception.BusinessException;
-import io.github.xiaotang.novartc.common.result.Result;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 
 import java.util.Collection;

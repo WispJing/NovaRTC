@@ -1,6 +1,5 @@
 package io.github.xiaotang.novartc.server.netty;
 
-import io.github.xiaotang.novartc.common.constant.IMConstant;
 import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.config.ChatErrorLog;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
@@ -10,7 +9,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
