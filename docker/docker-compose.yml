@@ -3,7 +3,7 @@ version: '3.8'
 name: novartc
 
 networks:
-  rocketmq-net:
+  novartc-net:
     driver: bridge
 
 services:
@@ -12,7 +12,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elasticsearch
     networks:
-      - rocketmq-net
+      - novartc-net
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -28,7 +28,7 @@ services:
     ports:
       - "5601:5601"
     networks:
-      - rocketmq-net
+      - novartc-net
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
@@ -39,12 +39,34 @@ services:
     user: root
     command: [ "--strict.perms=false" ]
     networks:
-      - rocketmq-net
+      - novartc-net
     volumes:
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - D:/project/NovaRTC/logs:/data/logs
     depends_on:
       - elasticsearch
+
+  mysql:
+    image: mysql:8.0          # 使用 MySQL 8.0 最新版本，也可指定具体版本如 mysql:8.0.36
+    container_name: mysql
+    ports:
+      - "3307:3307"           # 映射主机 3306 端口，如主机已占用可改为其他端口（例如 3307:3306）
+    networks:
+      - novartc-net
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456     # 请修改为强密码
+      TZ: Asia/Shanghai                # 时区设置
+    volumes:
+      - ./mysql/data:/var/lib/mysql                # 数据持久化目录
+      - ./mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro   # 挂载自定义配置文件（只读）
+    restart: unless-stopped
+    # 可选健康检查（需要正确传入密码，可省略）
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+    #   start_period: 30s
 
   # Redis 8.4.0
   redis:
@@ -53,7 +75,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - rocketmq-net
+      - novartc-net
     volumes:
       # 挂载数据目录以实现数据持久化
       - "./redis/data:/data"
@@ -76,7 +98,7 @@ services:
     ports:
       - "27017:27017"
     networks:
-      - rocketmq-net
+      - novartc-net
 #    environment:
       # 可选：初始化管理员账号（如开启认证）
 #      MONGO_INITDB_ROOT_USERNAME: root          # 请修改为自定义用户名
@@ -103,7 +125,7 @@ services:
     ports:
       - "9876:9876"
     networks:
-      - rocketmq-net
+      - novartc-net
     command: sh mqnamesrv
   broker:
     image: apache/rocketmq:4.9.6
@@ -112,7 +134,7 @@ services:
       - "10909:10909"
       - "10911:10911"
     networks:
-      - rocketmq-net
+      - novartc-net
     environment:
       - NAMESRV_ADDR=namesrv:9876
     depends_on:
@@ -126,7 +148,7 @@ services:
     ports:
       - "8082:8082"  # 浏览器访问端口
     networks:
-      - rocketmq-net
+      - novartc-net
     environment:
       # 关键配置：指定 NameServer 地址（使用服务名 namesrv）
       JAVA_OPTS: >
