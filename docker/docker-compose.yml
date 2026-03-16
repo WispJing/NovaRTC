@@ -59,6 +59,7 @@ services:
     volumes:
       - ./mysql/data:/var/lib/mysql                # 数据持久化目录
       - ./mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro   # 挂载自定义配置文件（只读）
+      - ./mysql/logs:/var/log/mysql
     restart: unless-stopped
     # 可选健康检查（需要正确传入密码，可省略）
     # healthcheck:

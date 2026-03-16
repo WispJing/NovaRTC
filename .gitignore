@@ -45,3 +45,4 @@ build/
 !/docker/redis/data/.gitkeep
 /docker/mysql/data/*
 !/docker/mysql/data/.gitkeep
+!/docker/mysql/logs/.gitkeep
