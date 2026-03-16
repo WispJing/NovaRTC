@@ -1,6 +1,6 @@
 ### 连接配置示例（UTC必须）
 ```bash
-spring.datasource.url=jdbc:mysql://localhost:3307/novartc?serverTimezone=UTC
+jdbc:mysql://localhost:3307/novartc?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 ```
 
 ### 消息表和已读状态表不存MYSQL
