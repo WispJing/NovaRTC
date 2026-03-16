@@ -43,3 +43,5 @@ build/
 !/docker/mongodb/data/.gitkeep
 /docker/redis/data/*
 !/docker/redis/data/.gitkeep
+/docker/mysql/data/*
+!/docker/mysql/data/.gitkeep
