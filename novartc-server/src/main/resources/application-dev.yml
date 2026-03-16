@@ -32,6 +32,73 @@ spring:
           max-wait: 2000ms
     mongodb:
       uri: mongodb://localhost:27017/novartc
+  datasource:
+    url: jdbc:mysql://localhost:3307/novartc?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Druid 连接池配置
+    druid:
+      # 初始连接数（默认0）
+      initial-size: 5
+      # 最小空闲连接数（默认0）
+      min-idle: 10
+      # 最大活动连接数（默认8）
+      max-active: 50
+      # 获取连接的超时时间（毫秒）
+      max-wait: 60000
+      # 间隔多久检测一次空闲连接（毫秒）
+      time-between-eviction-runs-millis: 60000
+      # 连接在池中最小生存时间（毫秒）
+      min-evictable-idle-time-millis: 300000
+      # 连接在池中最大生存时间（毫秒，需小于MySQL wait_timeout）
+      max-evictable-idle-time-millis: 580000
+      # 测试连接是否有效的SQL
+      validation-query: SELECT 1
+      # 申请连接时是否检测（建议false，true会降低性能）
+      test-on-borrow: false
+      # 归还连接时是否检测（建议false）
+      test-on-return: false
+      # 建议保持为true，空闲时检测连接有效性 [citation:6]
+      test-while-idle: true
+      # 是否缓存PreparedStatement（开启可提升性能，但耗内存）
+      pool-prepared-statements: false
+      # 启用keepAlive，防止空闲连接被MySQL主动断开 [citation:6]
+      keep-alive: true
+      # 监控配置（通过Web页面查看）
+      stat-view-servlet:
+        # 启用监控页面
+        enabled: true
+        # 访问路径：http://ip:port/druid
+        url-pattern: /druid/*
+        # 监控页面登录用户名
+        login-username: admin
+        # 监控页面登录密码
+        login-password: admin123
+        # 允许清空统计数据
+        reset-enable: false
+      # Web应用关联的过滤器（用于统计URI请求）
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+      # 防火墙和日志过滤器
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录（毫秒）
+          slow-sql-millis: 2000
+          log-slow-sql: true
+        wall:
+          enabled: true
+          # SQL防火墙配置（防止SQL注入）
+          config:
+            delete-allow: true
+            update-allow: true
+        slf4j:
+          enabled: true
+          # 日志输出SQL执行信息
+          statement-executable-sql-log-enable: true
 
 rocketmq:
   enabled: true
