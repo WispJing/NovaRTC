@@ -1,47 +1,42 @@
--- 用户数据 UUID
--- u1: 7f8e9d2c3a5b4b6f8c7d9e0f1a2b3c4d
--- u2: a1b2c3d4e5f678901234567890abcdef
--- u3: 0123456789abcdef0123456789abcdef
-
-INSERT IGNORE INTO `im_user` (`id`, `user_num`, `username`, `password`, `email`, `avatar_url`, `is_deleted`, `created_at`, `updated_at`)
+INSERT INTO im_user (id, user_num, username, password, email, avatar_url)
 VALUES
-    ('7f8e9d2c3a5b4b6f8c7d9e0f1a2b3c4d', '10001', '张三', '123456', 'zhangsan@example.com', 'https://randomuser.me/api/portraits/men/1.jpg', 0, NOW(), NOW()),
-    ('a1b2c3d4e5f678901234567890abcdef', '10002', '李四', '123456', 'lisi@example.com', NULL, 0, NOW(), NOW()),
-    ('0123456789abcdef0123456789abcdef', '10003', '王五', '123456', 'wangwu@example.com', 'https://randomuser.me/api/portraits/men/2.jpg', 0, NOW(), NOW());
+    ('9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', 'U1001', '小棠', 'hashed_pwd', 'xiaotang@example.com', 'https://img.example.com/u1.png'),
+    ('1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'U1002', '阿杰', 'hashed_pwd', 'ajie@example.com', 'https://img.example.com/u2.png'),
+    ('5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'U1003', '小雨', 'hashed_pwd', 'xiaoyu@example.com', 'https://img.example.com/u3.png'),
+    ('7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', 'U1004', '老王', 'hashed_pwd', 'laowang@example.com', 'https://img.example.com/u4.png'),
+    ('2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'U1005', '小美', 'hashed_pwd', 'xiaomei@example.com', 'https://img.example.com/u5.png'),
+    ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'hashed_pwd', 'aqiang@example.com', 'https://img.example.com/u6.png');
 
--- 群聊数据 UUID
--- g1: b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0
--- g2: c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1
-
-INSERT IGNORE INTO `im_group_chat` (`id`, `chat_id`, `group_num`, `group_name`, `is_deleted`, `created_at`, `updated_at`)
+INSERT INTO im_group_chat (id, chat_id, group_num, group_name)
 VALUES
-    ('b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0', 'group001', 'G001', '技术交流群', 0, NOW(), NOW()),
-    ('c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1', 'group002', 'G002', '闲聊群', 0, NOW(), NOW());
+    ('c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '4d9c2a7e5b1f4c8d9a3e6f2b7c1d8a22', 'G10001', '技术交流群'),
+    ('a7d3c1e9f5b24e8c9a6d2b7f1c3e4a23', '9e2b7c1d4f6a3c8e5d9a1b2f7c3e6a24', 'G10002', '产品运营群'),
+    ('f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '2a7d4c1e9f3b6e8c5d1a2b7c9e3f6a26', 'G10003', '摸鱼吹水群');
 
--- 群成员数据 UUID
--- gm1: d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2
--- gm2: e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3
--- gm3: f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4
--- gm4: a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5
--- gm5: b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6
-
-INSERT IGNORE INTO `im_group_member` (`id`, `group_id`, `user_id`, `joined_at`, `is_deleted`, `created_at`, `updated_at`)
+INSERT INTO im_group_member (id, group_id, user_id, joined_at)
 VALUES
-    -- 技术交流群成员：张三、李四、王五
-    ('d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2', 'b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0', '7f8e9d2c3a5b4b6f8c7d9e0f1a2b3c4d', NOW(), 0, NOW(), NOW()),
-    ('e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3', 'b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0', 'a1b2c3d4e5f678901234567890abcdef', NOW(), 0, NOW(), NOW()),
-    ('f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4', 'b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0', '0123456789abcdef0123456789abcdef', NOW(), 0, NOW(), NOW()),
-    -- 闲聊群成员：张三、王五
-    ('a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5', 'c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1', '7f8e9d2c3a5b4b6f8c7d9e0f1a2b3c4d', NOW(), 0, NOW(), NOW()),
-    ('b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6', 'c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1', '0123456789abcdef0123456789abcdef', NOW(), 0, NOW(), NOW());
+    ('6e2c9a1d4b7f4c8e5a3d2f7b1c9e6a31', 'c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', NOW()),
+    ('3b7e1c9a5d2f4e8c6a1d3b9f7c2e6a32', 'c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', NOW()),
+    ('8a1d3c7e5b2f4e9c6d1a7b3f2c9e6a33', 'c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', NOW()),
+    ('2f6a9c1d7b3e4e8c5a1d3f7b9c2e6a34', 'c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', NOW());
 
--- 单聊数据 UUID
--- s1: c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7
--- s2: d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8
--- s3: e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9
-
-INSERT IGNORE INTO `im_single_chat` (`id`, `chat_id`, `user1_id`, `user2_id`, `is_deleted`, `created_at`, `updated_at`)
+INSERT INTO im_group_member (id, group_id, user_id, joined_at)
 VALUES
-    ('c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7', 'single001', '7f8e9d2c3a5b4b6f8c7d9e0f1a2b3c4d', 'a1b2c3d4e5f678901234567890abcdef', 0, NOW(), NOW()), -- 张三和李四
-    ('d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8', 'single002', '7f8e9d2c3a5b4b6f8c7d9e0f1a2b3c4d', '0123456789abcdef0123456789abcdef', 0, NOW(), NOW()), -- 张三和王五
-    ('e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9', 'single003', 'a1b2c3d4e5f678901234567890abcdef', '0123456789abcdef0123456789abcdef', 0, NOW(), NOW()); -- 李四和王五
+    ('1a7c3e9d5b2f4e8c6d1a3b7f9c2e6a41', 'a7d3c1e9f5b24e8c9a6d2b7f1c3e4a23', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', NOW()),
+    ('9d2f7c1a3e5b4e8c6a1d3b7f2c9e6a42', 'a7d3c1e9f5b24e8c9a6d2b7f1c3e4a23', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', NOW()),
+    ('4c1e7a9d3b5f4e8c6a1d2b7f9c3e6a43', 'a7d3c1e9f5b24e8c9a6d2b7f1c3e4a23', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', NOW());
+
+INSERT INTO im_group_member (id, group_id, user_id, joined_at)
+VALUES
+    ('7a3d1c9e5b2f4e8c6a1d3b7f2c9e6a51', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', NOW()),
+    ('2c9e7a1d3b5f4e8c6a1d3b7f9c2e6a52', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', NOW()),
+    ('5e1a3c7d9b2f4e8c6a1d3b7f2c9e6a53', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', NOW()),
+    ('8c2d7a1e3b5f4e8c6a1d3b7f9c2e6a54', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', NOW()),
+    ('3f7a1c9d5b2e4e8c6a1d3b7f2c9e6a55', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', NOW());
+
+INSERT INTO im_single_chat (id, chat_id, user1_id, user2_id)
+VALUES
+    ('6b2c9e1a4d7f4c8e5a3d2b7f1c9e6a61', '1c9e7a3d5b2f4e8c6a1d3b7f2c9e6a62', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
+    ('3e7a1c9d5b2f4e8c6a1d3b7f9c2e6a63', '7c2e9a1d3b5f4e8c6a1d3b7f2c9e6a64', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
+    ('9a2c7e1d3b5f4e8c6a1d3b7f2c9e6a65', '2e7a1c9d5b3f4e8c6a1d3b7f9c2e6a66', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13'),
+    ('5c1e7a9d3b2f4e8c6a1d3b7f9c2e6a67', '8a3d1c9e5b2f4e8c6a1d3b7f2c9e6a68', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14');
