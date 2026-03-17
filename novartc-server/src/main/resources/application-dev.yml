@@ -99,11 +99,16 @@ spring:
           enabled: true
           # 日志输出SQL执行信息
           statement-executable-sql-log-enable: true
+  sql:
+    init:
+      mode: never
   flyway:
     enabled: true
     encoding: UTF-8
     baseline-on-migrate: false
-    locations: classpath:db/migration
+    locations: >
+      classpath:db/migration,
+      classpath:db/migration-dev
     table: flyway_schema_history
     validate-on-migrate: true
 
