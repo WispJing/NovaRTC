@@ -47,7 +47,7 @@ services:
       - elasticsearch
 
   mysql:
-    image: mysql:8.0          # 使用 MySQL 8.0 最新版本，也可指定具体版本如 mysql:8.0.36
+    image: im-mysql:8.0          # 使用 MySQL 8.0 最新版本，也可指定具体版本如 mysql:8.0.36
     container_name: mysql
     ports:
       - "3307:3306"           # 映射主机 3306 端口，如主机已占用可改为其他端口（例如 3307:3306）
@@ -58,7 +58,7 @@ services:
       TZ: Asia/Shanghai                # 时区设置
     volumes:
       - ./mysql/data:/var/lib/mysql                # 数据持久化目录
-      - ./mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro   # 挂载自定义配置文件（只读）
+      # - ./mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro   # 挂载自定义配置文件（只读）
       - ./mysql/logs:/var/log/mysql
     restart: unless-stopped
     # 可选健康检查（需要正确传入密码，可省略）

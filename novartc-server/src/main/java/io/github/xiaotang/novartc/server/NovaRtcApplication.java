@@ -7,6 +7,8 @@ import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.netty.NovaRTCServer;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,10 +27,12 @@ import java.util.TimeZone;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class NovaRtcApplication implements CommandLineRunner {
+    private final Logger logger = LoggerFactory.getLogger(NovaRtcApplication.class);
 
     @PostConstruct
     public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        logger.info("JVM默认时区: {}", TimeZone.getDefault().getID());
     }
 
     public static void main(String[] args) {
