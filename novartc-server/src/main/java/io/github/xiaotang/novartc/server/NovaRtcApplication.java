@@ -7,6 +7,7 @@ import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.netty.NovaRTCServer;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -22,6 +23,7 @@ import java.util.TimeZone;
  *
  * @author tangj
  */
+@MapperScan("io.github.xiaotang.novartc.server.mapper")
 @EnableMongoAuditing
 @EnableConfigurationProperties
 @SpringBootApplication

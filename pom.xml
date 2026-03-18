@@ -14,6 +14,7 @@
   <modules>
     <module>novartc-common</module>
     <module>novartc-server</module>
+    <module>novartc-generator</module>
   </modules>
 
   <properties>
@@ -82,6 +83,18 @@
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         <version>3.5.16</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-generator</artifactId>
+        <version>3.5.16</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>2.3.34</version>
       </dependency>
 
       <dependency>
