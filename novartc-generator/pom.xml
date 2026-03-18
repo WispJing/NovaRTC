@@ -18,6 +18,12 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>io.github.xiaotang</groupId>
+      <artifactId>novartc-common</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+
     <!-- Mysql -->
     <dependency>
       <groupId>com.mysql</groupId>

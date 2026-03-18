@@ -1,11 +1,13 @@
 package io.github.xiaotang.novartc.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.xiaotang.novartc.server.dto.IMUserDTO;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.mapper.ImUserMapper;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,9 +20,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ImUserServiceImpl extends ServiceImpl<ImUserMapper, ImUser> implements IImUserService {
-
     @Override
-    public LoginResponse login(IMUserDTO imUserDTO) {
-        return null;
+    public ImUser selectByUserNum(String userNum) {
+        if (StringUtils.isBlank(userNum)) {
+            return null;
+        }
+        return getOne(new LambdaQueryWrapper<ImUser>()
+                .eq(ImUser::getUserNum, userNum));
     }
 }

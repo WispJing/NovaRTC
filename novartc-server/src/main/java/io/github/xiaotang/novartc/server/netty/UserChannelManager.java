@@ -45,8 +45,14 @@ public class UserChannelManager {
 
     // 移除用户Channel（用户下线）
     public void remove(Channel channel) {
+        if (channel == null) {
+            return;
+        }
         String userId = channel.attr(NettyAttributes.USER_ID).get();
         if (StringUtils.isEmpty(userId)) {
+            if (channel.isOpen()) {
+                channel.close();
+            }
             return;
         }
         Set<Channel> channels = userChannels.get(userId);
@@ -58,6 +64,9 @@ public class UserChannelManager {
                 userRouteService.unregisterUser(userId, instanceIdProvider.getInstanceId());
                 ChatAccessLog.log.info("User {} fully removed", userId);
             }
+        }
+        if (channel.isOpen()) {
+            channel.close();
         }
     }
 

@@ -1,18 +1,21 @@
+delete from im_user where is_deleted = 0;
 INSERT INTO im_user (id, user_num, username, password, email, avatar_url)
 VALUES
-    ('9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', 'U1001', '小棠', 'hashed_pwd', 'xiaotang@example.com', 'https://img.example.com/u1.png'),
-    ('1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'U1002', '阿杰', 'hashed_pwd', 'ajie@example.com', 'https://img.example.com/u2.png'),
-    ('5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'U1003', '小雨', 'hashed_pwd', 'xiaoyu@example.com', 'https://img.example.com/u3.png'),
-    ('7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', 'U1004', '老王', 'hashed_pwd', 'laowang@example.com', 'https://img.example.com/u4.png'),
-    ('2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'U1005', '小美', 'hashed_pwd', 'xiaomei@example.com', 'https://img.example.com/u5.png'),
-    ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'hashed_pwd', 'aqiang@example.com', 'https://img.example.com/u6.png');
+    ('9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', 'U1001', '小棠', 'e10adc3949ba59abbe56e057f20f883e', 'xiaotang@example.com', 'https://img.example.com/u1.png'),
+    ('1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'U1002', '阿杰', 'e10adc3949ba59abbe56e057f20f883e', 'ajie@example.com', 'https://img.example.com/u2.png'),
+    ('5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'U1003', '小雨', 'e10adc3949ba59abbe56e057f20f883e', 'xiaoyu@example.com', 'https://img.example.com/u3.png'),
+    ('7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', 'U1004', '老王', 'e10adc3949ba59abbe56e057f20f883e', 'laowang@example.com', 'https://img.example.com/u4.png'),
+    ('2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'U1005', '小美', 'e10adc3949ba59abbe56e057f20f883e', 'xiaomei@example.com', 'https://img.example.com/u5.png'),
+    ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'e10adc3949ba59abbe56e057f20f883e', 'aqiang@example.com', 'https://img.example.com/u6.png');
 
+delete from im_group_chat where is_deleted = 0;
 INSERT INTO im_group_chat (id, chat_id, group_num, group_name)
 VALUES
     ('c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '4d9c2a7e5b1f4c8d9a3e6f2b7c1d8a22', 'G10001', '技术交流群'),
     ('a7d3c1e9f5b24e8c9a6d2b7f1c3e4a23', '9e2b7c1d4f6a3c8e5d9a1b2f7c3e6a24', 'G10002', '产品运营群'),
     ('f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '2a7d4c1e9f3b6e8c5d1a2b7c9e3f6a26', 'G10003', '摸鱼吹水群');
 
+delete from im_group_member where is_deleted = 0;
 INSERT INTO im_group_member (id, group_id, user_id, joined_at)
 VALUES
     ('6e2c9a1d4b7f4c8e5a3d2f7b1c9e6a31', 'c2f1e7a9d4b34c8e9a1f5d3b7c2e6a21', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', NOW()),
@@ -34,6 +37,7 @@ VALUES
     ('8c2d7a1e3b5f4e8c6a1d3b7f9c2e6a54', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', NOW()),
     ('3f7a1c9d5b2e4e8c6a1d3b7f2c9e6a55', 'f1c7e3a9d2b64c8e5a1f9d3b7c2e6a25', '8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', NOW());
 
+delete from im_single_chat where is_deleted = 0;
 INSERT INTO im_single_chat (id, chat_id, user1_id, user2_id)
 VALUES
     ('6b2c9e1a4d7f4c8e5a3d2b7f1c9e6a61', '1c9e7a3d5b2f4e8c6a1d3b7f2c9e6a62', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
