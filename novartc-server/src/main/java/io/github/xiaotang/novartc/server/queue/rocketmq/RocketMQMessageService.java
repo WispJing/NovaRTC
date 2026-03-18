@@ -1,5 +1,6 @@
 package io.github.xiaotang.novartc.server.queue.rocketmq;
 
+import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
@@ -8,6 +9,7 @@ import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import lombok.RequiredArgsConstructor;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,7 @@ public class RocketMQMessageService implements MessageService {
         }
         if (!CollectionUtils.isEmpty(mqToUsers)) {
             try {
-                rocketMQTemplate.syncSendOrderly(
+                SendResult sendResult = rocketMQTemplate.syncSendOrderly(
                         iMConfigProperties.getImMsgTopic(),
                         MessageBuilder
                                 .withPayload(message.toByteArray())
@@ -62,6 +64,7 @@ public class RocketMQMessageService implements MessageService {
                                 .build(),
                         message.getSender().getUserId()
                 );
+                logger.info("mq-sendResult: {}", JacksonUtil.toJson(sendResult));
             } catch (Exception e) {
                 logger.error("send mq failed", e);
             }

@@ -140,6 +140,8 @@ services:
       - NAMESRV_ADDR=namesrv:9876
     depends_on:
       - namesrv
+    volumes:
+      - ./rocketmq/conf/broker.conf:/home/rocketmq/rocketmq-4.9.6/conf/broker.conf
     command: sh mqbroker -c /home/rocketmq/rocketmq-4.9.6/conf/broker.conf
 
   # RocketMQ Dashboard（管理控制台）
