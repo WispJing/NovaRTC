@@ -2,8 +2,8 @@ package io.github.xiaotang.novartc.generator;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
 
 import java.util.Collections;
 
@@ -20,7 +20,8 @@ public class CodeGenerator {
                         , "root", "123456")
                 .globalConfig(builder -> {
                     builder.author("xiaotang") // 设置作者
-                            .outputDir("D:\\project\\NovaRTC\\novartc-server\\src\\main\\java"); // 输出目录
+                            .outputDir("D:\\project\\NovaRTC\\novartc-server\\src\\main\\java")
+                            .dateType(DateType.TIME_PACK); // 输出目录
                 })
                 .packageConfig(builder -> {
                     builder.parent("io.github.xiaotang.novartc.server") // 设置父包名
@@ -34,12 +35,19 @@ public class CodeGenerator {
                             )); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("im_user") // 设置需要生成的表名
+                    builder.addInclude("im_user", "im_group_chat", "im_group_member", "im_single_chat") // 设置需要生成的表名
                             .entityBuilder()
+                            .superClass("io.github.xiaotang.novartc.server.entity.mysql.BaseEntity")
+                            .addSuperEntityColumns("id", "is_deleted", "created_at", "updated_at")
                             .enableLombok() // 启用 Lombok
                             .enableTableFieldAnnotation() // 启用字段注解
+                            .logicDeleteColumnName("is_deleted")
+                            .disableSerialVersionUID()
+                            .enableFileOverride()
+                            .mapperBuilder()
+                            .serviceBuilder()
                             .controllerBuilder()
-                            .enableRestStyle(); // 启用 REST 风格
+                            .disable();
                 })
                 // 使用 Freemarker 模板引擎
                 .templateEngine(new FreemarkerTemplateEngine())

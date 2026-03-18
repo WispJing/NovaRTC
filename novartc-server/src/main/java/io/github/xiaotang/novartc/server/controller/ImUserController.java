@@ -2,7 +2,7 @@ package io.github.xiaotang.novartc.server.controller;
 
 import io.github.xiaotang.novartc.server.dto.IMUserDTO;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
-import io.github.xiaotang.novartc.server.service.ImUserService;
+import io.github.xiaotang.novartc.server.service.IImUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/im-user")
 public class ImUserController {
-    private final ImUserService imUserService;
+    private final IImUserService imUserService;
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody IMUserDTO imUserDTO) {
