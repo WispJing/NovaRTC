@@ -11,6 +11,7 @@ import io.netty.util.AttributeKey;
 public class NettyAttributes {
     // 用户ID
     public static final AttributeKey<String> USER_ID = AttributeKey.valueOf("userId");
+    public static final AttributeKey<String> TOKEN = AttributeKey.valueOf("token");
 
     // 用户名
     public static final AttributeKey<String> USERNAME = AttributeKey.valueOf("username");

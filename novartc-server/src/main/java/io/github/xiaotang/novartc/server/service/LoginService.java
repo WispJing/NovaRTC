@@ -6,8 +6,10 @@ import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JwtUtil;
 import io.github.xiaotang.novartc.common.util.MD5Util;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
+import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import lombok.RequiredArgsConstructor;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
+    private final RocketMQTemplate rocketMQTemplate;
     private final StringRedisTemplate redisTemplate;
     private final IImUserService imUserService;
 
@@ -57,6 +60,18 @@ public class LoginService {
         );
 
         return LoginResponse.of(token);
+    }
+
+    public Boolean checkToken(String token) {
+        if (!JwtUtil.validate(token)) {
+            return false;
+        }
+
+        // 2. Redis校验
+        String key = LoginConstant.TOKEN_PREFIX + token;
+        String userId = redisTemplate.opsForValue().get(key);
+
+        return userId != null;
     }
 
     /**
@@ -102,30 +117,28 @@ public class LoginService {
         }
     }
 
-    /**
-     * 踢掉某个设备（单token）
-     */
+    // 踢掉某个设备
     public void kick(String userId, String token) {
+        // 1. 删除 Redis
         redisTemplate.delete(LoginConstant.TOKEN_PREFIX + token);
-        redisTemplate.opsForSet().remove(
-                LoginConstant.USER_TOKEN_PREFIX + userId,
-                token
-        );
+        redisTemplate.opsForSet().remove(LoginConstant.USER_TOKEN_PREFIX + userId, token);
+
+        // 2. 发送 MQ 踢人事件
+        TokenKickMessage kickMsg = new TokenKickMessage(userId, token);
+        rocketMQTemplate.convertAndSend("im-token-kick", kickMsg);
     }
 
-    /**
-     * 踢掉所有设备
-     */
+    // 踢掉所有设备
     public void kickAll(String userId) {
         String key = LoginConstant.USER_TOKEN_PREFIX + userId;
-
         Set<String> tokens = redisTemplate.opsForSet().members(key);
         if (tokens != null) {
             for (String token : tokens) {
                 redisTemplate.delete(LoginConstant.TOKEN_PREFIX + token);
+                // 发送 MQ 消息（可批量发送或循环）
+                rocketMQTemplate.convertAndSend("im-token-kick", new TokenKickMessage(userId, token));
             }
         }
-
         redisTemplate.delete(key);
     }
 }

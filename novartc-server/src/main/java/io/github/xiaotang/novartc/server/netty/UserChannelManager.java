@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2026/3/5 14:04
@@ -25,6 +27,8 @@ public class UserChannelManager {
     private final Map<String, Set<Channel>> userChannels = new ConcurrentHashMap<>();
     // 群组ID -> 群组成员ID集合（缓存）
     private final Map<String, Set<String>> groupMembers = new ConcurrentHashMap<>();
+    // token -> Channel（一个token对应一个连接）
+    private final Map<String, Channel> tokenChannels = new ConcurrentHashMap<>();
 
     @Autowired
     private UserRouteService userRouteService;
@@ -32,15 +36,18 @@ public class UserChannelManager {
     private InstanceIdProvider instanceIdProvider;
 
     // 绑定用户Channel（用户上线）
-    public void bind(String userId, Channel channel) {
-        if (StringUtils.isBlank(userId)) {
+    public void bind(String userId, String token, Channel channel) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(token)) {
             return;
         }
         channel.attr(NettyAttributes.USER_ID).set(userId);
+        channel.attr(NettyAttributes.TOKEN).set(token);
         userChannels.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(channel);
-        // 向Redis注册该用户在本实例
+        tokenChannels.put(token, channel);
         userRouteService.registerUser(userId, instanceIdProvider.getInstanceId());
-        ChatAccessLog.log.info("User {} bound, channel: {}", userId, channel.id());
+        // 可选：记录 token 与实例的映射，用于精确路由
+        // userRouteService.registerToken(token, instanceIdProvider.getInstanceId());
+        ChatAccessLog.log.info("User {} bound with token {}, channel: {}", userId, token, channel.id());
     }
 
     // 移除用户Channel（用户下线）
@@ -49,25 +56,49 @@ public class UserChannelManager {
             return;
         }
         String userId = channel.attr(NettyAttributes.USER_ID).get();
-        if (StringUtils.isEmpty(userId)) {
-            if (channel.isOpen()) {
-                channel.close();
-            }
-            return;
+        String token = channel.attr(NettyAttributes.TOKEN).get();
+        if (StringUtils.isNotEmpty(token)) {
+            tokenChannels.remove(token);
+            // 可选：删除 token 与实例的映射
+            // userRouteService.unregisterToken(token, instanceIdProvider.getInstanceId());
         }
-        Set<Channel> channels = userChannels.get(userId);
-        if (channels != null) {
-            channels.remove(channel);
-            if (channels.isEmpty()) {
-                userChannels.remove(userId);
-                // Redis中注销该实例
-                userRouteService.unregisterUser(userId, instanceIdProvider.getInstanceId());
-                ChatAccessLog.log.info("User {} fully removed", userId);
+        if (StringUtils.isNotEmpty(userId)) {
+            Set<Channel> channels = userChannels.get(userId);
+            if (channels != null) {
+                channels.remove(channel);
+                if (channels.isEmpty()) {
+                    userChannels.remove(userId);
+                    userRouteService.unregisterUser(userId, instanceIdProvider.getInstanceId());
+                }
             }
         }
-        if (channel.isOpen()) {
+        if (channel.isActive()) {
             channel.close();
         }
+        ChatAccessLog.log.info("Channel {} removed", channel.id());
+    }
+
+    // 新增方法：根据 token 获取 Channel
+    public Channel getChannelByToken(String token) {
+        return tokenChannels.get(token);
+    }
+
+    // 新增方法：关闭指定 token 的连接
+    public void closeByToken(String token) {
+        Channel channel = tokenChannels.get(token);
+        if (channel != null && channel.isActive()) {
+            channel.close();
+        }
+    }
+
+    // 根据 userId 获取所有 token
+    public Set<String> getTokensByUserId(String userId) {
+        Set<Channel> channels = userChannels.get(userId);
+        if (channels == null) return Set.of();
+        return channels.stream()
+                .map(ch -> ch.attr(NettyAttributes.TOKEN).get())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     // 向指定用户发送消息（本地发送）

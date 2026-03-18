@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
+import io.github.xiaotang.novartc.server.service.LoginService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
     private final UserChannelManager userChannelManager;
+    private final LoginService loginService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -53,8 +55,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         String userId = auth.getUserId();
         String token = auth.getToken();
 
-        // TODO 真实环境这里需要调用登录服务校验 token
-        boolean success = verifyToken(userId, token);
+        Boolean success = loginService.checkToken(token);
 
         if (!success) {
             ChatAccessLog.log.warn("auth failed {}", userId);
@@ -64,19 +65,13 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         }
 
         // 绑定用户 Channel
-        userChannelManager.bind(userId, channel);
+        userChannelManager.bind(userId, token, channel);
 
         ChatAccessLog.log.info("user login success {}", userId);
 
         sendAuthResult(channel, true, "user login success");
         // 认证成功后移除 AuthHandler
         ctx.pipeline().remove(this);
-    }
-
-    private boolean verifyToken(String userId, String token) {
-
-        // 示例逻辑
-        return token != null && !token.isEmpty();
     }
 
     private void sendAuthResult(Channel channel, Boolean isSuccess, String message) {
