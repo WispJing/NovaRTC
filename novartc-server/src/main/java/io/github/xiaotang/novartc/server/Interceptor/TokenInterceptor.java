@@ -2,10 +2,12 @@ package io.github.xiaotang.novartc.server.Interceptor;
 
 import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
+import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -38,8 +40,16 @@ public class TokenInterceptor implements HandlerInterceptor {
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
 
-        request.setAttribute("userId", userId);
+        UserContextHolder.setUserId(userId);
+        UserContextHolder.setToken(token);
+        logger.info("用户上下文已设置: userId={}, token={}", userId, token);
 
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        UserContextHolder.clear();
+        logger.info("用户上下文已清除");
     }
 }

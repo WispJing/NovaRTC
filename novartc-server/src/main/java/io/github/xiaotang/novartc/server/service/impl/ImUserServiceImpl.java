@@ -21,11 +21,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImUserServiceImpl extends ServiceImpl<ImUserMapper, ImUser> implements IImUserService {
     @Override
+    public ImUser selectByUserId(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            return null;
+        }
+        return getOne(new LambdaQueryWrapper<ImUser>()
+                .eq(ImUser::getIsDeleted, false)
+                .eq(ImUser::getId, userId));
+    }
+
+    @Override
     public ImUser selectByUserNum(String userNum) {
         if (StringUtils.isBlank(userNum)) {
             return null;
         }
         return getOne(new LambdaQueryWrapper<ImUser>()
+                .eq(ImUser::getIsDeleted, false)
                 .eq(ImUser::getUserNum, userNum));
     }
 }

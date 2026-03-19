@@ -2,11 +2,9 @@ package io.github.xiaotang.novartc.server.entity.mysql;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.github.xiaotang.novartc.server.entity.mysql.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 
 /**
  * <p>
@@ -14,7 +12,7 @@ import lombok.ToString;
  * </p>
  *
  * @author xiaotang
- * @since 2026-03-18
+ * @since 2026-03-19
  */
 @Getter
 @Setter
@@ -51,4 +49,10 @@ public class ImUser extends BaseEntity {
      */
     @TableField("avatar_url")
     private String avatarUrl;
+
+    /**
+     * 是否管理员：0-否，1-是
+     */
+    @TableField("is_admin")
+    private Boolean isAdmin;
 }

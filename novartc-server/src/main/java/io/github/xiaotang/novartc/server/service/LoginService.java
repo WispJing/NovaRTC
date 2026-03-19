@@ -5,11 +5,16 @@ import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JwtUtil;
 import io.github.xiaotang.novartc.common.util.MD5Util;
+import io.github.xiaotang.novartc.server.Interceptor.TokenInterceptor;
+import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
+    private final Logger logger = LoggerFactory.getLogger(LoginService.class);
     private final RocketMQTemplate rocketMQTemplate;
     private final StringRedisTemplate redisTemplate;
     private final IImUserService imUserService;
@@ -98,18 +104,33 @@ public class LoginService {
     }
 
     /**
-     * 登出（当前设备）
+     * 登出
      */
     public void logout(String token) {
+        String currentUserId = UserContextHolder.getUserId();
+        ImUser currentUser = imUserService.selectByUserId(currentUserId);
+        // 登出他人需做权限控制
+        if (StringUtils.isNotBlank(token)) {
+            if (currentUser == null || !Boolean.TRUE.equals(currentUser.getIsAdmin())) {
+                throw new BusinessException(ResultCode.FORBIDDEN);
+            }
+        }
+        token = UserContextHolder.getToken();
+        if (StringUtils.isBlank(token)) {
+            return;
+        }
+
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
         String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
+        String clientType = (String) redisTemplate.opsForHash().get(tokenKey, "clientType");
         if (userId != null) {
             // 删除 Hash
             redisTemplate.delete(tokenKey);
             // 从用户集合移除
             redisTemplate.opsForSet().remove(LoginConstant.USER_TOKEN_PREFIX + userId, token);
+            logger.info("用户：{}，设备：{} 已登出", userId, clientType);
         }
-        // 发送踢人消息（可选）
+        // 发送踢人消息
         TokenKickMessage kickMsg = new TokenKickMessage(userId, token);
         rocketMQTemplate.convertAndSend("im-token-kick", kickMsg);
     }

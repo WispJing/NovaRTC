@@ -29,7 +29,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/api/login")
-                .excludePathPatterns("/api/register")
-                .excludePathPatterns("/error");
+                .excludePathPatterns("/api/register");
     }
 }

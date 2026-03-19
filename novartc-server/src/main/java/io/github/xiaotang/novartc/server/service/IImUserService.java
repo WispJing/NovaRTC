@@ -14,5 +14,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2026-03-18
  */
 public interface IImUserService extends IService<ImUser> {
+    ImUser selectByUserId(String userId);
     ImUser selectByUserNum(String userNum);
 }
