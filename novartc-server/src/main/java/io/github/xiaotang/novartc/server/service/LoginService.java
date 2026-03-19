@@ -59,6 +59,9 @@ public class LoginService {
         tokenInfo.put("clientType", clientType);
         tokenInfo.put("loginTime", String.valueOf(System.currentTimeMillis()));
 
+        // TODO 踢出同端登录用户
+
+
         redisTemplate.opsForHash().putAll(tokenKey, tokenInfo);
         redisTemplate.expire(tokenKey, LoginConstant.TOKEN_TTL, TimeUnit.SECONDS);
 

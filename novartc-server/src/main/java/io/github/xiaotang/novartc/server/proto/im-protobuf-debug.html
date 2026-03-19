@@ -2,363 +2,681 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>NovaRTC IM Protobuf Debug</title>
-
+    <title>NovaRTC IM · 微信风格聊天室</title>
+    <!-- 引入 Vue 3 + Element Plus (轻量级浅色系) -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css"/>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <!-- protobufjs 库 -->
     <script src="https://cdn.jsdelivr.net/npm/protobufjs/dist/protobuf.min.js"></script>
-
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            background: #1e1e1e;
-            color: #eee;
-            font-family: Arial;
+            background: #f5f5f5;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .container {
-            width: 1000px;
-            margin: auto;
+        #app {
+            width: 100%;
+            height: 100%;
+            max-width: 1300px;
+            background-color: #fff;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .panel {
-            background: #2b2b2b;
-            border: 1px solid #444;
-            padding: 10px;
-            margin-bottom: 10px;
+        /* 登录卡片居中 */
+        .login-container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
         }
 
-        button {
-            padding: 6px 10px;
-            margin: 5px;
+        .login-card {
+            width: 420px;
+            padding: 32px 24px;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .chat-layout {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 左侧联系人列表 (微信风格) */
+        .contact-sidebar {
+            width: 280px;
+            background-color: #f9f9f9;
+            border-right: 1px solid #e4e7ed;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-header {
+            padding: 20px 16px 12px;
+            border-bottom: 1px solid #e4e7ed;
+            font-weight: 600;
+            font-size: 16px;
+            color: #1e1e1e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .contact-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .contact-item.active {
+            background-color: #e6f7ff;
+            border-left: 3px solid #409EFF;
+        }
+
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #b3d8ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-right: 12px;
+            text-transform: uppercase;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 500;
+            color: #1f2f3d;
+        }
+
+        .contact-preview {
+            font-size: 12px;
+            color: #909399;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 右侧聊天区域 */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f7fa;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            background: white;
+            border-bottom: 1px solid #e4e7ed;
+            font-weight: 600;
+            color: #303133;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px 20px;
+            overflow-y: auto;
+            background: #f5f7fa;
+        }
+
+        .message-item {
+            display: flex;
+            margin-bottom: 18px;
+        }
+
+        .message-item.right {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #c6e2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 12px;
+            flex-shrink: 0;
+        }
+
+        .message-bubble {
+            max-width: 60%;
+            background: white;
+            border-radius: 18px;
+            padding: 10px 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+
+        .message-item.right .message-bubble {
+            background: #95ec69;
+            color: #1f2d3d;
+        }
+
+        .message-meta {
+            font-size: 12px;
+            color: #909399;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .message-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 12px;
             cursor: pointer;
         }
 
-        input {
-            padding: 6px;
-            margin: 5px;
+        .chat-footer {
+            background: white;
+            padding: 16px 20px;
+            border-top: 1px solid #e4e7ed;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        #log {
-            height: 350px;
-            overflow: auto;
-            background: black;
-            padding: 10px;
-            font-family: monospace;
+        .chat-footer .el-input {
+            flex: 1;
         }
 
+        .logout-btn {
+            color: #909399;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            color: #409EFF;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            margin-left: 8px;
+        }
     </style>
-
 </head>
-
 <body>
-
-<div class="container">
-
-    <h2>🚀 NovaRTC IM Protobuf 调试控制台</h2>
-
-    <div class="panel">
-
-        服务器
-
-        <label for="url"></label><input id="url" value="ws://localhost:9688/ws" style="width:300px">
-
-        <button onclick="connect()">连接</button>
-        <button onclick="disconnect()">断开</button>
-
-        <span id="status">未连接</span>
-
+<div id="app">
+    <!-- 登录界面 -->
+    <div v-if="currentView === 'login'" class="login-container">
+        <el-card class="login-card" shadow="never">
+            <h2 style="margin-bottom: 24px; text-align: center; color: #2c3e50;">NovaRTC 登录</h2>
+            <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" label-position="top">
+                <el-form-item label="用户名" prop="userNum">
+                    <el-input v-model="loginForm.userNum" placeholder="请输入用户名" prefix-icon="User"/>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock"
+                              show-password/>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" style="width: 100%;" @click="handleLogin" :loading="loginLoading">登录
+                    </el-button>
+                </el-form-item>
+            </el-form>
+            <div style="margin-top: 16px; font-size: 13px; color: #aaa; text-align: center;">测试账号: user1 / 123456
+            </div>
+        </el-card>
     </div>
 
-    <div class="panel">
+    <!-- 聊天主界面 (微信风格) -->
+    <div v-else-if="currentView === 'chat'" class="chat-layout">
+        <!-- 左侧联系人/会话列表 -->
+        <div class="contact-sidebar">
+            <div class="contact-header">
+                <span>💬 消息</span>
+                <el-dropdown trigger="click" @command="handleLogout">
+                        <span class="logout-btn">
+                            <el-icon><User/></el-icon> {{ currentUser?.userNum || '我' }}
+                            <el-icon><ArrowDown/></el-icon>
+                        </span>
+                    <template #dropdown>
+                        <el-dropdown-menu>
+                            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
+            </div>
+            <div class="contact-list">
+                <div v-for="contact in contactList" :key="contact.user_id" class="contact-item"
+                     :class="{ active: currentChatId === contact.user_id }" @click="switchChat(contact.user_id)">
+                    <div class="contact-avatar">{{ contact.userNum?.charAt(0) || '?' }}</div>
+                    <div class="contact-info">
+                        <div class="contact-name">{{ contact.userNum }} <span
+                                style="font-size:12px; color:#aaa;">({{ contact.user_id }})</span></div>
+                        <div class="contact-preview">{{ contact.preview || '暂无消息' }}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 12px; border-top: 1px solid #e4e7ed; font-size:12px; color:#909399; display: flex; align-items: center;">
+                <span>连接状态: </span>
+                <span :style="{color: wsConnected ? '#67C23A' : '#F56C6C'}">
+                        {{ wsConnected ? '已连接' : '未连接' }}
+                    </span>
+                <span class="status-badge" v-if="wsConnected && authed">✅ 已认证</span>
+            </div>
+        </div>
 
-        用户ID
-
-        <input id="userId" value="1001">
-
-        Token
-
-        <input id="token" value="test_token">
-
-        <button onclick="auth()">AUTH</button>
-
+        <!-- 右侧聊天区域 -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <span>当前对话: {{ currentContactName || '选择联系人' }}</span>
+            </div>
+            <div class="chat-messages" ref="messageContainer">
+                <div v-for="(msg, idx) in messageList" :key="idx" class="message-item" :class="{ right: msg.isSelf }">
+                    <div class="message-avatar">{{ msg.senderName?.charAt(0) || 'U' }}</div>
+                    <div class="message-bubble">
+                        <div v-if="msg.type === 'text'">{{ msg.text }}</div>
+                        <div v-else-if="msg.type === 'image'">
+                            <img :src="msg.imageUrl" class="message-image" @click="previewImage(msg.imageUrl)"/>
+                            <div v-if="msg.imageDesc" style="font-size:12px; color:#666;">{{ msg.imageDesc }}</div>
+                        </div>
+                        <div v-else-if="msg.type === 'system'">[系统] {{ msg.text }}</div>
+                        <div class="message-meta">{{ msg.timeStr }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-footer">
+                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage" clearable/>
+                <el-button type="primary" :icon="Position" @click="sendTextMessage" circle/>
+                <el-button type="success" :icon="Picture" @click="sendSampleImage" circle/>
+            </div>
+        </div>
     </div>
-
-    <div class="panel">
-
-        发送给
-
-        <input id="toUserId" value="1002">
-
-        消息
-
-        <input id="msg" value="hello">
-
-        <button onclick="sendText()">TEXT</button>
-        <button onclick="sendImage()">IMAGE</button>
-
-    </div>
-
-    <div class="panel">
-
-        <button onclick="ping()">PING</button>
-
-    </div>
-
-    <div class="panel">
-
-        <h3>日志</h3>
-
-        <div id="log"></div>
-
-    </div>
-
 </div>
 
 <script>
+    const {createApp, ref, reactive, onMounted, nextTick, watch} = Vue;
+    const ElMessage = ElementPlus.ElMessage;
 
-    let ws
-    let MsgBody
-    let root
+    const app = createApp({
+        setup() {
+            // 状态控制
+            const currentView = ref('login'); // 'login' 或 'chat'
+            const loginLoading = ref(false);
+            const loginForm = reactive({userNum: 'U1001', password: '123456'});
+            const loginRules = {
+                userNum: [{required: true, message: '请输入用户名', trigger: 'blur'}],
+                password: [{required: true, message: '请输入密码', trigger: 'blur'}]
+            };
 
-    function log(msg) {
+            // 用户信息 (登录后获得)
+            const currentUser = ref(null); // { user_id, userNum, token }
 
-        let logDiv = document.getElementById("log")
+            // WebSocket 相关
+            let ws = null;
+            const wsConnected = ref(false);
+            const authed = ref(false);
+            const MsgBody = ref(null); // protobuf 消息类
+            const protoLoaded = ref(false);
 
-        let time = new Date().toLocaleTimeString()
+            // 聊天数据
+            const contactList = ref([
+                {user_id: '1002', userNum: '李华', preview: ''},
+                {user_id: '1003', userNum: '王明', preview: ''},
+                {user_id: '1004', userNum: '赵丽', preview: ''},
+            ]);
+            const currentChatId = ref('1002'); // 默认选中1002
+            const messageList = ref([]);
+            const inputMessage = ref('');
 
-        logDiv.innerHTML += time + " " + msg + "<br>"
+            // 辅助计算当前联系人名称
+            const currentContactName = Vue.computed(() => {
+                const c = contactList.value.find(c => c.user_id === currentChatId.value);
+                return c ? c.userNum : '';
+            });
 
-        logDiv.scrollTop = logDiv.scrollHeight
+            // 消息容器引用
+            const messageContainer = ref(null);
 
-    }
+            // ================== Proto 加载 ==================
+            onMounted(() => {
+                protobuf.load("ChatMessage.proto", (err, root) => {
+                    if (err) {
+                        ElMessage.error('Proto 文件加载失败: ' + err);
+                        console.error(err);
+                        return;
+                    }
+                    try {
+                        // 注意包名: io.github.xiaotang.novartc.server.proto.MsgBody
+                        const MsgBodyClass = root.lookupType("io.github.xiaotang.novartc.server.proto.MsgBody");
+                        MsgBody.value = MsgBodyClass;
+                        protoLoaded.value = true;
+                        ElMessage.success('协议加载成功');
+                    } catch (e) {
+                        ElMessage.error('Proto 解析失败: ' + e.message);
+                    }
+                });
+            });
 
+            // ================== 登录逻辑 ==================
+            const handleLogin = async () => {
+                if (!protoLoaded.value) {
+                    ElMessage.warning('协议未加载完毕，请稍后');
+                    return;
+                }
+                loginLoading.value = true;
+                try {
+                    const response = await fetch('http://127.0.0.1:7000/api/login', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            userNum: loginForm.userNum,
+                            password: loginForm.password
+                        })
+                    });
+                    const data = await response.json();
+                    // 假设返回格式: { code:0, data: { user_id: '1001', userNum: 'user1', token: 'xxx' } }
+                    if (data.code === 0 || data.data) {
+                        const info = data.data || data; // 兼容
+                        currentUser.value = {
+                            user_id: '',
+                            userNum: loginForm.userNum,
+                            token: info.token
+                        };
+                        ElMessage.success('登录成功');
+                        // 切换视图
+                        currentView.value = 'chat';
+                        // 连接 WebSocket 并认证
+                        connectWebSocket();
+                    } else {
+                        ElMessage.error(data.message || '登录失败');
+                    }
+                } catch (err) {
+                    console.log(err)
+                    ElMessage.error('网络错误: ' + err.message);
+                } finally {
+                    loginLoading.value = false;
+                }
+            };
 
-    // 加载proto
+            // ================== WebSocket 连接 ==================
+            function connectWebSocket() {
+                if (!currentUser.value) return;
+                const wsUrl = 'ws://localhost:9688/ws'; // 可配置
+                ws = new WebSocket(wsUrl);
+                ws.binaryType = 'arraybuffer';
 
-    protobuf.load("ChatMessage.proto", (err, rootObj) => {
+                ws.onopen = () => {
+                    wsConnected.value = true;
+                    ElMessage.success('WebSocket 已连接');
+                    // 发送认证消息 (Auth)
+                    sendAuth();
+                };
 
-        if (err) {
+                ws.onmessage = (event) => {
+                    if (!MsgBody.value) return;
+                    try {
+                        const buffer = new Uint8Array(event.data);
+                        const msg = MsgBody.value.decode(buffer);
+                        handleIncomingMessage(msg);
+                    } catch (e) {
+                        console.error('decode error', e);
+                    }
+                };
 
-            console.error(err)
-
-            return
-
-        }
-
-        root = rootObj
-
-        MsgBody = root.lookupType("io.github.xiaotang.novartc.proto.MsgBody")
-
-        log("✅ proto loaded" + MsgBody)
-
-    })
-
-
-    function connect() {
-
-        let url = document.getElementById("url").value
-
-        ws = new WebSocket(url)
-
-        ws.binaryType = "arraybuffer"
-
-        ws.onopen = () => {
-
-            document.getElementById("status").innerText = "已连接"
-
-            log("✅ websocket connected")
-
-        }
-
-        ws.onmessage = (event) => {
-
-            let buffer = new Uint8Array(event.data)
-
-            let msg = MsgBody.decode(buffer)
-
-            log("📩 receive: " + JSON.stringify(msg))
-
-        }
-
-        ws.onclose = () => {
-
-            document.getElementById("status").innerText = "已断开"
-
-            log("🔌 websocket closed")
-
-        }
-
-    }
-
-
-    function disconnect() {
-
-        if (ws) ws.close()
-
-    }
-
-
-    function sendProto(payload) {
-
-        let err = MsgBody.verify(payload)
-
-        if (err) {
-
-            log("❌ verify error " + err)
-
-            return
-
-        }
-
-        let message = MsgBody.create(payload)
-
-        let buffer = MsgBody.encode(message).finish()
-
-        ws.send(buffer)
-
-        log("📤 send " + JSON.stringify(payload))
-
-    }
-
-
-    function auth() {
-
-        let userId = document.getElementById("userId").value
-
-        let token = document.getElementById("token").value
-
-        sendProto({
-
-            messageType: 9,
-
-            authMessage: {
-
-                userId: userId,
-
-                token: token
-
+                ws.onclose = () => {
+                    wsConnected.value = false;
+                    authed.value = false;
+                    ElMessage.warning('连接已断开');
+                };
             }
 
-        })
-
-    }
-
-
-    function sendText() {
-
-        let userId = document.getElementById("userId").value
-
-        let toUserId = document.getElementById("toUserId").value
-
-        let text = document.getElementById("msg").value
-
-        sendProto({
-
-            messageId: Date.now().toString(),
-
-            messageType: 0,
-
-            timestamp: Date.now(),
-
-            isGroup: false,
-
-            sender: {
-
-                userId: userId
-
-            },
-
-            singleChatInfo: {
-
-                user1Id: userId,
-
-                user2Id: toUserId
-
-            },
-
-            textContent: {
-
-                text: text
-
+            // 发送认证 (message_type=9, auth_message)
+            function sendAuth() {
+                if (!ws || ws.readyState !== 1 || !currentUser.value || !MsgBody.value) return;
+                const payload = {
+                    message_type: 9, // AUTH
+                    auth_message: {
+                        user_id: currentUser.value.userNum,
+                        token: currentUser.value.token
+                    }
+                };
+                sendProto(payload);
             }
 
-        })
+            // 处理接收的消息
+            function handleIncomingMessage(msg) {
+                // 如果是认证响应
+                if (msg.message_type === 9 && msg.auth_message) {
+                    if (msg.auth_message.success === true) {
+                        authed.value = true;
+                        ElMessage.success('认证成功');
+                    } else {
+                        ElMessage.error('认证失败: ' + (msg.auth_message.message || ''));
+                    }
+                    return;
+                }
 
-    }
+                // 处理 PONG (忽略)
+                if (msg.message_type === 8) return;
 
+                // 处理文本/图片消息
+                let displayMsg = {
+                    isSelf: msg.sender?.user_id === currentUser.value?.user_id,
+                    senderId: msg.sender?.user_id,
+                    senderName: msg.sender?.userNum || '用户',
+                    timeStr: new Date(msg.timestamp).toLocaleTimeString(),
+                    type: 'text',
+                };
 
-    function sendImage() {
+                if (msg.message_type === 0 && msg.text_content) {
+                    displayMsg.type = 'text';
+                    displayMsg.text = msg.text_content.text;
+                } else if (msg.message_type === 1 && msg.image_content) {
+                    displayMsg.type = 'image';
+                    displayMsg.imageUrl = msg.image_content.image_url;
+                    displayMsg.imageDesc = msg.image_content.image_description;
+                } else {
+                    return; // 其他类型暂不显示
+                }
 
-        let userId = document.getElementById("userId").value
+                // 判断是否属于当前聊天 (单聊)
+                if (msg.single_chat_info) {
+                    const otherId = (msg.single_chat_info.user1_id === currentUser.value?.user_id)
+                        ? msg.single_chat_info.user2_id
+                        : msg.single_chat_info.user1_id;
+                    // 如果对方ID不是当前选中的联系人，可以加个提醒或者直接插入，但为了demo，统一插入消息列表（可优化）
+                    // 这里简单插入，不自动切换
+                }
 
-        let toUserId = document.getElementById("toUserId").value
+                // 添加到消息列表，并滚动到底部
+                messageList.value.push(displayMsg);
+                nextTick(() => {
+                    if (messageContainer.value) {
+                        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+                    }
+                });
 
-        sendProto({
-
-            messageId: Date.now().toString(),
-
-            messageType: 1,
-
-            timestamp: Date.now(),
-
-            isGroup: false,
-
-            sender: {
-
-                userId: userId
-
-            },
-
-            singleChatInfo: {
-
-                user1Id: userId,
-
-                user2Id: toUserId
-
-            },
-
-            imageContent: {
-
-                imageUrl: "https://test.com/a.png",
-
-                imageDescription: "test"
-
+                // 更新联系人预览
+                if (msg.sender?.user_id !== currentUser.value?.user_id) {
+                    const contact = contactList.value.find(c => c.user_id === msg.sender?.user_id);
+                    if (contact) {
+                        contact.preview = displayMsg.text || '[图片]';
+                    }
+                }
             }
 
-        })
-
-    }
-
-
-    function ping() {
-
-        sendProto({
-
-            messageType: 7,
-
-            pongPing: {
-
-                pingId: Date.now().toString()
-
+            // 发送 protobuf 二进制
+            function sendProto(payload) {
+                if (!ws || ws.readyState !== 1 || !MsgBody.value) {
+                    ElMessage.warning('连接未就绪');
+                    return;
+                }
+                try {
+                    const err = MsgBody.value.verify(payload);
+                    if (err) throw new Error(err);
+                    const message = MsgBody.value.create(payload);
+                    const buffer = MsgBody.value.encode(message).finish();
+                    ws.send(buffer);
+                } catch (e) {
+                    ElMessage.error('发送失败: ' + e.message);
+                }
             }
 
-        })
+            // 发送文本消息
+            function sendTextMessage() {
+                if (!inputMessage.value.trim() || !currentChatId.value) return;
+                const text = inputMessage.value;
+                const payload = {
+                    message_id: Date.now().toString(),
+                    message_type: 0, // TEXT
+                    sender: {
+                        user_id: currentUser.value.user_id,
+                        userNum: currentUser.value.userNum
+                    },
+                    timestamp: Date.now(),
+                    is_group: false,
+                    single_chat_info: {
+                        chat_id: `single_${currentUser.value.user_id}_${currentChatId.value}`,
+                        user1_id: currentUser.value.user_id,
+                        user2_id: currentChatId.value
+                    },
+                    text_content: {
+                        text: text
+                    }
+                };
+                sendProto(payload);
+                inputMessage.value = ''; // 清空
+            }
 
-    }
+            // 发送图片示例 (固定URL)
+            function sendSampleImage() {
+                if (!currentChatId.value) return;
+                const payload = {
+                    message_id: Date.now().toString(),
+                    message_type: 1, // IMAGE
+                    sender: {
+                        user_id: currentUser.value.user_id,
+                        userNum: currentUser.value.userNum
+                    },
+                    timestamp: Date.now(),
+                    is_group: false,
+                    single_chat_info: {
+                        chat_id: `single_${currentUser.value.user_id}_${currentChatId.value}`,
+                        user1_id: currentUser.value.user_id,
+                        user2_id: currentChatId.value
+                    },
+                    image_content: {
+                        image_url: 'https://picsum.photos/200/150?random=' + Date.now(),
+                        image_description: '示例图片'
+                    }
+                };
+                sendProto(payload);
+            }
 
+            // 切换聊天对象
+            function switchChat(userId) {
+                currentChatId.value = userId;
+                // 可以清空或保留历史消息，简单保留全部
+            }
 
-    // 自动心跳
+            // 预览图片
+            function previewImage(url) {
+                window.open(url, '_blank');
+            }
 
-    setInterval(() => {
+            // 退出登录
+            function handleLogout(cmd) {
+                if (cmd === 'logout') {
+                    if (ws) ws.close();
+                    ws = null;
+                    currentView.value = 'login';
+                    currentUser.value = null;
+                    messageList.value = [];
+                    authed.value = false;
+                    wsConnected.value = false;
+                }
+            }
 
-        if (ws && ws.readyState === 1) {
+            // 心跳 Ping (30s)
+            setInterval(() => {
+                if (ws && ws.readyState === 1 && authed.value && MsgBody.value) {
+                    const pingPayload = {
+                        message_type: 7, // PING
+                        pong_ping: {ping_id: Date.now().toString()}
+                    };
+                    sendProto(pingPayload);
+                }
+            }, 30000);
 
-            ping()
-
+            return {
+                currentView,
+                loginForm,
+                loginRules,
+                loginLoading,
+                handleLogin,
+                currentUser,
+                wsConnected,
+                authed,
+                contactList,
+                currentChatId,
+                currentContactName,
+                messageList,
+                inputMessage,
+                messageContainer,
+                sendTextMessage,
+                sendSampleImage,
+                switchChat,
+                previewImage,
+                handleLogout,
+                Position: ElementPlus.Position, // 图标
+                Picture: ElementPlus.Picture
+            };
         }
+    });
 
-    }, 30000)
-
+    app.use(ElementPlus);
+    app.mount('#app');
 </script>
-
 </body>
 </html>
