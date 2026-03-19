@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -114,9 +115,11 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        String userId = ctx.channel().attr(NettyAttributes.USER_ID).get();
         userChannelManager.remove(ctx.channel());
-        ChatAccessLog.log.info("用户下线 {}", userId);
+        String userId = ctx.channel().attr(NettyAttributes.USER_ID).get();
+        if (StringUtils.isNotBlank(userId)) {
+            ChatAccessLog.log.info("用户下线 {}", userId);
+        }
     }
 
 }
