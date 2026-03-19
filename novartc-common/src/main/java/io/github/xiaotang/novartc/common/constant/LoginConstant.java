@@ -11,5 +11,5 @@ public interface LoginConstant {
     String USER_TOKEN_PREFIX = "login:user:";
 
     // 30分钟（滑动过期）
-    long TOKEN_TTL = 30 * 60;
+    long TOKEN_TTL = 300 * 60;
 }
