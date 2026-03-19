@@ -58,13 +58,12 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
         ChatMessage.Auth auth = msgBody.getAuthMessage();
 
-        String userId;
-        String userNum = auth.getUserId();
+        String userId = auth.getUserId();
         String token = auth.getToken();
 
-        ImUser imUser = imUserService.selectByUserNum(userNum);
+        ImUser imUser = imUserService.selectByUserId(userId);
         if (imUser == null) {
-            handleAuthFailed(channel, userNum);
+            handleAuthFailed(channel, userId);
             return;
         }
         userId = imUser.getId();
@@ -77,22 +76,22 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         }
 
         if (tokenUserId == null || !Objects.equals(userId, tokenUserId)) {
-            handleAuthFailed(channel, userNum);
+            handleAuthFailed(channel, userId);
             return;
         }
 
         // 绑定用户 Channel
         userChannelManager.bind(userId, token, channel);
 
-        ChatAccessLog.log.info("user login success {}", userNum);
+        ChatAccessLog.log.info("user login success {}", imUser.getUserNum());
 
         sendAuthResult(channel, true, "user login success");
         // 认证成功后移除 AuthHandler
         ctx.pipeline().remove(this);
     }
 
-    private void handleAuthFailed(Channel channel, String userNum) {
-        ChatAccessLog.log.warn("auth failed {}", userNum);
+    private void handleAuthFailed(Channel channel, String userId) {
+        ChatAccessLog.log.warn("auth failed {}", userId);
         sendAuthResult(channel, false, "auth failed");
         channel.close();
     }
