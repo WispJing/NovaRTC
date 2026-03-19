@@ -1,0 +1,45 @@
+package io.github.xiaotang.novartc.server.Interceptor;
+
+import io.github.xiaotang.novartc.common.exception.BusinessException;
+import io.github.xiaotang.novartc.common.result.ResultCode;
+import io.github.xiaotang.novartc.server.service.LoginService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+/**
+ * Created on 2026/3/19 14:56
+ *
+ * @author tangj
+ * @description
+ */
+@Component
+@RequiredArgsConstructor
+public class TokenInterceptor implements HandlerInterceptor {
+    private final Logger logger = LoggerFactory.getLogger(TokenInterceptor.class);
+    private final LoginService loginService;
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String token = request.getHeader("Authorization");
+        if (token == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+
+        String userId;
+        try {
+            userId = loginService.checkAndRefresh(token);
+        } catch (RuntimeException e) {
+            logger.warn("token 校验失败: {}", e.getMessage(), e);
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+
+        request.setAttribute("userId", userId);
+
+        return true;
+    }
+}

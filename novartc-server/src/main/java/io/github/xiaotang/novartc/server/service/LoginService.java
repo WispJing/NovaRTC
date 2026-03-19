@@ -13,6 +13,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -43,22 +44,20 @@ public class LoginService {
             throw new BusinessException(ResultCode.LOGIN_FAIL);
         }
 
-        // 1. 生成JWT
-        String token = JwtUtil.generateToken(userId, Map.of("clientType", clientType));;
+        String token = JwtUtil.generateToken(userId, Map.of("clientType", clientType));
 
-        // 2. 存 token -> userId
-        redisTemplate.opsForValue().set(
-                LoginConstant.TOKEN_PREFIX + token,
-                userId,
-                LoginConstant.TOKEN_TTL,
-                TimeUnit.SECONDS
-        );
+        // 使用 Hash 存储 token 的详细信息
+        String tokenKey = LoginConstant.TOKEN_PREFIX + token;
+        Map<String, String> tokenInfo = new HashMap<>();
+        tokenInfo.put("userId", userId);
+        tokenInfo.put("clientType", clientType);
+        tokenInfo.put("loginTime", String.valueOf(System.currentTimeMillis()));
 
-        // 3. 加入用户token集合（多端）
-        redisTemplate.opsForSet().add(
-                LoginConstant.USER_TOKEN_PREFIX + userId,
-                token
-        );
+        redisTemplate.opsForHash().putAll(tokenKey, tokenInfo);
+        redisTemplate.expire(tokenKey, LoginConstant.TOKEN_TTL, TimeUnit.SECONDS);
+
+        // 将 token 加入用户的 Set 集合（多端）
+        redisTemplate.opsForSet().add(LoginConstant.USER_TOKEN_PREFIX + userId, token);
 
         return LoginResponse.of(token);
     }
@@ -69,8 +68,8 @@ public class LoginService {
         }
 
         // 2. Redis校验
-        String key = LoginConstant.TOKEN_PREFIX + token;
-        String userId = redisTemplate.opsForValue().get(key);
+        String tokenKey = LoginConstant.TOKEN_PREFIX + token;
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
 
         return userId != null;
     }

@@ -23,7 +23,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody IMUserDTO imUserDTO,
-                               @RequestParam(required = false) String clientType,
+                               @RequestParam(name = "clientType", required = false) String clientType,
                                HttpServletRequest request) {
         if (StringUtils.isBlank(clientType)) {
             clientType = UserAgentUtil.parseClientTypeFromUserAgent(request.getHeader("User-Agent"));
