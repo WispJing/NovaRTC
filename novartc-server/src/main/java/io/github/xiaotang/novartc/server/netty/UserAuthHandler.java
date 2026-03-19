@@ -1,7 +1,9 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
+import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
+import io.github.xiaotang.novartc.server.service.IImUserService;
 import io.github.xiaotang.novartc.server.service.LoginService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -9,6 +11,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 /**
  * Created on 2026/2/28 14:32
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Component;
 public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
     private final UserChannelManager userChannelManager;
     private final LoginService loginService;
+    private final IImUserService imUserService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -52,26 +57,43 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
         ChatMessage.Auth auth = msgBody.getAuthMessage();
 
-        String userId = auth.getUserId();
+        String userId;
+        String userNum = auth.getUserId();
         String token = auth.getToken();
 
-        Boolean success = loginService.checkToken(token);
+        ImUser imUser = imUserService.selectByUserNum(userNum);
+        if (imUser == null) {
+            handleAuthFailed(channel, userNum);
+            return;
+        }
+        userId = imUser.getId();
 
-        if (!success) {
-            ChatAccessLog.log.warn("auth failed {}", userId);
-            sendAuthResult(channel, false, "auth failed");
-            channel.close();
+        String tokenUserId;
+        try {
+            tokenUserId = loginService.checkAndRefresh(token);
+        } catch (Exception e) {
+            tokenUserId = null;
+        }
+
+        if (tokenUserId == null || !Objects.equals(userId, tokenUserId)) {
+            handleAuthFailed(channel, userNum);
             return;
         }
 
         // 绑定用户 Channel
         userChannelManager.bind(userId, token, channel);
 
-        ChatAccessLog.log.info("user login success {}", userId);
+        ChatAccessLog.log.info("user login success {}", userNum);
 
         sendAuthResult(channel, true, "user login success");
         // 认证成功后移除 AuthHandler
         ctx.pipeline().remove(this);
+    }
+
+    private void handleAuthFailed(Channel channel, String userNum) {
+        ChatAccessLog.log.warn("auth failed {}", userNum);
+        sendAuthResult(channel, false, "auth failed");
+        channel.close();
     }
 
     private void sendAuthResult(Channel channel, Boolean isSuccess, String message) {
