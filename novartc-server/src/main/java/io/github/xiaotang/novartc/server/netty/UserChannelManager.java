@@ -85,10 +85,7 @@ public class UserChannelManager {
 
     // 新增方法：关闭指定 token 的连接
     public void closeByToken(String token) {
-        Channel channel = tokenChannels.get(token);
-        if (channel != null && channel.isActive()) {
-            channel.close();
-        }
+        remove(tokenChannels.get(token));
     }
 
     // 根据 userId 获取所有 token

@@ -1,5 +1,6 @@
 package io.github.xiaotang.novartc.server.controller;
 
+import io.github.xiaotang.novartc.common.result.Result;
 import io.github.xiaotang.novartc.server.dto.IMUserDTO;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.service.IImUserService;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/im-user")
+@RequestMapping("/api")
 public class LoginController {
     private final LoginService loginService;
 
@@ -27,4 +28,8 @@ public class LoginController {
         return loginService.login(imUserDTO.getUserNum(), imUserDTO.getPassword());
     }
 
+    @PostMapping("/logout")
+    public void logout(@RequestBody LoginResponse loginResponse) {
+        loginService.logout(loginResponse.getToken());
+    }
 }

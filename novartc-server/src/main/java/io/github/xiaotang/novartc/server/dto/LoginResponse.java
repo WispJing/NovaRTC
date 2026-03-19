@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created on 2026/3/11 14:15
@@ -9,6 +10,7 @@ import lombok.Data;
  * @description
  */
 @Data
+@NoArgsConstructor
 public class LoginResponse {
     private String token;
 

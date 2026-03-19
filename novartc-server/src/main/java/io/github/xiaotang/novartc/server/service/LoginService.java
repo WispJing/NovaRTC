@@ -115,6 +115,8 @@ public class LoginService {
                     token
             );
         }
+        TokenKickMessage kickMsg = new TokenKickMessage(userId, token);
+        rocketMQTemplate.convertAndSend("im-token-kick", kickMsg);
     }
 
     // 踢掉某个设备
