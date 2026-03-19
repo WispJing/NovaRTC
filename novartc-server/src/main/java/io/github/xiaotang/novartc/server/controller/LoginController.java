@@ -1,15 +1,13 @@
 package io.github.xiaotang.novartc.server.controller;
 
-import io.github.xiaotang.novartc.common.result.Result;
+import io.github.xiaotang.novartc.common.util.UserAgentUtil;
 import io.github.xiaotang.novartc.server.dto.IMUserDTO;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
-import io.github.xiaotang.novartc.server.service.IImUserService;
 import io.github.xiaotang.novartc.server.service.LoginService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created on 2026/3/11 9:11
@@ -24,8 +22,13 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody IMUserDTO imUserDTO) {
-        return loginService.login(imUserDTO.getUserNum(), imUserDTO.getPassword());
+    public LoginResponse login(@RequestBody IMUserDTO imUserDTO,
+                               @RequestParam(required = false) String clientType,
+                               HttpServletRequest request) {
+        if (StringUtils.isBlank(clientType)) {
+            clientType = UserAgentUtil.parseClientTypeFromUserAgent(request.getHeader("User-Agent"));
+        }
+        return loginService.login(imUserDTO.getUserNum(), imUserDTO.getPassword(), clientType);
     }
 
     @PostMapping("/logout")

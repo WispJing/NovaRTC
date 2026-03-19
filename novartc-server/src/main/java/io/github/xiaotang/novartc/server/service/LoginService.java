@@ -13,6 +13,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,7 @@ public class LoginService {
     /**
      * 登录（支持多端）
      */
-    public LoginResponse login(String userNum, String password) {
+    public LoginResponse login(String userNum, String password, String clientType) {
         ImUser imUser = imUserService.selectByUserNum(userNum);
         if (imUser == null) {
             throw new BusinessException(ResultCode.LOGIN_FAIL);
@@ -43,7 +44,7 @@ public class LoginService {
         }
 
         // 1. 生成JWT
-        String token = JwtUtil.generateToken(userId, null);
+        String token = JwtUtil.generateToken(userId, Map.of("clientType", clientType));;
 
         // 2. 存 token -> userId
         redisTemplate.opsForValue().set(
@@ -78,22 +79,21 @@ public class LoginService {
      * 校验 + 续期（核心）
      */
     public String checkAndRefresh(String token) {
-
-        // 1. JWT校验
+        // 1. JWT 校验
         if (!JwtUtil.validate(token)) {
             throw new RuntimeException("token非法");
         }
 
-        // 2. Redis校验
-        String key = LoginConstant.TOKEN_PREFIX + token;
-        String userId = redisTemplate.opsForValue().get(key);
+        // 2. 从 Redis Hash 中获取 userId
+        String tokenKey = LoginConstant.TOKEN_PREFIX + token;
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
 
         if (userId == null) {
             throw new RuntimeException("token已过期");
         }
 
-        // 3. 刷新TTL（滑动过期核心）
-        redisTemplate.expire(key, LoginConstant.TOKEN_TTL, TimeUnit.SECONDS);
+        // 3. 刷新整个 Hash 的 TTL
+        redisTemplate.expire(tokenKey, LoginConstant.TOKEN_TTL, TimeUnit.SECONDS);
 
         return userId;
     }
@@ -102,45 +102,52 @@ public class LoginService {
      * 登出（当前设备）
      */
     public void logout(String token) {
-        String key = LoginConstant.TOKEN_PREFIX + token;
-
-        String userId = redisTemplate.opsForValue().get(key);
+        String tokenKey = LoginConstant.TOKEN_PREFIX + token;
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
         if (userId != null) {
-            // 删除token
-            redisTemplate.delete(key);
-
+            // 删除 Hash
+            redisTemplate.delete(tokenKey);
             // 从用户集合移除
-            redisTemplate.opsForSet().remove(
-                    LoginConstant.USER_TOKEN_PREFIX + userId,
-                    token
-            );
+            redisTemplate.opsForSet().remove(LoginConstant.USER_TOKEN_PREFIX + userId, token);
         }
+        // 发送踢人消息（可选）
         TokenKickMessage kickMsg = new TokenKickMessage(userId, token);
         rocketMQTemplate.convertAndSend("im-token-kick", kickMsg);
     }
 
-    // 踢掉某个设备
+    // 踢掉指定 token
     public void kick(String userId, String token) {
-        // 1. 删除 Redis
-        redisTemplate.delete(LoginConstant.TOKEN_PREFIX + token);
+        String tokenKey = LoginConstant.TOKEN_PREFIX + token;
+        redisTemplate.delete(tokenKey);
         redisTemplate.opsForSet().remove(LoginConstant.USER_TOKEN_PREFIX + userId, token);
+        rocketMQTemplate.convertAndSend("im-token-kick", new TokenKickMessage(userId, token));
+    }
 
-        // 2. 发送 MQ 踢人事件
-        TokenKickMessage kickMsg = new TokenKickMessage(userId, token);
-        rocketMQTemplate.convertAndSend("im-token-kick", kickMsg);
+    // 踢掉用户的所有指定类型的设备
+    public void kickByClientType(String userId, String clientType) {
+        String userTokensKey = LoginConstant.USER_TOKEN_PREFIX + userId;
+        Set<String> tokens = redisTemplate.opsForSet().members(userTokensKey);
+        if (tokens != null) {
+            for (String token : tokens) {
+                String tokenKey = LoginConstant.TOKEN_PREFIX + token;
+                String type = (String) redisTemplate.opsForHash().get(tokenKey, "clientType");
+                if (clientType.equals(type)) {
+                    kick(userId, token);
+                }
+            }
+        }
     }
 
     // 踢掉所有设备
     public void kickAll(String userId) {
-        String key = LoginConstant.USER_TOKEN_PREFIX + userId;
-        Set<String> tokens = redisTemplate.opsForSet().members(key);
+        String userTokensKey = LoginConstant.USER_TOKEN_PREFIX + userId;
+        Set<String> tokens = redisTemplate.opsForSet().members(userTokensKey);
         if (tokens != null) {
             for (String token : tokens) {
                 redisTemplate.delete(LoginConstant.TOKEN_PREFIX + token);
-                // 发送 MQ 消息（可批量发送或循环）
                 rocketMQTemplate.convertAndSend("im-token-kick", new TokenKickMessage(userId, token));
             }
         }
-        redisTemplate.delete(key);
+        redisTemplate.delete(userTokensKey);
     }
 }
