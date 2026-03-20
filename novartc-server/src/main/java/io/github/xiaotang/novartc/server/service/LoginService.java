@@ -5,7 +5,6 @@ import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JwtUtil;
 import io.github.xiaotang.novartc.common.util.MD5Util;
-import io.github.xiaotang.novartc.server.Interceptor.TokenInterceptor;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -59,8 +59,8 @@ public class LoginService {
         tokenInfo.put("clientType", clientType);
         tokenInfo.put("loginTime", String.valueOf(System.currentTimeMillis()));
 
-        // TODO 踢出同端登录用户
-
+        // 踢出同端登录用户
+        kickByClientType(userId, clientType);
 
         redisTemplate.opsForHash().putAll(tokenKey, tokenInfo);
         redisTemplate.expire(tokenKey, LoginConstant.TOKEN_TTL, TimeUnit.SECONDS);

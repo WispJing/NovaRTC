@@ -31,19 +31,19 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
         String userId = channel.attr(NettyAttributes.USER_ID).get();
 
         if (userId == null) {
-            ChatMsgLog.log.warn("unauthorized message: {}", msgBody);
+            ChatMsgLog.msgLog.warn("unauthorized message: {}", msgBody);
             channel.close();
             return;
         }
 
         switch (msgBody.getMessageType()) {
-            case PING -> ChatMsgLog.log.info("receive ping {}", userId);
+            case PING -> ChatMsgLog.msgLog.info("receive ping {}", userId);
 
-            case PONG -> ChatMsgLog.log.info("receive pong {}", userId);
+            case PONG -> ChatMsgLog.msgLog.info("receive pong {}", userId);
 
             case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE -> handleMessage(msgBody);
 
-            default -> ChatMsgLog.log.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
+            default -> ChatMsgLog.msgLog.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
         }
     }
 

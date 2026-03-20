@@ -252,18 +252,18 @@
             <h2 style="margin-bottom: 24px; text-align: center; color: #2c3e50;">NovaRTC 登录</h2>
             <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" label-position="top">
                 <el-form-item label="用户名" prop="userNum">
-                    <el-input v-model="loginForm.userNum" placeholder="请输入用户名" prefix-icon="User"/>
+                    <el-input v-model="loginForm.userNum" placeholder="请输入用户名" prefix-icon="User"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock"
-                              show-password/>
+                              show-password></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" style="width: 100%;" @click="handleLogin" :loading="loginLoading">登录
                     </el-button>
                 </el-form-item>
             </el-form>
-            <div style="margin-top: 16px; font-size: 13px; color: #aaa; text-align: center;">测试账号: user1 / 123456
+            <div style="margin-top: 16px; font-size: 13px; color: #aaa; text-align: center;">测试账号: U1002 / 123456
             </div>
         </el-card>
     </div>
@@ -287,12 +287,12 @@
                 </el-dropdown>
             </div>
             <div class="contact-list">
-                <div v-for="contact in contactList" :key="contact.user_id" class="contact-item"
-                     :class="{ active: currentChatId === contact.user_id }" @click="switchChat(contact.user_id)">
+                <div v-for="contact in contactList" :key="contact.userId" class="contact-item"
+                     :class="{ active: currentChatId === contact.userId }" @click="switchChat(contact.userId)">
                     <div class="contact-avatar">{{ contact.userNum?.charAt(0) || '?' }}</div>
                     <div class="contact-info">
                         <div class="contact-name">{{ contact.userNum }} <span
-                                style="font-size:12px; color:#aaa;">({{ contact.user_id }})</span></div>
+                                style="font-size:12px; color:#aaa;">({{ contact.userId }})</span></div>
                         <div class="contact-preview">{{ contact.preview || '暂无消息' }}</div>
                     </div>
                 </div>
@@ -326,9 +326,9 @@
                 </div>
             </div>
             <div class="chat-footer">
-                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage" clearable/>
-                <el-button type="primary" :icon="Position" @click="sendTextMessage" circle/>
-                <el-button type="success" :icon="Picture" @click="sendSampleImage" circle/>
+                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage" clearable></el-input>
+                <el-button type="primary" :icon="Position" @click="sendTextMessage" circle></el-button>
+                <el-button type="success" :icon="Picture" @click="sendSampleImage" circle></el-button>
             </div>
         </div>
     </div>
@@ -350,7 +350,7 @@
             };
 
             // 用户信息 (登录后获得)
-            const currentUser = ref(null); // { user_id, userNum, token }
+            const currentUser = ref(null); // { userId, userNum, token }
 
             // WebSocket 相关
             let ws = null;
@@ -361,17 +361,17 @@
 
             // 聊天数据
             const contactList = ref([
-                {user_id: '1002', userNum: '李华', preview: ''},
-                {user_id: '1003', userNum: '王明', preview: ''},
-                {user_id: '1004', userNum: '赵丽', preview: ''},
+                {userId: 'U1002', userNum: '李华', preview: ''},
+                {userId: 'U1003', userNum: '王明', preview: ''},
+                {userId: 'U1004', userNum: '赵丽', preview: ''},
             ]);
-            const currentChatId = ref('1002'); // 默认选中1002
+            const currentChatId = ref('U1002');
             const messageList = ref([]);
             const inputMessage = ref('');
 
             // 辅助计算当前联系人名称
             const currentContactName = Vue.computed(() => {
-                const c = contactList.value.find(c => c.user_id === currentChatId.value);
+                const c = contactList.value.find(c => c.userId === currentChatId.value);
                 return c ? c.userNum : '';
             });
 
@@ -388,8 +388,7 @@
                     }
                     try {
                         // 注意包名: io.github.xiaotang.novartc.server.proto.MsgBody
-                        const MsgBodyClass = root.lookupType("io.github.xiaotang.novartc.server.proto.MsgBody");
-                        MsgBody.value = MsgBodyClass;
+                        MsgBody.value = root.lookupType("io.github.xiaotang.novartc.server.proto.MsgBody");
                         protoLoaded.value = true;
                         ElMessage.success('协议加载成功');
                     } catch (e) {
@@ -415,12 +414,14 @@
                         })
                     });
                     const data = await response.json();
-                    // 假设返回格式: { code:0, data: { user_id: '1001', userNum: 'user1', token: 'xxx' } }
+                    // 假设返回格式: { code:0, data: { userId: '1001', userNum: 'user1', token: 'xxx' } }
                     if (data.code === 0 || data.data) {
                         const info = data.data || data; // 兼容
                         currentUser.value = {
-                            user_id: '',
-                            userNum: loginForm.userNum,
+                            userId: info.userId,
+                            userNum: info.userNum,
+                            username: info.username,
+                            avatarUrl: info.avatarUrl,
                             token: info.token
                         };
                         ElMessage.success('登录成功');
@@ -471,13 +472,13 @@
                 };
             }
 
-            // 发送认证 (message_type=9, auth_message)
+            // 发送认证 (messageType=9, authMessage)
             function sendAuth() {
                 if (!ws || ws.readyState !== 1 || !currentUser.value || !MsgBody.value) return;
                 const payload = {
-                    message_type: 9, // AUTH
-                    auth_message: {
-                        user_id: currentUser.value.userNum,
+                    messageType: 9, // AUTH
+                    authMessage: {
+                        userId: currentUser.value.userId,
                         token: currentUser.value.token
                     }
                 };
@@ -487,32 +488,32 @@
             // 处理接收的消息
             function handleIncomingMessage(msg) {
                 // 如果是认证响应
-                if (msg.message_type === 9 && msg.auth_message) {
-                    if (msg.auth_message.success === true) {
+                if (msg.messageType === 9 && msg.authMessage) {
+                    if (msg.authMessage.success === true) {
                         authed.value = true;
                         ElMessage.success('认证成功');
                     } else {
-                        ElMessage.error('认证失败: ' + (msg.auth_message.message || ''));
+                        ElMessage.error('认证失败: ' + (msg.authMessage.message || ''));
                     }
                     return;
                 }
 
                 // 处理 PONG (忽略)
-                if (msg.message_type === 8) return;
+                if (msg.messageType === 8) return;
 
                 // 处理文本/图片消息
                 let displayMsg = {
-                    isSelf: msg.sender?.user_id === currentUser.value?.user_id,
-                    senderId: msg.sender?.user_id,
+                    isSelf: msg.sender?.userId === currentUser.value?.userId,
+                    senderId: msg.sender?.userId,
                     senderName: msg.sender?.userNum || '用户',
                     timeStr: new Date(msg.timestamp).toLocaleTimeString(),
                     type: 'text',
                 };
 
-                if (msg.message_type === 0 && msg.text_content) {
+                if (msg.messageType === 0 && msg.textContent) {
                     displayMsg.type = 'text';
-                    displayMsg.text = msg.text_content.text;
-                } else if (msg.message_type === 1 && msg.image_content) {
+                    displayMsg.text = msg.textContent.text;
+                } else if (msg.messageType === 1 && msg.image_content) {
                     displayMsg.type = 'image';
                     displayMsg.imageUrl = msg.image_content.image_url;
                     displayMsg.imageDesc = msg.image_content.image_description;
@@ -521,10 +522,10 @@
                 }
 
                 // 判断是否属于当前聊天 (单聊)
-                if (msg.single_chat_info) {
-                    const otherId = (msg.single_chat_info.user1_id === currentUser.value?.user_id)
-                        ? msg.single_chat_info.user2_id
-                        : msg.single_chat_info.user1_id;
+                if (msg.singleChatInfo) {
+                    const otherId = (msg.singleChatInfo.user1_id === currentUser.value?.userId)
+                        ? msg.singleChatInfo.user2_id
+                        : msg.singleChatInfo.user1_id;
                     // 如果对方ID不是当前选中的联系人，可以加个提醒或者直接插入，但为了demo，统一插入消息列表（可优化）
                     // 这里简单插入，不自动切换
                 }
@@ -538,8 +539,8 @@
                 });
 
                 // 更新联系人预览
-                if (msg.sender?.user_id !== currentUser.value?.user_id) {
-                    const contact = contactList.value.find(c => c.user_id === msg.sender?.user_id);
+                if (msg.sender?.userId !== currentUser.value?.userId) {
+                    const contact = contactList.value.find(c => c.userId === msg.sender?.userId);
                     if (contact) {
                         contact.preview = displayMsg.text || '[图片]';
                     }
@@ -568,20 +569,20 @@
                 if (!inputMessage.value.trim() || !currentChatId.value) return;
                 const text = inputMessage.value;
                 const payload = {
-                    message_id: Date.now().toString(),
-                    message_type: 0, // TEXT
+                    messageId: Date.now().toString(),
+                    messageType: 0, // TEXT
                     sender: {
-                        user_id: currentUser.value.user_id,
+                        userId: currentUser.value.userId,
                         userNum: currentUser.value.userNum
                     },
                     timestamp: Date.now(),
-                    is_group: false,
-                    single_chat_info: {
-                        chat_id: `single_${currentUser.value.user_id}_${currentChatId.value}`,
-                        user1_id: currentUser.value.user_id,
+                    isGroup: false,
+                    singleChatInfo: {
+                        chat_id: `single_${currentUser.value.userId}_${currentChatId.value}`,
+                        user1_id: currentUser.value.userId,
                         user2_id: currentChatId.value
                     },
-                    text_content: {
+                    textContent: {
                         text: text
                     }
                 };
@@ -593,17 +594,17 @@
             function sendSampleImage() {
                 if (!currentChatId.value) return;
                 const payload = {
-                    message_id: Date.now().toString(),
-                    message_type: 1, // IMAGE
+                    messageId: Date.now().toString(),
+                    messageType: 1, // IMAGE
                     sender: {
-                        user_id: currentUser.value.user_id,
+                        userId: currentUser.value.userId,
                         userNum: currentUser.value.userNum
                     },
                     timestamp: Date.now(),
-                    is_group: false,
-                    single_chat_info: {
-                        chat_id: `single_${currentUser.value.user_id}_${currentChatId.value}`,
-                        user1_id: currentUser.value.user_id,
+                    isGroup: false,
+                    singleChatInfo: {
+                        chat_id: `single_${currentUser.value.userId}_${currentChatId.value}`,
+                        user1_id: currentUser.value.userId,
                         user2_id: currentChatId.value
                     },
                     image_content: {
@@ -642,7 +643,7 @@
             setInterval(() => {
                 if (ws && ws.readyState === 1 && authed.value && MsgBody.value) {
                     const pingPayload = {
-                        message_type: 7, // PING
+                        messageType: 7, // PING
                         pong_ping: {ping_id: Date.now().toString()}
                     };
                     sendProto(pingPayload);

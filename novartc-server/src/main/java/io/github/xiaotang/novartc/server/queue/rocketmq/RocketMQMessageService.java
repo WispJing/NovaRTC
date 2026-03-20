@@ -9,6 +9,7 @@ import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2026/3/10 13:50
@@ -114,6 +116,6 @@ public class RocketMQMessageService implements MessageService {
         } else {
             userIds.add(message.getSingleChatInfo().getUser2Id());
         }
-        return userIds;
+        return userIds.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
     }
 }

@@ -13,9 +13,11 @@ import org.slf4j.LoggerFactory;
  * @description
  */
 public class ChatMsgLog {
-    public static final Logger log = LoggerFactory.getLogger("im.msg");
+    public static final Logger logger = LoggerFactory.getLogger(ChatMsgLog.class);
+    public static final Logger msgLog = LoggerFactory.getLogger("im.msg");
 
     public static void msg(ChatMessage.MsgBody msg) {
-        log.info("{}", JacksonUtil.toJson(MessageLogConverter.convert(msg)));
+        logger.info("原始消息：{}", JacksonUtil.toJson(msg));
+        msgLog.info("{}", JacksonUtil.toJson(MessageLogConverter.convert(msg)));
     }
 }
