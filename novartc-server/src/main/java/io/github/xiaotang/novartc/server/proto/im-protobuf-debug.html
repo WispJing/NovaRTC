@@ -484,6 +484,7 @@
 
             // 处理接收的消息
             function handleIncomingMessage(msg) {
+                console.log('收到消息:', JSON.parse(JSON.stringify(msg)));
                 // 如果是认证响应
                 if (msg.messageType === 9 && msg.authMessage) {
                     if (msg.authMessage.success === true) {
@@ -570,26 +571,44 @@
             function sendTextMessage() {
                 if (!inputMessage.value.trim() || !currentChatId.value) return;
                 const text = inputMessage.value;
+                const targetContact = contactList.value.find(c => c.userNum === currentChatId.value);
+                if (!targetContact) {
+                    ElMessage.error('联系人不存在');
+                    return;
+                }
                 const payload = {
                     messageId: Date.now().toString(),
-                    messageType: 0, // TEXT
+                    messageType: 0,
                     sender: {
                         userId: currentUser.value.userId,
-                        userNum: currentUser.value.userNum
+                        userNum: currentUser.value.userNum,
+                        username: currentUser.value.username || currentUser.value.userNum,
+                        avatarUrl: currentUser.value.avatarUrl || ''
                     },
                     timestamp: Date.now(),
                     isGroup: false,
                     singleChatInfo: {
-                        chatId: `single_${currentUser.value.userId}_${currentChatId.value}`,
+                        chatId: `single_${currentUser.value.userId}_${targetContact.userId}`,
                         user1Id: currentUser.value.userId,
-                        user2Id: contactList.value.find(c => c.userNum === currentChatId.value).userId
+                        user2Id: targetContact.userId
                     },
-                    textContent: {
-                        text: text
-                    }
+                    textContent: { text }
                 };
+
+                // 乐观更新：立即显示消息
+                const localMsg = {
+                    isSelf: true,
+                    senderId: currentUser.value.userId,
+                    senderName: currentUser.value.userNum,
+                    timeStr: new Date().toLocaleTimeString(),
+                    type: 'text',
+                    text: text
+                };
+                messageList.value.push(localMsg);
+                nextTick(() => scrollToBottom());
+
                 sendProto(payload);
-                inputMessage.value = ''; // 清空
+                inputMessage.value = '';
             }
 
             // 发送图片示例 (固定URL)
@@ -616,6 +635,17 @@
                 };
                 sendProto(payload);
             }
+
+            const scrollToBottom = (smooth = false) => {
+                if (messageContainer.value) {
+                    nextTick(() => {
+                        messageContainer.value.scrollTo({
+                            top: messageContainer.value.scrollHeight,
+                            behavior: smooth ? 'smooth' : 'auto'
+                        });
+                    });
+                }
+            };
 
             // 切换聊天对象
             function switchChat(userNum) {
