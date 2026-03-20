@@ -68,7 +68,7 @@ public class LoginService {
         // 将 token 加入用户的 Set 集合（多端）
         redisTemplate.opsForSet().add(LoginConstant.USER_TOKEN_PREFIX + userId, token);
 
-        return LoginResponse.of(token);
+        return LoginResponse.of(imUser, token);
     }
 
     public Boolean checkToken(String token) {
