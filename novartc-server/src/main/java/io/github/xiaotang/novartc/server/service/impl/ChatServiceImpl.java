@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupMember;
@@ -32,7 +33,8 @@ public class ChatServiceImpl implements ChatService {
     private final IImGroupMemberService imGroupMemberService;
 
     @Override
-    public List<ChatInfoVO> chatList(String currentUserId) {
+    public List<ChatInfoVO> chatList() {
+        String currentUserId = UserContextHolder.getUserId();
 
         // 1. 查单聊
         List<ImSingleChat> singleChats = imSingleChatService.list(

@@ -11,5 +11,5 @@ import java.util.List;
  * @description
  */
 public interface ChatService {
-    List<ChatInfoVO> chatList(String userId);
+    List<ChatInfoVO> chatList();
 }

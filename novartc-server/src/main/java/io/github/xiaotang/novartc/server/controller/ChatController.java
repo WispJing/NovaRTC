@@ -22,9 +22,9 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
 
-    @PostMapping("/list/{userId}")
-    public List<ChatInfoVO> chatList(@PathVariable String userId) {
-        return chatService.chatList(userId);
+    @PostMapping("/list")
+    public List<ChatInfoVO> chatList() {
+        return chatService.chatList();
     }
 
 }
