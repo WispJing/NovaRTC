@@ -288,11 +288,11 @@
             </div>
             <div class="contact-list">
                 <div v-for="contact in contactList" :key="contact.userId" class="contact-item"
-                     :class="{ active: currentChatId === contact.userId }" @click="switchChat(contact.userId)">
+                     :class="{ active: currentChatId === contact.userNum }" @click="switchChat(contact.userNum)">
                     <div class="contact-avatar">{{ contact.userNum?.charAt(0) || '?' }}</div>
                     <div class="contact-info">
-                        <div class="contact-name">{{ contact.userNum }} <span
-                                style="font-size:12px; color:#aaa;">({{ contact.userId }})</span></div>
+                        <div class="contact-name">{{ contact.userName }} <span
+                                style="font-size:12px; color:#aaa;">({{ contact.userNum }})</span></div>
                         <div class="contact-preview">{{ contact.preview || '暂无消息' }}</div>
                     </div>
                 </div>
@@ -328,7 +328,6 @@
             <div class="chat-footer">
                 <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage" clearable></el-input>
                 <el-button type="primary" :icon="Position" @click="sendTextMessage" circle></el-button>
-                <el-button type="success" :icon="Picture" @click="sendSampleImage" circle></el-button>
             </div>
         </div>
     </div>
@@ -361,17 +360,15 @@
 
             // 聊天数据
             const contactList = ref([
-                {userId: 'U1002', userNum: '李华', preview: ''},
-                {userId: 'U1003', userNum: '王明', preview: ''},
-                {userId: 'U1004', userNum: '赵丽', preview: ''},
+                {userId: '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', userNum: 'U1003', userName: '小雨', preview: ''},
             ]);
-            const currentChatId = ref('U1002');
+            const currentChatId = ref('U1003');
             const messageList = ref([]);
             const inputMessage = ref('');
 
             // 辅助计算当前联系人名称
             const currentContactName = Vue.computed(() => {
-                const c = contactList.value.find(c => c.userId === currentChatId.value);
+                const c = contactList.value.find(c => c.userNum === currentChatId.value);
                 return c ? c.userNum : '';
             });
 
@@ -513,19 +510,19 @@
                 if (msg.messageType === 0 && msg.textContent) {
                     displayMsg.type = 'text';
                     displayMsg.text = msg.textContent.text;
-                } else if (msg.messageType === 1 && msg.image_content) {
+                } else if (msg.messageType === 1 && msg.imageContent) {
                     displayMsg.type = 'image';
-                    displayMsg.imageUrl = msg.image_content.image_url;
-                    displayMsg.imageDesc = msg.image_content.image_description;
+                    displayMsg.imageUrl = msg.imageContent.imageUrl;
+                    displayMsg.imageDesc = msg.imageContent.imageDescription;
                 } else {
                     return; // 其他类型暂不显示
                 }
 
                 // 判断是否属于当前聊天 (单聊)
                 if (msg.singleChatInfo) {
-                    const otherId = (msg.singleChatInfo.user1_id === currentUser.value?.userId)
-                        ? msg.singleChatInfo.user2_id
-                        : msg.singleChatInfo.user1_id;
+                    const otherId = (msg.singleChatInfo.user1Id === currentUser.value?.userId)
+                        ? msg.singleChatInfo.user2Id
+                        : msg.singleChatInfo.user1Id;
                     // 如果对方ID不是当前选中的联系人，可以加个提醒或者直接插入，但为了demo，统一插入消息列表（可优化）
                     // 这里简单插入，不自动切换
                 }
@@ -555,11 +552,16 @@
                 }
                 try {
                     const err = MsgBody.value.verify(payload);
-                    if (err) throw new Error(err);
+                    if (err) {
+                        console.error('Verify Error:', err);
+                        ElMessage.error('消息格式错误: ' + err);
+                        return;
+                    }
                     const message = MsgBody.value.create(payload);
                     const buffer = MsgBody.value.encode(message).finish();
                     ws.send(buffer);
                 } catch (e) {
+                    console.error('Send Error:', e);
                     ElMessage.error('发送失败: ' + e.message);
                 }
             }
@@ -578,9 +580,9 @@
                     timestamp: Date.now(),
                     isGroup: false,
                     singleChatInfo: {
-                        chat_id: `single_${currentUser.value.userId}_${currentChatId.value}`,
-                        user1_id: currentUser.value.userId,
-                        user2_id: currentChatId.value
+                        chatId: `single_${currentUser.value.userId}_${currentChatId.value}`,
+                        user1Id: currentUser.value.userId,
+                        user2Id: contactList.value.find(c => c.userNum === currentChatId.value).userId
                     },
                     textContent: {
                         text: text
@@ -603,21 +605,21 @@
                     timestamp: Date.now(),
                     isGroup: false,
                     singleChatInfo: {
-                        chat_id: `single_${currentUser.value.userId}_${currentChatId.value}`,
-                        user1_id: currentUser.value.userId,
-                        user2_id: currentChatId.value
+                        chatId: `single_${currentUser.value.userId}_${currentChatId.value}`,
+                        user1Id: currentUser.value.userId,
+                        user2Id: currentChatId.value
                     },
-                    image_content: {
-                        image_url: 'https://picsum.photos/200/150?random=' + Date.now(),
-                        image_description: '示例图片'
+                    imageContent: {
+                        imageUrl: 'https://picsum.photos/200/150?random=' + Date.now(),
+                        imageDescription: '示例图片'
                     }
                 };
                 sendProto(payload);
             }
 
             // 切换聊天对象
-            function switchChat(userId) {
-                currentChatId.value = userId;
+            function switchChat(userNum) {
+                currentChatId.value = userNum;
                 // 可以清空或保留历史消息，简单保留全部
             }
 
@@ -644,7 +646,7 @@
                 if (ws && ws.readyState === 1 && authed.value && MsgBody.value) {
                     const pingPayload = {
                         messageType: 7, // PING
-                        pong_ping: {ping_id: Date.now().toString()}
+                        pongPing: {ping_id: Date.now().toString()}
                     };
                     sendProto(pingPayload);
                 }

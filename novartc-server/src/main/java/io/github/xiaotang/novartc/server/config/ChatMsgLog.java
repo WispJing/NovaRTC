@@ -17,7 +17,7 @@ public class ChatMsgLog {
     public static final Logger msgLog = LoggerFactory.getLogger("im.msg");
 
     public static void msg(ChatMessage.MsgBody msg) {
-        logger.info("原始消息：{}", JacksonUtil.toJson(msg));
+        logger.info("原始消息：{}", msg.toString());
         msgLog.info("{}", JacksonUtil.toJson(MessageLogConverter.convert(msg)));
     }
 }
