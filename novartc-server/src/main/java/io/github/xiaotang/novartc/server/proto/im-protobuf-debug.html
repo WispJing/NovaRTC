@@ -287,12 +287,22 @@
                 </el-dropdown>
             </div>
             <div class="contact-list">
-                <div v-for="contact in contactList" :key="contact.userId" class="contact-item"
-                     :class="{ active: currentChatId === contact.userNum }" @click="switchChat(contact.userNum)">
-                    <div class="contact-avatar">{{ contact.userNum?.charAt(0) || '?' }}</div>
+                <div v-for="contact in contactList" :key="contact.chatId" class="contact-item"
+                     :class="{ active: currentChatId === contact.chatId }" @click="switchChat(contact.chatId)">
+                    <div class="contact-avatar">
+                        {{ (contact.title || '?').charAt(0) }}
+                    </div>
                     <div class="contact-info">
-                        <div class="contact-name">{{ contact.userName }} <span
-                                style="font-size:12px; color:#aaa;">({{ contact.userNum }})</span></div>
+                        <div class="contact-name">
+                            {{ contact.title }}
+                            <span style="font-size:12px; color:#aaa;">
+                                {{
+                                    contact.chatType === 'single'
+                                            ? `(${contact.userNum || ''})`
+                                            : `(${contact.groupNum || ''})`
+                                }}
+                            </span>
+                        </div>
                         <div class="contact-preview">{{ contact.preview || '暂无消息' }}</div>
                     </div>
                 </div>
@@ -326,7 +336,8 @@
                 </div>
             </div>
             <div class="chat-footer">
-                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage" clearable></el-input>
+                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage"
+                          clearable></el-input>
                 <el-button type="primary" :icon="Position" @click="sendTextMessage" circle></el-button>
             </div>
         </div>
@@ -359,17 +370,15 @@
             const protoLoaded = ref(false);
 
             // 聊天数据
-            const contactList = ref([
-                {userId: '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', userNum: 'U1003', userName: '小雨', preview: ''},
-            ]);
-            const currentChatId = ref('U1003');
+            const contactList = ref([]);
+            const currentChatId = ref('');
             const messageList = ref([]);
             const inputMessage = ref('');
 
             // 辅助计算当前联系人名称
             const currentContactName = Vue.computed(() => {
-                const c = contactList.value.find(c => c.userNum === currentChatId.value);
-                return c ? c.userNum : '';
+                const c = contactList.value.find(c => c.chatId === currentChatId.value);
+                return c ? c.title : '';
             });
 
             // 消息容器引用
@@ -424,7 +433,11 @@
                         ElMessage.success('登录成功');
                         // 切换视图
                         currentView.value = 'chat';
-                        // 连接 WebSocket 并认证
+
+                        // 先加载会话列表
+                        await loadChatList();
+
+                        // 再连接 WebSocket 并认证
                         connectWebSocket();
                     } else {
                         ElMessage.error(data.message || '登录失败');
@@ -537,8 +550,16 @@
                 });
 
                 // 更新联系人预览
-                if (msg.sender?.userId !== currentUser.value?.userId) {
-                    const contact = contactList.value.find(c => c.userId === msg.sender?.userId);
+                let incomingChatId = '';
+
+                if (msg.singleChatInfo?.chatId) {
+                    incomingChatId = msg.singleChatInfo.chatId;
+                } else if (msg.groupChatInfo?.chatId) {
+                    incomingChatId = msg.groupChatInfo.chatId;
+                }
+
+                if (incomingChatId) {
+                    const contact = contactList.value.find(c => c.chatId === incomingChatId);
                     if (contact) {
                         contact.preview = displayMsg.text || '[图片]';
                     }
@@ -570,12 +591,15 @@
             // 发送文本消息
             function sendTextMessage() {
                 if (!inputMessage.value.trim() || !currentChatId.value) return;
-                const text = inputMessage.value;
-                const targetContact = contactList.value.find(c => c.userNum === currentChatId.value);
-                if (!targetContact) {
-                    ElMessage.error('联系人不存在');
+
+                const text = inputMessage.value.trim();
+                const currentChat = contactList.value.find(c => c.chatId === currentChatId.value);
+
+                if (!currentChat) {
+                    ElMessage.error('当前会话不存在');
                     return;
                 }
+
                 const payload = {
                     messageId: Date.now().toString(),
                     messageType: 0,
@@ -586,16 +610,25 @@
                         avatarUrl: currentUser.value.avatarUrl || ''
                     },
                     timestamp: Date.now(),
-                    isGroup: false,
-                    singleChatInfo: {
-                        chatId: `single_${currentUser.value.userId}_${targetContact.userId}`,
-                        user1Id: currentUser.value.userId,
-                        user2Id: targetContact.userId
-                    },
-                    textContent: { text }
+                    isGroup: currentChat.chatType === 'group',
+                    textContent: {
+                        text
+                    }
                 };
 
-                // 乐观更新：立即显示消息
+                if (currentChat.chatType === 'single') {
+                    payload.singleChatInfo = {
+                        chatId: currentChat.chatId,
+                        user1Id: currentUser.value.userId,
+                        user2Id: currentChat.userId
+                    };
+                } else if (currentChat.chatType === 'group') {
+                    payload.groupChatInfo = {
+                        chatId: currentChat.chatId,
+                        groupId: currentChat.groupId
+                    };
+                }
+
                 const localMsg = {
                     isSelf: true,
                     senderId: currentUser.value.userId,
@@ -609,6 +642,8 @@
 
                 sendProto(payload);
                 inputMessage.value = '';
+
+                currentChat.preview = text;
             }
 
             // 发送图片示例 (固定URL)
@@ -648,14 +683,59 @@
             };
 
             // 切换聊天对象
-            function switchChat(userNum) {
-                currentChatId.value = userNum;
-                // 可以清空或保留历史消息，简单保留全部
+            function switchChat(chatId) {
+                currentChatId.value = chatId;
             }
 
             // 预览图片
             function previewImage(url) {
                 window.open(url, '_blank');
+            }
+
+            async function loadChatList() {
+                if (!currentUser.value?.token) {
+                    ElMessage.warning('token 不存在，无法加载会话列表');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://127.0.0.1:7000/api/chat/list', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': currentUser.value.token
+                        }
+                    });
+
+                    const result = await response.json();
+                    console.log('chat list result:', result);
+
+                    if (result.code !== 0 || !Array.isArray(result.data)) {
+                        ElMessage.error(result.msg || '会话列表加载失败');
+                        return;
+                    }
+
+                    contactList.value = result.data.map(item => ({
+                        chatType: item.chatType,
+                        chatId: item.chatId,
+                        title: item.title,
+                        userId: item.targetUserId,
+                        userNum: item.targetUserNum,
+                        userName: item.title,
+                        groupId: item.groupId,
+                        groupNum: item.groupNum,
+                        avatarUrl: item.avatarUrl,
+                        preview: ''
+                    }));
+
+                    if (contactList.value.length > 0) {
+                        const first = contactList.value[0];
+                        currentChatId.value = first.chatId;
+                    }
+                } catch (err) {
+                    console.error('loadChatList error:', err);
+                    ElMessage.error('加载会话列表失败: ' + err.message);
+                }
             }
 
             // 退出登录
@@ -688,6 +768,7 @@
                 loginRules,
                 loginLoading,
                 handleLogin,
+                loadChatList,
                 currentUser,
                 wsConnected,
                 authed,
