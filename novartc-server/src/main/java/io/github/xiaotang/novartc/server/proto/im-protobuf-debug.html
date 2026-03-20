@@ -756,7 +756,7 @@
                 if (ws && ws.readyState === 1 && authed.value && MsgBody.value) {
                     const pingPayload = {
                         messageType: 7, // PING
-                        pongPing: {ping_id: Date.now().toString()}
+                        pongPing: {pingId: Date.now().toString()}
                     };
                     sendProto(pingPayload);
                 }
