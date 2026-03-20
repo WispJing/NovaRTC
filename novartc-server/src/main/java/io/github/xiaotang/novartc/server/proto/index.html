@@ -355,9 +355,10 @@
 
     const app = createApp({
         setup() {
+            const HOST = '192.168.24.177';
             const currentView = ref('login');
             const loginLoading = ref(false);
-            const loginForm = reactive({ userNum: 'U1001', password: '123456' });
+            const loginForm = reactive({ userNum: '', password: '' });
             const loginRules = {
                 userNum: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
@@ -430,7 +431,7 @@
                 }
 
                 try {
-                    const response = await fetch('http://127.0.0.1:7000/api/chat/list', {
+                    const response = await fetch(`http://${HOST}:7000/api/chat/list`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -483,7 +484,7 @@
                 }
                 loginLoading.value = true;
                 try {
-                    const response = await fetch('http://127.0.0.1:7000/api/login', {
+                    const response = await fetch(`http://${HOST}:7000/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -519,7 +520,7 @@
 
             function connectWebSocket() {
                 if (!currentUser.value) return;
-                const wsUrl = 'ws://localhost:9688/ws';
+                const wsUrl = `ws://${HOST}:9688/ws`;
                 ws = new WebSocket(wsUrl);
                 ws.binaryType = 'arraybuffer';
 
