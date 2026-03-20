@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>NovaRTC IM · 微信风格聊天室</title>
-    <!-- 引入 Vue 3 + Element Plus (轻量级浅色系) -->
     <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css"/>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/element-plus"></script>
-    <!-- protobufjs 库 -->
     <script src="https://cdn.jsdelivr.net/npm/protobufjs/dist/protobuf.min.js"></script>
     <style>
         * {
@@ -37,7 +35,6 @@
             flex-direction: column;
         }
 
-        /* 登录卡片居中 */
         .login-container {
             height: 100%;
             display: flex;
@@ -60,7 +57,6 @@
             width: 100%;
         }
 
-        /* 左侧联系人列表 (微信风格) */
         .contact-sidebar {
             width: 280px;
             background-color: #f9f9f9;
@@ -116,10 +112,12 @@
             font-weight: bold;
             margin-right: 12px;
             text-transform: uppercase;
+            flex-shrink: 0;
         }
 
         .contact-info {
             flex: 1;
+            min-width: 0;
         }
 
         .contact-name {
@@ -135,7 +133,6 @@
             text-overflow: ellipsis;
         }
 
-        /* 右侧聊天区域 */
         .chat-main {
             flex: 1;
             display: flex;
@@ -159,6 +156,13 @@
             padding: 24px 20px;
             overflow-y: auto;
             background: #f5f7fa;
+        }
+
+        .message-empty {
+            color: #909399;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
         }
 
         .message-item {
@@ -246,7 +250,6 @@
 </head>
 <body>
 <div id="app">
-    <!-- 登录界面 -->
     <div v-if="currentView === 'login'" class="login-container">
         <el-card class="login-card" shadow="never">
             <h2 style="margin-bottom: 24px; text-align: center; color: #2c3e50;">NovaRTC 登录</h2>
@@ -263,22 +266,19 @@
                     </el-button>
                 </el-form-item>
             </el-form>
-            <div style="margin-top: 16px; font-size: 13px; color: #aaa; text-align: center;">测试账号: U1002 / 123456
-            </div>
+            <div style="margin-top: 16px; font-size: 13px; color: #aaa; text-align: center;">测试账号: U1002 / 123456</div>
         </el-card>
     </div>
 
-    <!-- 聊天主界面 (微信风格) -->
     <div v-else-if="currentView === 'chat'" class="chat-layout">
-        <!-- 左侧联系人/会话列表 -->
         <div class="contact-sidebar">
             <div class="contact-header">
                 <span>💬 消息</span>
                 <el-dropdown trigger="click" @command="handleLogout">
-                        <span class="logout-btn">
-                            <el-icon><User/></el-icon> {{ currentUser?.userNum || '我' }}
-                            <el-icon><ArrowDown/></el-icon>
-                        </span>
+                    <span class="logout-btn">
+                        <el-icon><User/></el-icon> {{ currentUser?.userNum || '我' }}
+                        <el-icon><ArrowDown/></el-icon>
+                    </span>
                     <template #dropdown>
                         <el-dropdown-menu>
                             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
@@ -286,9 +286,11 @@
                     </template>
                 </el-dropdown>
             </div>
+
             <div class="contact-list">
                 <div v-for="contact in contactList" :key="contact.chatId" class="contact-item"
-                     :class="{ active: currentChatId === contact.chatId }" @click="switchChat(contact.chatId)">
+                     :class="{ active: currentChatId === contact.chatId }"
+                     @click="switchChat(contact.chatId)">
                     <div class="contact-avatar">
                         {{ (contact.title || '?').charAt(0) }}
                     </div>
@@ -307,21 +309,24 @@
                     </div>
                 </div>
             </div>
+
             <div style="padding: 12px; border-top: 1px solid #e4e7ed; font-size:12px; color:#909399; display: flex; align-items: center;">
                 <span>连接状态: </span>
                 <span :style="{color: wsConnected ? '#67C23A' : '#F56C6C'}">
-                        {{ wsConnected ? '已连接' : '未连接' }}
-                    </span>
+                    {{ wsConnected ? '已连接' : '未连接' }}
+                </span>
                 <span class="status-badge" v-if="wsConnected && authed">✅ 已认证</span>
             </div>
         </div>
 
-        <!-- 右侧聊天区域 -->
         <div class="chat-main">
             <div class="chat-header">
                 <span>当前对话: {{ currentContactName || '选择联系人' }}</span>
             </div>
+
             <div class="chat-messages" ref="messageContainer">
+                <div v-if="messageList.length === 0" class="message-empty">暂无消息</div>
+
                 <div v-for="(msg, idx) in messageList" :key="idx" class="message-item" :class="{ right: msg.isSelf }">
                     <div class="message-avatar">{{ msg.senderName?.charAt(0) || 'U' }}</div>
                     <div class="message-bubble">
@@ -335,9 +340,9 @@
                     </div>
                 </div>
             </div>
+
             <div class="chat-footer">
-                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage"
-                          clearable></el-input>
+                <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendTextMessage" clearable></el-input>
                 <el-button type="primary" :icon="Position" @click="sendTextMessage" circle></el-button>
             </div>
         </div>
@@ -345,56 +350,52 @@
 </div>
 
 <script>
-    const {createApp, ref, reactive, onMounted, nextTick, watch} = Vue;
+    const { createApp, ref, reactive, onMounted, nextTick } = Vue;
     const ElMessage = ElementPlus.ElMessage;
 
     const app = createApp({
         setup() {
-            // 状态控制
-            const currentView = ref('login'); // 'login' 或 'chat'
+            const currentView = ref('login');
             const loginLoading = ref(false);
-            const loginForm = reactive({userNum: 'U1001', password: '123456'});
+            const loginForm = reactive({ userNum: 'U1001', password: '123456' });
             const loginRules = {
-                userNum: [{required: true, message: '请输入用户名', trigger: 'blur'}],
-                password: [{required: true, message: '请输入密码', trigger: 'blur'}]
+                userNum: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+                password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
             };
 
-            // 用户信息 (登录后获得)
-            const currentUser = ref(null); // { userId, userNum, token }
+            const currentUser = ref(null);
 
-            // WebSocket 相关
             let ws = null;
             const wsConnected = ref(false);
             const authed = ref(false);
-            const MsgBody = ref(null); // protobuf 消息类
+            const MsgBody = ref(null);
             const protoLoaded = ref(false);
 
-            // 聊天数据
             const contactList = ref([]);
             const currentChatId = ref('');
-            const messageList = ref([]);
+            const chatMessageMap = ref({});
             const inputMessage = ref('');
+            const messageContainer = ref(null);
 
-            // 辅助计算当前联系人名称
             const currentContactName = Vue.computed(() => {
                 const c = contactList.value.find(c => c.chatId === currentChatId.value);
                 return c ? c.title : '';
             });
 
-            // 消息容器引用
-            const messageContainer = ref(null);
+            const messageList = Vue.computed(() => {
+                if (!currentChatId.value) return [];
+                return chatMessageMap.value[currentChatId.value] || [];
+            });
 
-            // ================== Proto 加载 ==================
             onMounted(() => {
-                protobuf.load("ChatMessage.proto", (err, root) => {
+                protobuf.load('ChatMessage.proto', (err, root) => {
                     if (err) {
                         ElMessage.error('Proto 文件加载失败: ' + err);
                         console.error(err);
                         return;
                     }
                     try {
-                        // 注意包名: io.github.xiaotang.novartc.server.proto.MsgBody
-                        MsgBody.value = root.lookupType("io.github.xiaotang.novartc.server.proto.MsgBody");
+                        MsgBody.value = root.lookupType('io.github.xiaotang.novartc.server.proto.MsgBody');
                         protoLoaded.value = true;
                         ElMessage.success('协议加载成功');
                     } catch (e) {
@@ -403,7 +404,78 @@
                 });
             });
 
-            // ================== 登录逻辑 ==================
+            function appendMessage(chatId, msg) {
+                if (!chatId) return;
+                if (!chatMessageMap.value[chatId]) {
+                    chatMessageMap.value[chatId] = [];
+                }
+                chatMessageMap.value[chatId].push(msg);
+            }
+
+            function scrollToBottom(smooth = false) {
+                if (messageContainer.value) {
+                    nextTick(() => {
+                        messageContainer.value.scrollTo({
+                            top: messageContainer.value.scrollHeight,
+                            behavior: smooth ? 'smooth' : 'auto'
+                        });
+                    });
+                }
+            }
+
+            async function loadChatList() {
+                if (!currentUser.value?.token) {
+                    ElMessage.warning('token 不存在，无法加载会话列表');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://127.0.0.1:7000/api/chat/list', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': currentUser.value.token
+                        }
+                    });
+
+                    const result = await response.json();
+                    console.log('chat list result:', result);
+
+                    if (result.code !== 0 || !Array.isArray(result.data)) {
+                        ElMessage.error(result.msg || '会话列表加载失败');
+                        return;
+                    }
+
+                    contactList.value = result.data.map(item => ({
+                        chatType: item.chatType,
+                        chatId: item.chatId,
+                        title: item.title,
+                        userId: item.targetUserId,
+                        userNum: item.targetUserNum,
+                        userName: item.title,
+                        groupId: item.groupId,
+                        groupNum: item.groupNum,
+                        avatarUrl: item.avatarUrl,
+                        preview: ''
+                    }));
+
+                    const nextMap = {};
+                    contactList.value.forEach(contact => {
+                        nextMap[contact.chatId] = chatMessageMap.value[contact.chatId] || [];
+                    });
+                    chatMessageMap.value = nextMap;
+
+                    if (contactList.value.length > 0) {
+                        currentChatId.value = contactList.value[0].chatId;
+                    } else {
+                        currentChatId.value = '';
+                    }
+                } catch (err) {
+                    console.error('loadChatList error:', err);
+                    ElMessage.error('加载会话列表失败: ' + err.message);
+                }
+            }
+
             const handleLogin = async () => {
                 if (!protoLoaded.value) {
                     ElMessage.warning('协议未加载完毕，请稍后');
@@ -413,16 +485,16 @@
                 try {
                     const response = await fetch('http://127.0.0.1:7000/api/login', {
                         method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             userNum: loginForm.userNum,
                             password: loginForm.password
                         })
                     });
                     const data = await response.json();
-                    // 假设返回格式: { code:0, data: { userId: '1001', userNum: 'user1', token: 'xxx' } }
+
                     if (data.code === 0 || data.data) {
-                        const info = data.data || data; // 兼容
+                        const info = data.data || data;
                         currentUser.value = {
                             userId: info.userId,
                             userNum: info.userNum,
@@ -431,36 +503,29 @@
                             token: info.token
                         };
                         ElMessage.success('登录成功');
-                        // 切换视图
                         currentView.value = 'chat';
-
-                        // 先加载会话列表
                         await loadChatList();
-
-                        // 再连接 WebSocket 并认证
                         connectWebSocket();
                     } else {
-                        ElMessage.error(data.message || '登录失败');
+                        ElMessage.error(data.message || data.msg || '登录失败');
                     }
                 } catch (err) {
-                    console.log(err)
+                    console.error(err);
                     ElMessage.error('网络错误: ' + err.message);
                 } finally {
                     loginLoading.value = false;
                 }
             };
 
-            // ================== WebSocket 连接 ==================
             function connectWebSocket() {
                 if (!currentUser.value) return;
-                const wsUrl = 'ws://localhost:9688/ws'; // 可配置
+                const wsUrl = 'ws://localhost:9688/ws';
                 ws = new WebSocket(wsUrl);
                 ws.binaryType = 'arraybuffer';
 
                 ws.onopen = () => {
                     wsConnected.value = true;
                     ElMessage.success('WebSocket 已连接');
-                    // 发送认证消息 (Auth)
                     sendAuth();
                 };
 
@@ -482,11 +547,10 @@
                 };
             }
 
-            // 发送认证 (messageType=9, authMessage)
             function sendAuth() {
                 if (!ws || ws.readyState !== 1 || !currentUser.value || !MsgBody.value) return;
                 const payload = {
-                    messageType: 9, // AUTH
+                    messageType: 9,
                     authMessage: {
                         userId: currentUser.value.userId,
                         token: currentUser.value.token
@@ -495,10 +559,9 @@
                 sendProto(payload);
             }
 
-            // 处理接收的消息
             function handleIncomingMessage(msg) {
                 console.log('收到消息:', JSON.parse(JSON.stringify(msg)));
-                // 如果是认证响应
+
                 if (msg.messageType === 9 && msg.authMessage) {
                     if (msg.authMessage.success === true) {
                         authed.value = true;
@@ -509,16 +572,14 @@
                     return;
                 }
 
-                // 处理 PONG (忽略)
                 if (msg.messageType === 8) return;
 
-                // 处理文本/图片消息
                 let displayMsg = {
                     isSelf: msg.sender?.userId === currentUser.value?.userId,
                     senderId: msg.sender?.userId,
                     senderName: msg.sender?.userNum || '用户',
                     timeStr: new Date(msg.timestamp).toLocaleTimeString(),
-                    type: 'text',
+                    type: 'text'
                 };
 
                 if (msg.messageType === 0 && msg.textContent) {
@@ -529,44 +590,30 @@
                     displayMsg.imageUrl = msg.imageContent.imageUrl;
                     displayMsg.imageDesc = msg.imageContent.imageDescription;
                 } else {
-                    return; // 其他类型暂不显示
+                    return;
                 }
 
-                // 判断是否属于当前聊天 (单聊)
-                if (msg.singleChatInfo) {
-                    const otherId = (msg.singleChatInfo.user1Id === currentUser.value?.userId)
-                        ? msg.singleChatInfo.user2Id
-                        : msg.singleChatInfo.user1Id;
-                    // 如果对方ID不是当前选中的联系人，可以加个提醒或者直接插入，但为了demo，统一插入消息列表（可优化）
-                    // 这里简单插入，不自动切换
-                }
-
-                // 添加到消息列表，并滚动到底部
-                messageList.value.push(displayMsg);
-                nextTick(() => {
-                    if (messageContainer.value) {
-                        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-                    }
-                });
-
-                // 更新联系人预览
                 let incomingChatId = '';
-
                 if (msg.singleChatInfo?.chatId) {
                     incomingChatId = msg.singleChatInfo.chatId;
                 } else if (msg.groupChatInfo?.chatId) {
                     incomingChatId = msg.groupChatInfo.chatId;
                 }
 
-                if (incomingChatId) {
-                    const contact = contactList.value.find(c => c.chatId === incomingChatId);
-                    if (contact) {
-                        contact.preview = displayMsg.text || '[图片]';
-                    }
+                if (!incomingChatId) return;
+
+                appendMessage(incomingChatId, displayMsg);
+
+                const contact = contactList.value.find(c => c.chatId === incomingChatId);
+                if (contact) {
+                    contact.preview = displayMsg.text || '[图片]';
+                }
+
+                if (incomingChatId === currentChatId.value) {
+                    scrollToBottom();
                 }
             }
 
-            // 发送 protobuf 二进制
             function sendProto(payload) {
                 if (!ws || ws.readyState !== 1 || !MsgBody.value) {
                     ElMessage.warning('连接未就绪');
@@ -588,7 +635,6 @@
                 }
             }
 
-            // 发送文本消息
             function sendTextMessage() {
                 if (!inputMessage.value.trim() || !currentChatId.value) return;
 
@@ -637,126 +683,44 @@
                     type: 'text',
                     text: text
                 };
-                messageList.value.push(localMsg);
-                nextTick(() => scrollToBottom());
 
-                sendProto(payload);
-                inputMessage.value = '';
-
+                appendMessage(currentChat.chatId, localMsg);
                 currentChat.preview = text;
-            }
+                inputMessage.value = '';
+                scrollToBottom();
 
-            // 发送图片示例 (固定URL)
-            function sendSampleImage() {
-                if (!currentChatId.value) return;
-                const payload = {
-                    messageId: Date.now().toString(),
-                    messageType: 1, // IMAGE
-                    sender: {
-                        userId: currentUser.value.userId,
-                        userNum: currentUser.value.userNum
-                    },
-                    timestamp: Date.now(),
-                    isGroup: false,
-                    singleChatInfo: {
-                        chatId: `single_${currentUser.value.userId}_${currentChatId.value}`,
-                        user1Id: currentUser.value.userId,
-                        user2Id: currentChatId.value
-                    },
-                    imageContent: {
-                        imageUrl: 'https://picsum.photos/200/150?random=' + Date.now(),
-                        imageDescription: '示例图片'
-                    }
-                };
                 sendProto(payload);
             }
 
-            const scrollToBottom = (smooth = false) => {
-                if (messageContainer.value) {
-                    nextTick(() => {
-                        messageContainer.value.scrollTo({
-                            top: messageContainer.value.scrollHeight,
-                            behavior: smooth ? 'smooth' : 'auto'
-                        });
-                    });
-                }
-            };
-
-            // 切换聊天对象
             function switchChat(chatId) {
                 currentChatId.value = chatId;
+                scrollToBottom();
             }
 
-            // 预览图片
             function previewImage(url) {
                 window.open(url, '_blank');
             }
 
-            async function loadChatList() {
-                if (!currentUser.value?.token) {
-                    ElMessage.warning('token 不存在，无法加载会话列表');
-                    return;
-                }
-
-                try {
-                    const response = await fetch('http://127.0.0.1:7000/api/chat/list', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': currentUser.value.token
-                        }
-                    });
-
-                    const result = await response.json();
-                    console.log('chat list result:', result);
-
-                    if (result.code !== 0 || !Array.isArray(result.data)) {
-                        ElMessage.error(result.msg || '会话列表加载失败');
-                        return;
-                    }
-
-                    contactList.value = result.data.map(item => ({
-                        chatType: item.chatType,
-                        chatId: item.chatId,
-                        title: item.title,
-                        userId: item.targetUserId,
-                        userNum: item.targetUserNum,
-                        userName: item.title,
-                        groupId: item.groupId,
-                        groupNum: item.groupNum,
-                        avatarUrl: item.avatarUrl,
-                        preview: ''
-                    }));
-
-                    if (contactList.value.length > 0) {
-                        const first = contactList.value[0];
-                        currentChatId.value = first.chatId;
-                    }
-                } catch (err) {
-                    console.error('loadChatList error:', err);
-                    ElMessage.error('加载会话列表失败: ' + err.message);
-                }
-            }
-
-            // 退出登录
             function handleLogout(cmd) {
                 if (cmd === 'logout') {
                     if (ws) ws.close();
                     ws = null;
                     currentView.value = 'login';
                     currentUser.value = null;
-                    messageList.value = [];
+                    contactList.value = [];
+                    currentChatId.value = '';
+                    chatMessageMap.value = {};
+                    inputMessage.value = '';
                     authed.value = false;
                     wsConnected.value = false;
                 }
             }
 
-            // 心跳 Ping (30s)
             setInterval(() => {
                 if (ws && ws.readyState === 1 && authed.value && MsgBody.value) {
                     const pingPayload = {
-                        messageType: 7, // PING
-                        pongPing: {pingId: Date.now().toString()}
+                        messageType: 7,
+                        pongPing: { pingId: Date.now().toString() }
                     };
                     sendProto(pingPayload);
                 }
@@ -779,12 +743,10 @@
                 inputMessage,
                 messageContainer,
                 sendTextMessage,
-                sendSampleImage,
                 switchChat,
                 previewImage,
                 handleLogout,
-                Position: ElementPlus.Position, // 图标
-                Picture: ElementPlus.Picture
+                Position: ElementPlus.Position
             };
         }
     });
