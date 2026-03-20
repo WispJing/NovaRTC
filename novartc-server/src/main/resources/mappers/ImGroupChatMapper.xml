@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.github.xiaotang.novartc.server.mapper.ImGroupChatMapper">
 
+  <select id="selectGroupChatsByUserId"
+          resultType="io.github.xiaotang.novartc.server.entity.mysql.ImGroupChat">
+    SELECT gc.*
+    FROM im_group_chat gc
+           INNER JOIN im_group_member gm ON gc.id = gm.group_id
+    WHERE gm.user_id = #{userId}
+      AND gm.is_deleted = 0
+      AND gc.is_deleted = 0
+  </select>
 </mapper>

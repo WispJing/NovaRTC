@@ -3,6 +3,8 @@ package io.github.xiaotang.novartc.server.service;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupChat;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 群聊信息表 服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IImGroupChatService extends IService<ImGroupChat> {
 
+    List<ImGroupChat> getByUserId(String userId);
 }
