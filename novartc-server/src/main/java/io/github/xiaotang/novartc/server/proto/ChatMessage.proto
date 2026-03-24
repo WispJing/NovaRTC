@@ -20,12 +20,22 @@ enum MessageType {
   PING = 7;           // Ping 消息
   PONG = 8;           // Pong 消息
   AUTH = 9;           // 用户认证消息
+  PRESENCE = 10;      // 在线状态消息
+}
+
+// 在线状态枚举
+enum PresenceStatus {
+  ONLINE = 0;         // 在线
+  OFFLINE = 1;        // 离线
+  BUSY = 2;           // 忙碌
+  AWAY = 3;           // 离开
+  INVISIBLE = 4;      // 隐身
 }
 
 // 用户信息
 message User {
   string user_id = 1;     // 用户ID
-  string username = 2;     // 用户名
+  string username = 2;    // 用户名
   string avatar_url = 3;  // 用户头像URL
 }
 
@@ -42,17 +52,28 @@ message TextContent {
 
 // 复合消息内容 (文本 + 图片)
 message TextAndImageContent {
-  TextContent text_content = 1;  // 文本内容
+  TextContent text_content = 1;   // 文本内容
   ImageContent image_content = 2; // 图片内容
+}
+
+// 在线状态消息内容
+message Presence {
+  string user_id = 1;                // 状态所属用户ID
+  PresenceStatus status = 2;         // 在线状态
+  int64 last_active_at = 3;          // 最近活跃时间戳（Unix时间戳，毫秒）
+  string client_type = 4;            // 客户端类型：DESKTOP / MOBILE / WEB
+  string device_id = 5;              // 设备ID
+  bool is_broadcast = 6;             // 是否为广播给好友的状态变更
+  string message = 7;                // 备注信息，例如“手机在线”“忙碌中”
 }
 
 // 消息体
 message MsgBody {
-  string message_id = 1;     // 消息唯一ID
-  MessageType message_type = 2; // 消息类型（文本、图片、复合消息等）
-  User sender = 3;           // 发送者信息
-  int64 timestamp = 4;       // 消息发送时间戳（Unix时间戳）
-  bool is_group = 5;         // 是否为群聊消息（true为群聊，false为单聊）
+  string message_id = 1;          // 消息唯一ID
+  MessageType message_type = 2;   // 消息类型（文本、图片、复合消息等）
+  User sender = 3;                // 发送者信息
+  int64 timestamp = 4;            // 消息发送时间戳（Unix时间戳）
+  bool is_group = 5;              // 是否为群聊消息（true为群聊，false为单聊）
 
   // 单聊信息
   SingleChatInfo single_chat_info = 6;
@@ -61,46 +82,47 @@ message MsgBody {
 
   // 根据消息类型选择对应的内容字段
   oneof content {
-    TextContent text_content = 8;       // 文本消息内容
-    ImageContent image_content = 9;     // 图片消息内容
+    TextContent text_content = 8;                 // 文本消息内容
+    ImageContent image_content = 9;               // 图片消息内容
     TextAndImageContent text_and_image_content = 10; // 复合消息（文本 + 图片）
-    Ping pong_ping = 11;                // Ping 消息
-    Pong pong_response = 12;            // Pong 消息
-    Auth auth_message = 13;             // 用户认证消息
+    Ping pong_ping = 11;                          // Ping 消息
+    Pong pong_response = 12;                      // Pong 消息
+    Auth auth_message = 13;                       // 用户认证消息
+    Presence presence_message = 14;               // 在线状态消息
   }
 }
 
 // 群聊消息附加信息（可选）
 message GroupChatInfo {
-  string chat_id = 1;             // 群聊ID
-  string group_id = 2;           // 群组ID
+  string chat_id = 1;     // 群聊ID
+  string group_id = 2;    // 群组ID
 }
 
 // 单聊消息附加信息（可选）
 message SingleChatInfo {
-  string chat_id = 1;        // 单聊ID
-  string user1_id = 2;       // 用户1 ID
-  string user2_id = 3;       // 用户2 ID
+  string chat_id = 1;     // 单聊ID
+  string user1_id = 2;    // 用户1 ID
+  string user2_id = 3;    // 用户2 ID
 }
 
 // Ping 消息
 message Ping {
-  string ping_id = 1;    // Ping 唯一ID
-  string message = 2;    // Ping 消息内容 (可选)
+  string ping_id = 1;     // Ping 唯一ID
+  string message = 2;     // Ping 消息内容 (可选)
 }
 
 // Pong 消息
 message Pong {
-  string ping_id = 1;    // 对应的 Ping 唯一ID
-  string message = 2;    // Pong 消息内容 (可选)
+  string ping_id = 1;     // 对应的 Ping 唯一ID
+  string message = 2;     // Pong 消息内容 (可选)
 }
 
 // 用户认证消息
 message Auth {
-  string user_id = 1;      // 用户ID
-  string token = 2;        // 认证令牌
-  bool success = 3;        // 认证结果 (成功/失败)
-  string message = 4;      // 认证失败消息 (可选)
+  string user_id = 1;     // 用户ID
+  string token = 2;       // 认证令牌
+  bool success = 3;       // 认证结果 (成功/失败)
+  string message = 4;     // 认证失败消息 (可选)
 }
 
 // 阅读状态信息
