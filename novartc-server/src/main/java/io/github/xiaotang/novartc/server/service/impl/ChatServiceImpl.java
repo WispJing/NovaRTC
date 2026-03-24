@@ -88,6 +88,7 @@ public class ChatServiceImpl implements ChatService {
                 vo.setTitle("未知用户");
             }
 
+            fillLastMessage(vo);
             return vo;
         }).toList();
 
@@ -117,13 +118,27 @@ public class ChatServiceImpl implements ChatService {
                 vo.setGroupId(group.getId());
                 vo.setGroupNum(group.getGroupNum());
                 vo.setTitle(group.getGroupName());
+                fillLastMessage(vo);
                 return vo;
             }).toList();
 
             result.addAll(groupVos);
         }
 
-        return result;
+        return result.stream()
+                .sorted((left, right) -> {
+                    if (left.getLastMessageTime() == null && right.getLastMessageTime() == null) {
+                        return 0;
+                    }
+                    if (left.getLastMessageTime() == null) {
+                        return 1;
+                    }
+                    if (right.getLastMessageTime() == null) {
+                        return -1;
+                    }
+                    return right.getLastMessageTime().compareTo(left.getLastMessageTime());
+                })
+                .toList();
     }
 
     @Override
@@ -213,5 +228,31 @@ public class ChatServiceImpl implements ChatService {
             vo.setContent(JacksonUtil.toObject(message.getContentJson(), Object.class));
         }
         return vo;
+    }
+
+    private void fillLastMessage(ChatInfoVO vo) {
+        List<IMMessage> messages = imMessageRepository.findHistory(vo.getChatId(), null, 1);
+        if (messages.isEmpty()) {
+            return;
+        }
+
+        IMMessage latest = messages.getFirst();
+        vo.setLastMessageType(latest.getMessageType());
+        vo.setLastMessageTime(latest.getServerTime() != null ? latest.getServerTime() : latest.getClientTime());
+        vo.setLastMessage(resolveLastMessage(latest));
+    }
+
+    private String resolveLastMessage(IMMessage latest) {
+        if (StringUtils.isNotBlank(latest.getMessageText())) {
+            return latest.getMessageText();
+        }
+        return switch (StringUtils.defaultString(latest.getMessageType()).toUpperCase()) {
+            case "IMAGE" -> "[图片]";
+            case "TEXT_AND_IMAGE" -> "[图文]";
+            case "FILE" -> "[文件]";
+            case "VIDEO" -> "[视频]";
+            case "AUDIO" -> "[语音]";
+            default -> "[消息]";
+        };
     }
 }

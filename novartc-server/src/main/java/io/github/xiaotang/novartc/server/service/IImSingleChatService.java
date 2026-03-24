@@ -16,4 +16,8 @@ import java.util.List;
 public interface IImSingleChatService extends IService<ImSingleChat> {
 
     List<ImSingleChat> getByUserId(String userId);
+
+    ImSingleChat getByUsers(String user1Id, String user2Id);
+
+    ImSingleChat createOrGet(String currentUserId, String targetUserId);
 }
