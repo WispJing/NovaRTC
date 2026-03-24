@@ -36,4 +36,14 @@ public class IMMessageRepositoryImpl extends BaseMongoDaoIMpl<IMMessage> impleme
 
         return find(query);
     }
+
+    @Override
+    public List<String> findOtherUserMessageIds(String chatId, String currentUserId) {
+        Query query = Query.query(Criteria.where("chat_id").is(chatId).and("sender_id").ne(currentUserId));
+        query.fields().include("message_id");
+        return find(query).stream()
+                .map(IMMessage::getMessageId)
+                .filter(messageId -> messageId != null && !messageId.isBlank())
+                .toList();
+    }
 }

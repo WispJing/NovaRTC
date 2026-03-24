@@ -26,4 +26,5 @@ public class ChatHistoryVO {
     private Object content;
     private Instant serverTime;
     private Instant clientTime;
+    private Boolean read;
 }

@@ -15,4 +15,6 @@ public interface ChatService {
     List<ChatInfoVO> chatList();
 
     ChatHistoryPageVO history(String chatId, Long beforeChatSeq, Integer limit);
+
+    void markRead(String chatId);
 }

@@ -8,11 +8,13 @@ import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryVO;
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.entity.mongodb.IMMessage;
+import io.github.xiaotang.novartc.server.entity.mongodb.IMReadStatus;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupMember;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMMessageRepository;
+import io.github.xiaotang.novartc.server.repository.mongodb.IMReadStatusRepository;
 import io.github.xiaotang.novartc.server.service.ChatService;
 import io.github.xiaotang.novartc.server.service.IImGroupChatService;
 import io.github.xiaotang.novartc.server.service.IImGroupMemberService;
@@ -22,10 +24,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,6 +48,7 @@ public class ChatServiceImpl implements ChatService {
     private final IImGroupChatService imGroupChatService;
     private final IImGroupMemberService imGroupMemberService;
     private final IMMessageRepository imMessageRepository;
+    private final IMReadStatusRepository imReadStatusRepository;
 
     @Override
     public List<ChatInfoVO> chatList() {
@@ -88,7 +94,8 @@ public class ChatServiceImpl implements ChatService {
                 vo.setTitle("未知用户");
             }
 
-            fillLastMessage(vo);
+            fillLastMessage(vo, currentUserId);
+            vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
             return vo;
         }).toList();
 
@@ -118,7 +125,8 @@ public class ChatServiceImpl implements ChatService {
                 vo.setGroupId(group.getId());
                 vo.setGroupNum(group.getGroupNum());
                 vo.setTitle(group.getGroupName());
-                fillLastMessage(vo);
+                fillLastMessage(vo, currentUserId);
+                vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
                 return vo;
             }).toList();
 
@@ -149,20 +157,58 @@ public class ChatServiceImpl implements ChatService {
         }
 
         int pageSize = normalizeLimit(limit);
-        validateChatAccess(chatId, currentUserId);
+        ImSingleChat singleChat = validateChatAccess(chatId, currentUserId);
+        markRead(chatId);
 
         List<IMMessage> messages = imMessageRepository.findHistory(chatId, beforeChatSeq, pageSize + 1);
         boolean hasMore = messages.size() > pageSize;
         List<IMMessage> pageMessages = hasMore ? messages.subList(0, pageSize) : messages;
+        List<String> pageMessageIds = pageMessages.stream()
+                .map(IMMessage::getMessageId)
+                .filter(StringUtils::isNotBlank)
+                .toList();
+
+        Set<String> currentUserReadIds = imReadStatusRepository.findReadMessageIds(currentUserId, pageMessageIds);
+        String peerUserId = singleChat == null ? null : resolvePeerUserId(singleChat, currentUserId);
+        Set<String> peerReadIds = StringUtils.isBlank(peerUserId)
+                ? Set.of()
+                : imReadStatusRepository.findReadMessageIds(peerUserId, pageMessageIds);
 
         ChatHistoryPageVO page = new ChatHistoryPageVO();
         page.setChatId(chatId);
         page.setHasMore(hasMore);
-        page.setRecords(pageMessages.stream().map(this::toHistoryVO).toList());
+        page.setRecords(pageMessages.stream()
+                .map(message -> toHistoryVO(message, currentUserId, peerReadIds, currentUserReadIds))
+                .toList());
         if (!pageMessages.isEmpty()) {
             page.setNextBeforeChatSeq(pageMessages.get(pageMessages.size() - 1).getChatSeq());
         }
         return page;
+    }
+
+    @Override
+    public void markRead(String chatId) {
+        String currentUserId = UserContextHolder.getUserId();
+        if (StringUtils.isBlank(chatId)) {
+            throw new ApplicationException("chatId is blank!");
+        }
+
+        validateChatAccess(chatId, currentUserId);
+
+        List<String> unreadMessageIds = imMessageRepository.findOtherUserMessageIds(chatId, currentUserId);
+        if (unreadMessageIds.isEmpty()) {
+            return;
+        }
+
+        Set<String> existingReadIds = imReadStatusRepository.findReadMessageIds(currentUserId, unreadMessageIds);
+        List<IMReadStatus> inserts = unreadMessageIds.stream()
+                .filter(messageId -> !existingReadIds.contains(messageId))
+                .map(messageId -> createReadStatus(currentUserId, messageId))
+                .toList();
+
+        if (!inserts.isEmpty()) {
+            imReadStatusRepository.insertBatch(inserts);
+        }
     }
 
     private int normalizeLimit(Integer limit) {
@@ -175,17 +221,18 @@ public class ChatServiceImpl implements ChatService {
         return limit;
     }
 
-    private void validateChatAccess(String chatId, String currentUserId) {
-        long singleCount = imSingleChatService.count(
+    private ImSingleChat validateChatAccess(String chatId, String currentUserId) {
+        ImSingleChat singleChat = imSingleChatService.getOne(
                 new LambdaQueryWrapper<ImSingleChat>()
                         .eq(ImSingleChat::getChatId, chatId)
                         .eq(ImSingleChat::getIsDeleted, false)
                         .and(w -> w.eq(ImSingleChat::getUser1Id, currentUserId)
                                 .or()
                                 .eq(ImSingleChat::getUser2Id, currentUserId))
+                        .last("limit 1")
         );
-        if (singleCount > 0) {
-            return;
+        if (singleChat != null) {
+            return singleChat;
         }
 
         ImGroupChat groupChat = imGroupChatService.getOne(
@@ -207,9 +254,13 @@ public class ChatServiceImpl implements ChatService {
         if (memberCount <= 0) {
             throw new ApplicationException("no permission to access this chat");
         }
+        return null;
     }
 
-    private ChatHistoryVO toHistoryVO(IMMessage message) {
+    private ChatHistoryVO toHistoryVO(IMMessage message,
+                                      String currentUserId,
+                                      Set<String> peerReadIds,
+                                      Set<String> currentUserReadIds) {
         ChatHistoryVO vo = new ChatHistoryVO();
         vo.setMessageId(message.getMessageId());
         vo.setChatSeq(message.getChatSeq());
@@ -227,10 +278,16 @@ public class ChatServiceImpl implements ChatService {
         if (StringUtils.isNotBlank(message.getContentJson())) {
             vo.setContent(JacksonUtil.toObject(message.getContentJson(), Object.class));
         }
+
+        if (StringUtils.equals(message.getSenderId(), currentUserId)) {
+            vo.setRead(Boolean.TRUE.equals(message.getIsGroup()) ? Boolean.FALSE : peerReadIds.contains(message.getMessageId()));
+        } else {
+            vo.setRead(currentUserReadIds.contains(message.getMessageId()));
+        }
         return vo;
     }
 
-    private void fillLastMessage(ChatInfoVO vo) {
+    private void fillLastMessage(ChatInfoVO vo, String currentUserId) {
         List<IMMessage> messages = imMessageRepository.findHistory(vo.getChatId(), null, 1);
         if (messages.isEmpty()) {
             return;
@@ -240,6 +297,36 @@ public class ChatServiceImpl implements ChatService {
         vo.setLastMessageType(latest.getMessageType());
         vo.setLastMessageTime(latest.getServerTime() != null ? latest.getServerTime() : latest.getClientTime());
         vo.setLastMessage(resolveLastMessage(latest));
+        if (vo.getUnreadCount() == null) {
+            vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
+        }
+    }
+
+    private int countUnreadMessages(String chatId, String currentUserId) {
+        List<String> otherUserMessageIds = imMessageRepository.findOtherUserMessageIds(chatId, currentUserId);
+        if (otherUserMessageIds.isEmpty()) {
+            return 0;
+        }
+
+        Set<String> readMessageIds = imReadStatusRepository.findReadMessageIds(currentUserId, otherUserMessageIds);
+        return otherUserMessageIds.size() - readMessageIds.size();
+    }
+
+    private IMReadStatus createReadStatus(String currentUserId, String messageId) {
+        IMReadStatus readStatus = new IMReadStatus();
+        String id = uuid32();
+        readStatus.setId(id);
+        readStatus.setRead_status_id(id);
+        readStatus.setMessage_id(messageId);
+        readStatus.setUser_id(currentUserId);
+        readStatus.setRead_at(Instant.now());
+        return readStatus;
+    }
+
+    private String resolvePeerUserId(ImSingleChat singleChat, String currentUserId) {
+        return StringUtils.equals(singleChat.getUser1Id(), currentUserId)
+                ? singleChat.getUser2Id()
+                : singleChat.getUser1Id();
     }
 
     private String resolveLastMessage(IMMessage latest) {
@@ -254,5 +341,9 @@ public class ChatServiceImpl implements ChatService {
             case "AUDIO" -> "[语音]";
             default -> "[消息]";
         };
+    }
+
+    private String uuid32() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

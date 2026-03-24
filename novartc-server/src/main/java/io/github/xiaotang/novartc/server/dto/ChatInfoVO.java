@@ -24,4 +24,5 @@ public class ChatInfoVO {
     private String lastMessage;
     private String lastMessageType;
     private Instant lastMessageTime;
+    private Integer unreadCount;
 }
