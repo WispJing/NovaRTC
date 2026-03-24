@@ -14,4 +14,5 @@ public class ContactVO {
     private String userNum;
     private String username;
     private String avatarUrl;
+    private Boolean online;
 }

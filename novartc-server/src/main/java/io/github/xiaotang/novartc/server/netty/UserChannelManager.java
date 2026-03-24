@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.server.netty;
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
+import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,15 @@ public class UserChannelManager {
         if (StringUtils.isBlank(userId) || StringUtils.isBlank(token)) {
             return;
         }
+        boolean wasOffline = !isOnline(userId);
         channel.attr(NettyAttributes.USER_ID).set(userId);
         channel.attr(NettyAttributes.TOKEN).set(token);
         userChannels.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(channel);
         tokenChannels.put(token, channel);
         userRouteService.registerUser(userId, instanceIdProvider.getInstanceId());
+        if (wasOffline) {
+            broadcastPresence(userId, ChatMessage.PresenceStatus.ONLINE, "在线");
+        }
         // 可选：记录 token 与实例的映射，用于精确路由
         // userRouteService.registerToken(token, instanceIdProvider.getInstanceId());
         ChatAccessLog.log.info("User {} bound with token {}, channel: {}", userId, token, channel.id());
@@ -69,6 +74,9 @@ public class UserChannelManager {
                 if (channels.isEmpty()) {
                     userChannels.remove(userId);
                     userRouteService.unregisterUser(userId, instanceIdProvider.getInstanceId());
+                    if (!isOnline(userId)) {
+                        broadcastPresence(userId, ChatMessage.PresenceStatus.OFFLINE, "离线");
+                    }
                 }
             }
         }
@@ -113,9 +121,20 @@ public class UserChannelManager {
         return !CollectionUtils.isEmpty(userChannels.get(userId));
     }
 
+    public boolean isOnline(String userId) {
+        return StringUtils.isNotBlank(userId) && !userRouteService.getUserInstances(userId).isEmpty();
+    }
+
     // 获取用户在本地的所有Channel
     public Set<Channel> getLocalChannels(String userId) {
         return userChannels.get(userId);
+    }
+
+    public void sendToAllUsers(Object msg) {
+        userChannels.values().stream()
+                .flatMap(Set::stream)
+                .filter(Channel::isActive)
+                .forEach(channel -> channel.writeAndFlush(msg));
     }
 
     // 群组缓存操作
@@ -135,5 +154,21 @@ public class UserChannelManager {
 
     public Set<String> getGroupMembers(String groupId) {
         return groupMembers.getOrDefault(groupId, Set.of());
+    }
+
+    private void broadcastPresence(String userId, ChatMessage.PresenceStatus status, String message) {
+        ChatMessage.MsgBody presenceMessage = ChatMessage.MsgBody.newBuilder()
+                .setMessageId("presence-" + userId + "-" + System.currentTimeMillis())
+                .setMessageType(ChatMessage.MessageType.PRESENCE)
+                .setTimestamp(System.currentTimeMillis())
+                .setPresenceMessage(ChatMessage.Presence.newBuilder()
+                        .setUserId(userId)
+                        .setStatus(status)
+                        .setLastActiveAt(System.currentTimeMillis())
+                        .setIsBroadcast(true)
+                        .setMessage(message == null ? "" : message)
+                        .build())
+                .build();
+        sendToAllUsers(presenceMessage);
     }
 }

@@ -15,6 +15,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMMessageRepository;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMReadStatusRepository;
+import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import io.github.xiaotang.novartc.server.service.ChatService;
 import io.github.xiaotang.novartc.server.service.IImGroupChatService;
 import io.github.xiaotang.novartc.server.service.IImGroupMemberService;
@@ -49,6 +50,7 @@ public class ChatServiceImpl implements ChatService {
     private final IImGroupMemberService imGroupMemberService;
     private final IMMessageRepository imMessageRepository;
     private final IMReadStatusRepository imReadStatusRepository;
+    private final UserRouteService userRouteService;
 
     @Override
     public List<ChatInfoVO> chatList() {
@@ -90,8 +92,10 @@ public class ChatServiceImpl implements ChatService {
                 vo.setTitle(targetUser.getUsername());
                 vo.setTargetUserNum(targetUser.getUserNum());
                 vo.setAvatarUrl(targetUser.getAvatarUrl());
+                vo.setOnline(isUserOnline(targetUser.getId()));
             } else {
                 vo.setTitle("未知用户");
+                vo.setOnline(false);
             }
 
             fillLastMessage(vo, currentUserId);
@@ -112,6 +116,18 @@ public class ChatServiceImpl implements ChatService {
                 .toList();
 
         if (!groupIds.isEmpty()) {
+            List<ImGroupMember> groupMembers = imGroupMemberService.list(
+                    new LambdaQueryWrapper<ImGroupMember>()
+                            .in(ImGroupMember::getGroupId, groupIds)
+                            .eq(ImGroupMember::getIsDeleted, false)
+            );
+            Map<String, List<ImGroupMember>> membersByGroupId = groupMembers.stream()
+                    .collect(Collectors.groupingBy(ImGroupMember::getGroupId));
+            Map<String, Boolean> onlineUserMap = groupMembers.stream()
+                    .map(ImGroupMember::getUserId)
+                    .distinct()
+                    .collect(Collectors.toMap(Function.identity(), this::isUserOnline));
+
             List<ImGroupChat> groupChats = imGroupChatService.list(
                     new LambdaQueryWrapper<ImGroupChat>()
                             .in(ImGroupChat::getId, groupIds)
@@ -125,6 +141,12 @@ public class ChatServiceImpl implements ChatService {
                 vo.setGroupId(group.getId());
                 vo.setGroupNum(group.getGroupNum());
                 vo.setTitle(group.getGroupName());
+                List<ImGroupMember> groupMemberList = membersByGroupId.getOrDefault(group.getId(), List.of());
+                vo.setMemberCount(groupMemberList.size());
+                vo.setOnlineCount((int) groupMemberList.stream()
+                        .map(ImGroupMember::getUserId)
+                        .filter(userId -> Boolean.TRUE.equals(onlineUserMap.get(userId)))
+                        .count());
                 fillLastMessage(vo, currentUserId);
                 vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
                 return vo;
@@ -209,6 +231,10 @@ public class ChatServiceImpl implements ChatService {
         if (!inserts.isEmpty()) {
             imReadStatusRepository.insertBatch(inserts);
         }
+    }
+
+    private boolean isUserOnline(String userId) {
+        return !userRouteService.getUserInstances(userId).isEmpty();
     }
 
     private int normalizeLimit(Integer limit) {

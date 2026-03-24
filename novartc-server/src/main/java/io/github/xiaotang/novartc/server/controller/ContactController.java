@@ -8,6 +8,7 @@ import io.github.xiaotang.novartc.server.dto.ContactVO;
 import io.github.xiaotang.novartc.server.dto.StartChatRequest;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
+import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import java.util.List;
 public class ContactController {
     private final IImUserService imUserService;
     private final IImSingleChatService imSingleChatService;
+    private final UserChannelManager userChannelManager;
 
     @PostMapping("/list")
     public List<ContactVO> list() {
@@ -59,6 +61,7 @@ public class ContactController {
         vo.setTargetUserNum(targetUser.getUserNum());
         vo.setTitle(targetUser.getUsername());
         vo.setAvatarUrl(targetUser.getAvatarUrl());
+        vo.setOnline(userChannelManager.isOnline(targetUser.getId()));
         vo.setLastMessage("");
         vo.setLastMessageType("SYSTEM");
         vo.setUnreadCount(0);
@@ -71,6 +74,7 @@ public class ContactController {
         vo.setUserNum(user.getUserNum());
         vo.setUsername(user.getUsername());
         vo.setAvatarUrl(user.getAvatarUrl());
+        vo.setOnline(userChannelManager.isOnline(user.getId()));
         return vo;
     }
 }

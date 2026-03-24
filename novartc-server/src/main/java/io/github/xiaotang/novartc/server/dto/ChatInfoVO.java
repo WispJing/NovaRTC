@@ -21,6 +21,9 @@ public class ChatInfoVO {
     private String groupId;
     private String groupNum;
     private String avatarUrl;
+    private Boolean online;
+    private Integer memberCount;
+    private Integer onlineCount;
     private String lastMessage;
     private String lastMessageType;
     private Instant lastMessageTime;
