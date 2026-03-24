@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.server.netty;
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.MessageService;
+import io.github.xiaotang.novartc.server.service.MessagePersistenceService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
     private final MessageService messageService;
+    private final MessagePersistenceService messagePersistenceService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -41,14 +43,15 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
 
             case PONG -> ChatMsgLog.msgLog.info("receive pong {}", userId);
 
-            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE -> handleMessage(msgBody);
+            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE -> handleMessage(msgBody, userId);
 
             default -> ChatMsgLog.msgLog.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
         }
     }
 
-    private void handleMessage(ChatMessage.MsgBody msgBody) {
-        ChatMsgLog.msg(msgBody);
-        messageService.sendMessage(msgBody);
+    private void handleMessage(ChatMessage.MsgBody msgBody, String userId) {
+        ChatMessage.MsgBody persistedMessage = messagePersistenceService.persist(msgBody, userId);
+        ChatMsgLog.msg(persistedMessage);
+        messageService.sendMessage(persistedMessage);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.service;
 
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
+import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ import java.util.List;
  */
 public interface ChatService {
     List<ChatInfoVO> chatList();
+
+    ChatHistoryPageVO history(String chatId, Long beforeChatSeq, Integer limit);
 }
