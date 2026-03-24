@@ -13,4 +13,5 @@ public class IMUserDTO {
     private String userNum;
     private String username;
     private String password;
+    private String clientType;
 }

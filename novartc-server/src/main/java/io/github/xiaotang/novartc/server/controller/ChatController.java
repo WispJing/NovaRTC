@@ -1,12 +1,13 @@
 package io.github.xiaotang.novartc.server.controller;
 
-import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
+import io.github.xiaotang.novartc.server.dto.ChatHistoryRequest;
+import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,9 +30,7 @@ public class ChatController {
     }
 
     @PostMapping("/history")
-    public ChatHistoryPageVO history(@RequestParam String chatId,
-                                     @RequestParam(required = false) Long beforeChatSeq,
-                                     @RequestParam(required = false, defaultValue = "20") Integer limit) {
-        return chatService.history(chatId, beforeChatSeq, limit);
+    public ChatHistoryPageVO history(@RequestBody ChatHistoryRequest request) {
+        return chatService.history(request.getChatId(), request.getBeforeChatSeq(), request.getLimit());
     }
 }
