@@ -40,14 +40,18 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
             return null;
         }
 
+        var ordered = normalizeUserPair(user1Id, user2Id);
+        ImSingleChat exact = getOne(new LambdaQueryWrapper<ImSingleChat>()
+                .eq(ImSingleChat::getUser1Id, ordered[0])
+                .eq(ImSingleChat::getUser2Id, ordered[1])
+                .last("limit 1"));
+        if (exact != null) {
+            return exact;
+        }
+
         return getOne(new LambdaQueryWrapper<ImSingleChat>()
-                .eq(ImSingleChat::getIsDeleted, false)
-                .and(w -> w
-                        .and(inner -> inner.eq(ImSingleChat::getUser1Id, user1Id)
-                                .eq(ImSingleChat::getUser2Id, user2Id))
-                        .or()
-                        .and(inner -> inner.eq(ImSingleChat::getUser1Id, user2Id)
-                                .eq(ImSingleChat::getUser2Id, user1Id)))
+                .eq(ImSingleChat::getUser1Id, ordered[1])
+                .eq(ImSingleChat::getUser2Id, ordered[0])
                 .last("limit 1"));
     }
 
@@ -62,17 +66,28 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
 
         ImSingleChat existing = getByUsers(currentUserId, targetUserId);
         if (existing != null) {
+            if (Boolean.TRUE.equals(existing.getIsDeleted())) {
+                existing.setIsDeleted(false);
+                updateById(existing);
+            }
             return existing;
         }
 
+        var ordered = normalizeUserPair(currentUserId, targetUserId);
         ImSingleChat chat = new ImSingleChat();
         chat.setId(uuid32());
         chat.setChatId(uuid32());
-        chat.setUser1Id(currentUserId);
-        chat.setUser2Id(targetUserId);
+        chat.setUser1Id(ordered[0]);
+        chat.setUser2Id(ordered[1]);
         chat.setIsDeleted(false);
         save(chat);
         return chat;
+    }
+
+    private String[] normalizeUserPair(String left, String right) {
+        return left.compareTo(right) <= 0
+                ? new String[] { left, right }
+                : new String[] { right, left };
     }
 
     private String uuid32() {

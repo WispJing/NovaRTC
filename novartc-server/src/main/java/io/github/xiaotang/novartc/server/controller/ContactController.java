@@ -61,6 +61,7 @@ public class ContactController {
         vo.setAvatarUrl(targetUser.getAvatarUrl());
         vo.setLastMessage("");
         vo.setLastMessageType("SYSTEM");
+        vo.setUnreadCount(0);
         return vo;
     }
 
@@ -73,3 +74,4 @@ public class ContactController {
         return vo;
     }
 }
+
