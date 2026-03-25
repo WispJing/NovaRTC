@@ -1,6 +1,8 @@
 package io.github.xiaotang.novartc.server.queue.rocketmq;
 
+import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
+import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +48,7 @@ public class RocketMQConsumerConfig {
 
     private DefaultMQPushConsumer chatConsumer;
     private DefaultMQPushConsumer presenceConsumer;
+    private DefaultMQPushConsumer tokenKickConsumer;
 
     @Bean
     public DefaultMQPushConsumer chatMessageConsumer() throws Exception {
@@ -116,6 +120,38 @@ public class RocketMQConsumerConfig {
         return presenceConsumer;
     }
 
+    @Bean
+    public DefaultMQPushConsumer tokenKickConsumer() throws Exception {
+        tokenKickConsumer = new DefaultMQPushConsumer(imConfigProperties.getTokenKickConsumerGroup());
+        tokenKickConsumer.setNamesrvAddr(nameServer);
+        tokenKickConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
+        tokenKickConsumer.setMessageModel(MessageModel.BROADCASTING);
+        tokenKickConsumer.subscribe(imConfigProperties.getTokenKickTopic(), "*");
+        logger.info("RocketMQ token kick consumer subscribed to topic: {}, group: {}", imConfigProperties.getTokenKickTopic(), imConfigProperties.getTokenKickConsumerGroup());
+
+        tokenKickConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
+            for (MessageExt msg : msgList) {
+                try {
+                    String sourceInstanceId = msg.getProperty(RocketMQHeader.SOURCE_INSTANCE_ID);
+                    if (instanceIdProvider.getInstanceId().equals(sourceInstanceId)) {
+                        continue;
+                    }
+                    TokenKickMessage kickMessage = JacksonUtil.toObject(new String(msg.getBody(), StandardCharsets.UTF_8), TokenKickMessage.class);
+                    logger.info("Received token kick message for userId: {}", kickMessage.getUserId());
+                    userChannelManager.closeByToken(kickMessage.getToken());
+                } catch (Exception e) {
+                    logger.error("Consume token kick event error", e);
+                    return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                }
+            }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+
+        tokenKickConsumer.start();
+        logger.info("RocketMQ token kick consumer started");
+        return tokenKickConsumer;
+    }
+
     @PreDestroy
     public void destroy() {
         if (chatConsumer != null) {
@@ -125,6 +161,10 @@ public class RocketMQConsumerConfig {
         if (presenceConsumer != null) {
             presenceConsumer.shutdown();
             logger.info("RocketMQ presence consumer shutdown");
+        }
+        if (tokenKickConsumer != null) {
+            tokenKickConsumer.shutdown();
+            logger.info("RocketMQ token kick consumer shutdown");
         }
     }
 }

@@ -5,14 +5,13 @@ import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JwtUtil;
 import io.github.xiaotang.novartc.common.util.MD5Util;
-import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
+import io.github.xiaotang.novartc.server.queue.TokenKickBroadcastService;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -34,10 +33,9 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class LoginService {
     private final Logger logger = LoggerFactory.getLogger(LoginService.class);
-    private final RocketMQTemplate rocketMQTemplate;
     private final StringRedisTemplate redisTemplate;
     private final IImUserService imUserService;
-    private final IMConfigProperties imConfigProperties;
+    private final TokenKickBroadcastService tokenKickBroadcastService;
 
     /**
      * 登录（支持多端）
@@ -137,7 +135,7 @@ public class LoginService {
         }
         // 发送踢人消息
         TokenKickMessage kickMsg = new TokenKickMessage(userId, token);
-        rocketMQTemplate.convertAndSend(imConfigProperties.getTokenKickTopic(), kickMsg);
+        tokenKickBroadcastService.broadcast(kickMsg);
     }
 
     // 踢掉指定 token
@@ -145,7 +143,7 @@ public class LoginService {
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
         redisTemplate.delete(tokenKey);
         redisTemplate.opsForSet().remove(LoginConstant.USER_TOKEN_PREFIX + userId, token);
-        rocketMQTemplate.convertAndSend(imConfigProperties.getTokenKickTopic(), new TokenKickMessage(userId, token));
+        tokenKickBroadcastService.broadcast(new TokenKickMessage(userId, token));
     }
 
     // 踢掉用户的所有指定类型的设备
@@ -170,7 +168,7 @@ public class LoginService {
         if (tokens != null) {
             for (String token : tokens) {
                 redisTemplate.delete(LoginConstant.TOKEN_PREFIX + token);
-                rocketMQTemplate.convertAndSend(imConfigProperties.getTokenKickTopic(), new TokenKickMessage(userId, token));
+                tokenKickBroadcastService.broadcast(new TokenKickMessage(userId, token));
             }
         }
         redisTemplate.delete(userTokensKey);
