@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.mapper.ImSingleChatMapper;
@@ -12,14 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * <p>
- * 单聊信息表 服务实现类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
- */
 @Service
 public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImSingleChat> implements IImSingleChatService {
 
@@ -58,10 +51,7 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
     @Override
     public ImSingleChat createOrGet(String currentUserId, String targetUserId) {
         if (StringUtils.isAnyBlank(currentUserId, targetUserId)) {
-            throw new ApplicationException("userId is blank");
-        }
-        if (StringUtils.equals(currentUserId, targetUserId)) {
-            throw new ApplicationException("cannot chat with self");
+            throw ex(ExceptionEnum.FRIEND_CHAT_USER_ID_REQUIRED);
         }
 
         ImSingleChat existing = getByUsers(currentUserId, targetUserId);
@@ -88,6 +78,10 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
         return left.compareTo(right) <= 0
                 ? new String[] { left, right }
                 : new String[] { right, left };
+    }
+
+    private ApplicationException ex(ExceptionEnum exceptionEnum) {
+        return new ApplicationException(exceptionEnum.getValue(), exceptionEnum.getContent());
     }
 
     private String uuid32() {

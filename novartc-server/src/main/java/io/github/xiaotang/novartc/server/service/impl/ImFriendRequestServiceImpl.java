@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
 import io.github.xiaotang.novartc.common.enums.FriendRequestStatus;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.server.dto.FriendRequestCreateRequest;
@@ -53,29 +54,29 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO sendRequest(String currentUserId, FriendRequestCreateRequest request) {
         if (request == null || StringUtils.isBlank(request.getTargetUserId())) {
-            throw new ApplicationException("target user is required");
+            throw ex(ExceptionEnum.FRIEND_TARGET_REQUIRED);
         }
         if (StringUtils.equals(currentUserId, request.getTargetUserId())) {
-            throw new ApplicationException("cannot add self");
+            throw ex(ExceptionEnum.FRIEND_CANNOT_ADD_SELF);
         }
 
         ImUser targetUser = imUserService.selectByUserId(request.getTargetUserId());
         if (targetUser == null) {
-            throw new ApplicationException("target user not found");
+            throw ex(ExceptionEnum.FRIEND_TARGET_NOT_FOUND);
         }
         if (isFriend(currentUserId, targetUser.getId())) {
-            throw new ApplicationException("already friends");
+            throw ex(ExceptionEnum.FRIEND_ALREADY_EXISTS);
         }
 
         ImFriendRequest reversePending = getRequest(targetUser.getId(), currentUserId);
         if (reversePending != null && isPending(reversePending)) {
-            throw new ApplicationException("target user has already sent you a friend request");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_ALREADY_RECEIVED);
         }
 
         ImFriendRequest existing = getRequest(currentUserId, targetUser.getId());
         ImFriendRequest entity = existing == null ? new ImFriendRequest() : existing;
         if (existing != null && isPending(existing)) {
-            throw new ApplicationException("friend request already sent");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_ALREADY_SENT);
         }
 
         if (StringUtils.isBlank(entity.getId())) {
@@ -99,24 +100,24 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO handleRequest(String currentUserId, FriendRequestHandleRequest request) {
         if (request == null || StringUtils.isAnyBlank(request.getRequestId(), request.getStatus())) {
-            throw new ApplicationException("requestId and status are required");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_REQUIRED_FIELDS);
         }
 
         FriendRequestStatus targetStatus = parseHandleStatus(request.getStatus());
         ImFriendRequest entity = getById(request.getRequestId());
         if (entity == null || Boolean.TRUE.equals(entity.getIsDeleted())) {
-            throw new ApplicationException("friend request not found");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_NOT_FOUND);
         }
         if (!isPending(entity)) {
-            throw new ApplicationException("friend request has already been handled");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_ALREADY_HANDLED);
         }
 
         if (targetStatus == FriendRequestStatus.CANCELED) {
             if (!StringUtils.equals(currentUserId, entity.getRequesterId())) {
-                throw new ApplicationException("only requester can cancel the friend request");
+                throw ex(ExceptionEnum.FRIEND_REQUEST_CANCEL_PERMISSION_DENIED);
             }
         } else if (!StringUtils.equals(currentUserId, entity.getReceiverId())) {
-            throw new ApplicationException("only receiver can handle the friend request");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_HANDLE_PERMISSION_DENIED);
         }
 
         entity.setStatus(targetStatus.name());
@@ -139,11 +140,11 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         try {
             targetStatus = FriendRequestStatus.valueOf(status);
         } catch (IllegalArgumentException ex) {
-            throw new ApplicationException("invalid friend request status");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_INVALID_STATUS);
         }
 
         if (targetStatus == FriendRequestStatus.PENDING) {
-            throw new ApplicationException("friend request status can not be pending");
+            throw ex(ExceptionEnum.FRIEND_REQUEST_PENDING_NOT_ALLOWED);
         }
         return targetStatus;
     }
@@ -221,6 +222,10 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         vo.setReceiverUserNum(user == null ? "" : user.getUserNum());
         vo.setReceiverUsername(user == null ? "" : user.getUsername());
         vo.setReceiverAvatarUrl(user == null ? "" : user.getAvatarUrl());
+    }
+
+    private ApplicationException ex(ExceptionEnum exceptionEnum) {
+        return new ApplicationException(exceptionEnum.getValue(), exceptionEnum.getContent());
     }
 
     private String uuid32() {

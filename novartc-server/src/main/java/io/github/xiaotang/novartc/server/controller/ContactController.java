@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
@@ -66,15 +67,18 @@ public class ContactController {
         String currentUserId = UserContextHolder.getUserId();
         ImUser targetUser = imUserService.selectByUserId(request.getTargetUserId());
         if (targetUser == null) {
-            throw new ApplicationException("target user not found");
+            throw ex(ExceptionEnum.FRIEND_TARGET_NOT_FOUND);
         }
 
-        boolean isFriend = imFriendService.count(new LambdaQueryWrapper<ImFriend>()
-                .eq(ImFriend::getIsDeleted, false)
-                .eq(ImFriend::getUserId, currentUserId)
-                .eq(ImFriend::getFriendId, targetUser.getId())) > 0;
-        if (!isFriend) {
-            throw new ApplicationException("can only start chat with friends");
+        boolean isSelfChat = currentUserId.equals(targetUser.getId());
+        if (!isSelfChat) {
+            boolean isFriend = imFriendService.count(new LambdaQueryWrapper<ImFriend>()
+                    .eq(ImFriend::getIsDeleted, false)
+                    .eq(ImFriend::getUserId, currentUserId)
+                    .eq(ImFriend::getFriendId, targetUser.getId())) > 0;
+            if (!isFriend) {
+                throw ex(ExceptionEnum.FRIEND_CHAT_ONLY_FOR_FRIENDS);
+            }
         }
 
         ImSingleChat singleChat = imSingleChatService.createOrGet(currentUserId, targetUser.getId());
@@ -116,5 +120,9 @@ public class ContactController {
         vo.setAvatarUrl(user.getAvatarUrl());
         vo.setOnline(userChannelManager.isOnline(user.getId()));
         return vo;
+    }
+
+    private ApplicationException ex(ExceptionEnum exceptionEnum) {
+        return new ApplicationException(exceptionEnum.getValue(), exceptionEnum.getContent());
     }
 }

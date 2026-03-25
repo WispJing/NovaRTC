@@ -2,13 +2,8 @@ package io.github.xiaotang.novartc.common.enums;
 
 import lombok.Getter;
 
-/**
- * @author Tang_J on 2025/3/2 3:02
- * @Description TODO
- **/
 @Getter
 public enum ExceptionEnum {
-    //服务相关
     SERVER_ERROR(300, "服务器异常，请联系管理员"),
     SERVER_API_ERROR(301, "服务接口错误，请稍后重试"),
     SERVER_INVALID_URI(302, "无效的请求地址"),
@@ -20,7 +15,6 @@ public enum ExceptionEnum {
     USER_PERMISSION_FAIL(504, "用户权限异常"),
     USER_DISABLED(505, "账号被封禁"),
     USER_UN_REQUEST_AUTH(506, "用户没有访问权限"),
-
     USER_TOKEN_ERROR(507, "Token无效"),
     USER_PHONE_FORMAT_ERROR(508, "手机号码格式错误"),
     USER_REGISTER_ERROR(509, "注册失败,稍后重试"),
@@ -38,14 +32,29 @@ public enum ExceptionEnum {
     USER_PHONE_ADMIN_STOP(521, "您的手机号被管理员停止使用，请联系管理员"),
     CAN_NOT_MODITY_ADMIN(522, "无法更改超级管理员状态"),
 
-    //请求参数
+    FRIEND_TARGET_REQUIRED(530, "请选择要添加的好友"),
+    FRIEND_TARGET_NOT_FOUND(531, "目标用户不存在"),
+    FRIEND_CANNOT_ADD_SELF(532, "不能添加自己为好友"),
+    FRIEND_ALREADY_EXISTS(533, "你们已经是好友了"),
+    FRIEND_REQUEST_ALREADY_SENT(534, "好友申请已发送，请勿重复提交"),
+    FRIEND_REQUEST_ALREADY_RECEIVED(535, "对方已向你发起好友申请"),
+    FRIEND_REQUEST_REQUIRED_FIELDS(536, "申请ID和处理状态不能为空"),
+    FRIEND_REQUEST_NOT_FOUND(537, "好友申请不存在"),
+    FRIEND_REQUEST_ALREADY_HANDLED(538, "好友申请已处理"),
+    FRIEND_REQUEST_INVALID_STATUS(539, "好友申请状态无效"),
+    FRIEND_REQUEST_PENDING_NOT_ALLOWED(540, "好友申请状态不能为待处理"),
+    FRIEND_REQUEST_CANCEL_PERMISSION_DENIED(541, "只有申请人可以取消好友申请"),
+    FRIEND_REQUEST_HANDLE_PERMISSION_DENIED(542, "只有接收人可以处理好友申请"),
+    FRIEND_CHAT_ONLY_FOR_FRIENDS(543, "只能与好友发起单聊"),
+    FRIEND_CHAT_SELF_NOT_ALLOWED(544, "不能和自己发起单聊"),
+    FRIEND_CHAT_USER_ID_REQUIRED(545, "用户ID不能为空"),
+
     INVALID_PARAM_ERROR(601, "无效的请求参数"),
     INVALID_NOTIFY_PARAM(603, "回调参数有误"),
     INVALID_NOTIFY_SIGN(604, "回调签名有误"),
     FDFS_FILE_DELETE_FAIL(605, "FDFS文件删除失败"),
     UN_FIND_CAN_UPDATE_VERSION(606, "未发现可更新APK版本"),
 
-    //MinIO相关
     UN_SUPPORT_FILE_TYPE(900, "不支持的文件格式。请确认格式,重新上传"),
     CREATE_BUCKET_FAILED(901, "Bucket创建失败"),
     REMOVE_BUCKET_FAILED(902, "移除Bucket失败"),
