@@ -46,6 +46,7 @@ public class RocketMQConsumerConfig {
     private UserChannelManager userChannelManager;
 
     private DefaultMQPushConsumer consumer;
+    private DefaultMQPushConsumer presenceConsumer;
 
     @Bean
     public DefaultMQPushConsumer rocketMqConsumer() throws Exception {
@@ -86,11 +87,46 @@ public class RocketMQConsumerConfig {
         return consumer;
     }
 
+    @Bean
+    public DefaultMQPushConsumer rocketMqPresenceConsumer() throws Exception {
+        presenceConsumer = new DefaultMQPushConsumer(imConfigProperties.getPresenceConsumerGroup());
+        presenceConsumer.setNamesrvAddr(nameServer);
+        presenceConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
+        presenceConsumer.setMessageModel(MessageModel.BROADCASTING);
+        presenceConsumer.subscribe(imConfigProperties.getPresenceTopic(), "*");
+        logger.info("RocketMQ presence consumer subscribed topic: {}", imConfigProperties.getPresenceTopic());
+
+        presenceConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
+            for (MessageExt msg : msgList) {
+                try {
+                    String sourceInstanceId = msg.getProperty(RocketMQHeader.SOURCE_INSTANCE_ID);
+                    if (instanceIdProvider.getInstanceId().equals(sourceInstanceId)) {
+                        continue;
+                    }
+                    ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.parseFrom(msg.getBody());
+                    userChannelManager.sendToAllUsers(msgBody);
+                } catch (Exception e) {
+                    logger.error("Consume presence message error", e);
+                    return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                }
+            }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+        });
+
+        presenceConsumer.start();
+        logger.info("RocketMQ presence consumer started");
+        return presenceConsumer;
+    }
+
     @PreDestroy
     public void destroy() {
         if (consumer != null) {
             consumer.shutdown();
             logger.info("RocketMQ consumer shutdown");
+        }
+        if (presenceConsumer != null) {
+            presenceConsumer.shutdown();
+            logger.info("RocketMQ presence consumer shutdown");
         }
     }
 }

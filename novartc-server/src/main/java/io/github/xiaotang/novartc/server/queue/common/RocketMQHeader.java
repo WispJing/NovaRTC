@@ -9,4 +9,5 @@ package io.github.xiaotang.novartc.server.queue.common;
 public interface RocketMQHeader {
     String MSG_ID = "msgId";
     String TARGET_USER_ID = "targetUserId";
+    String SOURCE_INSTANCE_ID = "sourceInstanceId";
 }

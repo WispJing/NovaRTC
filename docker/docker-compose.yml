@@ -42,7 +42,7 @@ services:
       - novartc-net
     volumes:
       - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - D:/project/NovaRTC/logs:/data/logs
+      - ../logs:/data/logs
     depends_on:
       - elasticsearch
 
