@@ -18,7 +18,7 @@ import java.util.Set;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
-public class LocalMessageService implements MessageService {
+public class LocalChatMessageService implements MessageService {
     private final UserChannelManager userChannelManager;
 
     @Override
