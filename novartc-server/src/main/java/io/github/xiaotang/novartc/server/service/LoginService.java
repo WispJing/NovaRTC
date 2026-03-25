@@ -8,8 +8,8 @@ import io.github.xiaotang.novartc.common.util.MD5Util;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
-import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
+import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +35,7 @@ public class LoginService {
     private final StringRedisTemplate redisTemplate;
     private final IImUserService imUserService;
     private final TokenKickDispatchService tokenKickDispatchService;
+    private final UserRelationCacheService userRelationCacheService;
 
     /**
      * 登录（支持多端）
@@ -67,6 +67,7 @@ public class LoginService {
 
         // 将 token 加入用户的 Set 集合（多端）
         redisTemplate.opsForSet().add(LoginConstant.USER_TOKEN_PREFIX + userId, token);
+        userRelationCacheService.rebuildUserRelationsCacheAsync(userId);
 
         return LoginResponse.of(imUser, token);
     }

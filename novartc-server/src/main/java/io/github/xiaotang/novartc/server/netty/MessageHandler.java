@@ -1,13 +1,11 @@
 package io.github.xiaotang.novartc.server.netty;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
-import io.github.xiaotang.novartc.server.entity.mysql.ImFriend;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
-import io.github.xiaotang.novartc.server.service.IImFriendService;
 import io.github.xiaotang.novartc.server.service.MessagePersistenceService;
+import io.github.xiaotang.novartc.server.service.UserRelationCacheService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
     private final ChatDispatchService chatDispatchService;
     private final MessagePersistenceService messagePersistenceService;
-    private final IImFriendService imFriendService;
+    private final UserRelationCacheService userRelationCacheService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -75,13 +73,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
         if (StringUtils.isBlank(targetUserId)) {
             return false;
         }
-        if (StringUtils.equals(currentUserId, targetUserId)) {
-            return true;
-        }
-
-        return imFriendService.count(new LambdaQueryWrapper<ImFriend>()
-                .eq(ImFriend::getIsDeleted, false)
-                .eq(ImFriend::getUserId, currentUserId)
-                .eq(ImFriend::getFriendId, targetUserId)) > 0;
+        return userRelationCacheService.isFriend(currentUserId, targetUserId);
     }
 }

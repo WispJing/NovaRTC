@@ -25,6 +25,9 @@ public class IMConfigProperties {
     private String presenceConsumerGroup;
     private String tokenKickTopic;
     private String tokenKickConsumerGroup;
+    private String userFriendCacheKeyPreFix;
+    private String userGroupCacheKeyPreFix;
+    private String groupMembersCacheKeyPreFix;
     private Long workerId;
     private Long datacenterId;
 }

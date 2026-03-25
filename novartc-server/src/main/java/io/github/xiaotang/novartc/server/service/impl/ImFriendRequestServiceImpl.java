@@ -17,6 +17,7 @@ import io.github.xiaotang.novartc.server.service.IImFriendRequestService;
 import io.github.xiaotang.novartc.server.service.IImFriendService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
+import io.github.xiaotang.novartc.server.service.UserRelationCacheService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
     private final IImFriendService imFriendService;
     private final IImSingleChatService imSingleChatService;
     private final FriendRequestNotificationService friendRequestNotificationService;
+    private final UserRelationCacheService userRelationCacheService;
 
     @Override
     public List<FriendRequestVO> listByUserId(String currentUserId) {
@@ -128,6 +130,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         if (targetStatus == FriendRequestStatus.ACCEPTED) {
             createFriendRelation(entity);
             imSingleChatService.createOrGet(entity.getRequesterId(), entity.getReceiverId());
+            userRelationCacheService.rebuildUserRelationsCachesAsync(List.of(entity.getRequesterId(), entity.getReceiverId()));
         }
 
         ImFriendRequest latest = getById(entity.getId());

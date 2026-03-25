@@ -130,6 +130,9 @@ im:
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
   chatSeqKeyPreFix: 'im:chatseq:'
+  userFriendCacheKeyPreFix: 'im:relation:user:friends:'
+  userGroupCacheKeyPreFix: 'im:relation:user:groups:'
+  groupMembersCacheKeyPreFix: 'im:relation:group:members:'
   workerId: 1
   datacenterId: 1
 
@@ -138,3 +141,4 @@ logging:
     root: INFO
     io.github.xiaotang: INFO
     io.netty: INFO
+
