@@ -5,10 +5,14 @@ import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.dto.ContactVO;
+import io.github.xiaotang.novartc.server.dto.FriendRequestCreateRequest;
+import io.github.xiaotang.novartc.server.dto.FriendRequestHandleRequest;
+import io.github.xiaotang.novartc.server.dto.FriendRequestVO;
 import io.github.xiaotang.novartc.server.dto.StartChatRequest;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
+import io.github.xiaotang.novartc.server.service.IImFriendRequestService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Created on 2026/3/24 12:16
- *
- * @author tangj
- * @description
- */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/contact")
 public class ContactController {
     private final IImUserService imUserService;
     private final IImSingleChatService imSingleChatService;
+    private final IImFriendRequestService imFriendRequestService;
     private final UserChannelManager userChannelManager;
 
     @PostMapping("/list")
@@ -68,6 +67,21 @@ public class ContactController {
         return vo;
     }
 
+    @PostMapping("/request/list")
+    public List<FriendRequestVO> listFriendRequests() {
+        return imFriendRequestService.listByUserId(UserContextHolder.getUserId());
+    }
+
+    @PostMapping("/request/send")
+    public FriendRequestVO sendFriendRequest(@RequestBody FriendRequestCreateRequest request) {
+        return imFriendRequestService.sendRequest(UserContextHolder.getUserId(), request);
+    }
+
+    @PostMapping("/request/handle")
+    public FriendRequestVO handleFriendRequest(@RequestBody FriendRequestHandleRequest request) {
+        return imFriendRequestService.handleRequest(UserContextHolder.getUserId(), request);
+    }
+
     private ContactVO toContactVO(ImUser user) {
         ContactVO vo = new ContactVO();
         vo.setUserId(user.getId());
@@ -78,4 +92,3 @@ public class ContactController {
         return vo;
     }
 }
-

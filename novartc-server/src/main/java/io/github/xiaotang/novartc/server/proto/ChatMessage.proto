@@ -2,132 +2,142 @@ syntax = "proto3";
 
 package io.github.xiaotang.novartc.server.proto;
 
-option java_multiple_files = false;  // 生成每个消息类独立文件
-option java_package = "io.github.xiaotang.novartc.server.proto";  // 指定 Java 包名
-option java_outer_classname = "ChatMessage";  // 控制外部类名
+option java_multiple_files = false;
+option java_package = "io.github.xiaotang.novartc.server.proto";
+option java_outer_classname = "ChatMessage";
 
 option csharp_namespace = "NovaRTC.Protocol";
 
-// 消息类型枚举
 enum MessageType {
-  TEXT = 0;           // 文本消息
-  IMAGE = 1;          // 图片消息
-  VIDEO = 2;          // 视频消息
-  AUDIO = 3;          // 音频消息
-  FILE = 4;           // 文件消息
-  TEXT_AND_IMAGE = 5; // 复合消息类型：文本 + 图片
-  SYSTEM = 6;         // 系统消息
-  PING = 7;           // Ping 消息
-  PONG = 8;           // Pong 消息
-  AUTH = 9;           // 用户认证消息
-  PRESENCE = 10;      // 在线状态消息
+  TEXT = 0;
+  IMAGE = 1;
+  VIDEO = 2;
+  AUDIO = 3;
+  FILE = 4;
+  TEXT_AND_IMAGE = 5;
+  SYSTEM = 6;
+  PING = 7;
+  PONG = 8;
+  AUTH = 9;
+  PRESENCE = 10;
+  FRIEND_REQUEST = 11;
 }
 
-// 在线状态枚举
 enum PresenceStatus {
-  ONLINE = 0;         // 在线
-  OFFLINE = 1;        // 离线
-  BUSY = 2;           // 忙碌
-  AWAY = 3;           // 离开
-  INVISIBLE = 4;      // 隐身
+  ONLINE = 0;
+  OFFLINE = 1;
+  BUSY = 2;
+  AWAY = 3;
+  INVISIBLE = 4;
 }
 
-// 用户信息
+enum FriendRequestStatus {
+  FRIEND_REQUEST_PENDING = 0;
+  FRIEND_REQUEST_ACCEPTED = 1;
+  FRIEND_REQUEST_REJECTED = 2;
+  FRIEND_REQUEST_CANCELED = 3;
+}
+
+enum FriendRequestEventType {
+  FRIEND_REQUEST_CREATED = 0;
+  FRIEND_REQUEST_UPDATED = 1;
+}
+
 message User {
-  string user_id = 1;     // 用户ID
-  string username = 2;    // 用户名
-  string avatar_url = 3;  // 用户头像URL
+  string user_id = 1;
+  string username = 2;
+  string avatar_url = 3;
 }
 
-// 图片消息内容
 message ImageContent {
-  string image_url = 1;   // 图片URL
-  string image_description = 2; // 图片描述 (可选)
+  string image_url = 1;
+  string image_description = 2;
 }
 
-// 文本消息内容
 message TextContent {
-  string text = 1;        // 文本内容
+  string text = 1;
 }
 
-// 复合消息内容 (文本 + 图片)
 message TextAndImageContent {
-  TextContent text_content = 1;   // 文本内容
-  ImageContent image_content = 2; // 图片内容
+  TextContent text_content = 1;
+  ImageContent image_content = 2;
 }
 
-// 在线状态消息内容
 message Presence {
-  string user_id = 1;                // 状态所属用户ID
-  PresenceStatus status = 2;         // 在线状态
-  int64 last_active_at = 3;          // 最近活跃时间戳（Unix时间戳，毫秒）
-  string client_type = 4;            // 客户端类型：DESKTOP / MOBILE / WEB
-  string device_id = 5;              // 设备ID
-  bool is_broadcast = 6;             // 是否为广播给好友的状态变更
-  string message = 7;                // 备注信息，例如“手机在线”“忙碌中”
+  string user_id = 1;
+  PresenceStatus status = 2;
+  int64 last_active_at = 3;
+  string client_type = 4;
+  string device_id = 5;
+  bool is_broadcast = 6;
+  string message = 7;
 }
 
-// 消息体
-message MsgBody {
-  string message_id = 1;          // 消息唯一ID
-  MessageType message_type = 2;   // 消息类型（文本、图片、复合消息等）
-  User sender = 3;                // 发送者信息
-  int64 timestamp = 4;            // 消息发送时间戳（Unix时间戳）
-  bool is_group = 5;              // 是否为群聊消息（true为群聊，false为单聊）
+message FriendRequestEvent {
+  string request_id = 1;
+  string requester_id = 2;
+  string receiver_id = 3;
+  FriendRequestStatus status = 4;
+  string request_msg = 5;
+  int64 created_at = 6;
+  int64 handled_at = 7;
+  string handler_id = 8;
+  FriendRequestEventType event_type = 9;
+  bool unread = 10;
+}
 
-  // 单聊信息
+message MsgBody {
+  string message_id = 1;
+  MessageType message_type = 2;
+  User sender = 3;
+  int64 timestamp = 4;
+  bool is_group = 5;
+
   SingleChatInfo single_chat_info = 6;
-  // 群聊信息
   GroupChatInfo group_chat_info = 7;
 
-  // 根据消息类型选择对应的内容字段
   oneof content {
-    TextContent text_content = 8;                 // 文本消息内容
-    ImageContent image_content = 9;               // 图片消息内容
-    TextAndImageContent text_and_image_content = 10; // 复合消息（文本 + 图片）
-    Ping pong_ping = 11;                          // Ping 消息
-    Pong pong_response = 12;                      // Pong 消息
-    Auth auth_message = 13;                       // 用户认证消息
-    Presence presence_message = 14;               // 在线状态消息
+    TextContent text_content = 8;
+    ImageContent image_content = 9;
+    TextAndImageContent text_and_image_content = 10;
+    Ping pong_ping = 11;
+    Pong pong_response = 12;
+    Auth auth_message = 13;
+    Presence presence_message = 14;
+    FriendRequestEvent friend_request_event = 15;
   }
 }
 
-// 群聊消息附加信息（可选）
 message GroupChatInfo {
-  string chat_id = 1;     // 群聊ID
-  string group_id = 2;    // 群组ID
+  string chat_id = 1;
+  string group_id = 2;
 }
 
-// 单聊消息附加信息（可选）
 message SingleChatInfo {
-  string chat_id = 1;     // 单聊ID
-  string user1_id = 2;    // 用户1 ID
-  string user2_id = 3;    // 用户2 ID
+  string chat_id = 1;
+  string user1_id = 2;
+  string user2_id = 3;
 }
 
-// Ping 消息
 message Ping {
-  string ping_id = 1;     // Ping 唯一ID
-  string message = 2;     // Ping 消息内容 (可选)
+  string ping_id = 1;
+  string message = 2;
 }
 
-// Pong 消息
 message Pong {
-  string ping_id = 1;     // 对应的 Ping 唯一ID
-  string message = 2;     // Pong 消息内容 (可选)
+  string ping_id = 1;
+  string message = 2;
 }
 
-// 用户认证消息
 message Auth {
-  string user_id = 1;     // 用户ID
-  string token = 2;       // 认证令牌
-  bool success = 3;       // 认证结果 (成功/失败)
-  string message = 4;     // 认证失败消息 (可选)
+  string user_id = 1;
+  string token = 2;
+  bool success = 3;
+  string message = 4;
 }
 
-// 阅读状态信息
 message ReadStatus {
-  string message_id = 1;  // 消息ID
-  string user_id = 2;     // 阅读该消息的用户ID
-  string read_at = 3;     // 阅读时间 (字符串格式)
+  string message_id = 1;
+  string user_id = 2;
+  string read_at = 3;
 }
