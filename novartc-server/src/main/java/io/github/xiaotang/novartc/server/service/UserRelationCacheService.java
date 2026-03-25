@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.entity.mysql.ImFriend;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupMember;
+import io.github.xiaotang.novartc.server.mapper.ImFriendMapper;
+import io.github.xiaotang.novartc.server.mapper.ImGroupMemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,8 +23,8 @@ import java.util.stream.Collectors;
 public class UserRelationCacheService {
     private final StringRedisTemplate redisTemplate;
     private final IMConfigProperties imConfigProperties;
-    private final IImFriendService imFriendService;
-    private final IImGroupMemberService imGroupMemberService;
+    private final ImFriendMapper imFriendMapper;
+    private final ImGroupMemberMapper imGroupMemberMapper;
 
     @Async
     public void rebuildUserRelationsCacheAsync(String userId) {
@@ -61,7 +63,7 @@ public class UserRelationCacheService {
             return;
         }
 
-        List<String> friendIds = imFriendService.list(new LambdaQueryWrapper<ImFriend>()
+        List<String> friendIds = imFriendMapper.selectList(new LambdaQueryWrapper<ImFriend>()
                         .eq(ImFriend::getIsDeleted, false)
                         .eq(ImFriend::getUserId, userId))
                 .stream()
@@ -71,7 +73,7 @@ public class UserRelationCacheService {
                 .toList();
         replaceSet(buildUserFriendKey(userId), friendIds);
 
-        List<String> groupIds = imGroupMemberService.list(new LambdaQueryWrapper<ImGroupMember>()
+        List<String> groupIds = imGroupMemberMapper.selectList(new LambdaQueryWrapper<ImGroupMember>()
                         .eq(ImGroupMember::getIsDeleted, false)
                         .eq(ImGroupMember::getUserId, userId))
                 .stream()
@@ -89,7 +91,7 @@ public class UserRelationCacheService {
             return;
         }
 
-        List<String> memberUserIds = imGroupMemberService.list(new LambdaQueryWrapper<ImGroupMember>()
+        List<String> memberUserIds = imGroupMemberMapper.selectList(new LambdaQueryWrapper<ImGroupMember>()
                         .eq(ImGroupMember::getIsDeleted, false)
                         .eq(ImGroupMember::getGroupId, groupId))
                 .stream()
