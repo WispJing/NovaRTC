@@ -125,6 +125,8 @@ im:
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
   chatSeqKeyPreFix: 'im:chatseq:'
+  workerId: 1
+  datacenterId: 1
 
 logging:
   level:

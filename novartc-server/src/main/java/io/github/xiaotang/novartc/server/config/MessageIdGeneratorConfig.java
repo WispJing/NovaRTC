@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.config;
 
 import io.github.xiaotang.novartc.common.util.MessageIdUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,12 +12,14 @@ import org.springframework.context.annotation.Configuration;
  * @description
  */
 @Configuration
+@RequiredArgsConstructor
 public class MessageIdGeneratorConfig {
+    private final IMConfigProperties imConfigProperties;
+
     @Bean
     public MessageIdUtil messageIdUtil() {
-        // 从配置文件读取 workerId 和 datacenterId
-        long workerId = 1L;
-        long datacenterId = 1L;
+        long workerId = imConfigProperties.getWorkerId() == null ? 1L : imConfigProperties.getWorkerId();
+        long datacenterId = imConfigProperties.getDatacenterId() == null ? 1L : imConfigProperties.getDatacenterId();
         return new MessageIdUtil(workerId, datacenterId);
     }
 }

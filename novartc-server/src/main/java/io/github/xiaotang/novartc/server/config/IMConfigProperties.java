@@ -20,4 +20,6 @@ public class IMConfigProperties {
     private String instanceKeyPreFix;
     private String chatSeqKeyPreFix;
     private String imMsgTopic;
+    private Long workerId;
+    private Long datacenterId;
 }
