@@ -10,6 +10,6 @@ import lombok.Data;
  */
 @Data
 public class FriendRequestCreateRequest {
-    private String targetUserId;
+    private String targetUserNum;
     private String requestMsg;
 }

@@ -100,11 +100,13 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO sendFriendRequest(String currentUserId, FriendRequestCreateRequest request) {
         return imFriendRequestService.sendRequest(currentUserId, request);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO handleFriendRequest(String currentUserId, FriendRequestHandleRequest request) {
         return imFriendRequestService.handleRequest(currentUserId, request);
     }
@@ -123,3 +125,5 @@ public class ContactServiceImpl implements ContactService {
         return new ApplicationException(exceptionEnum.getValue(), exceptionEnum.getContent());
     }
 }
+
+

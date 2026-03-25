@@ -55,16 +55,16 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO sendRequest(String currentUserId, FriendRequestCreateRequest request) {
-        if (request == null || StringUtils.isBlank(request.getTargetUserId())) {
+        if (request == null || StringUtils.isBlank(request.getTargetUserNum())) {
             throw ex(ExceptionEnum.FRIEND_TARGET_REQUIRED);
         }
-        if (StringUtils.equals(currentUserId, request.getTargetUserId())) {
-            throw ex(ExceptionEnum.FRIEND_CANNOT_ADD_SELF);
-        }
 
-        ImUser targetUser = imUserService.selectByUserId(request.getTargetUserId());
+        ImUser targetUser = imUserService.selectByUserNum(request.getTargetUserNum());
         if (targetUser == null) {
             throw ex(ExceptionEnum.FRIEND_TARGET_NOT_FOUND);
+        }
+        if (StringUtils.equals(currentUserId, targetUser.getId())) {
+            throw ex(ExceptionEnum.FRIEND_CANNOT_ADD_SELF);
         }
         if (isFriend(currentUserId, targetUser.getId())) {
             throw ex(ExceptionEnum.FRIEND_ALREADY_EXISTS);
@@ -235,3 +235,5 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         return UUID.randomUUID().toString().replace("-", "");
     }
 }
+
+
