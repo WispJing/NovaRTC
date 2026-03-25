@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.server.netty;
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.PresenceDispatchService;
+import io.github.xiaotang.novartc.server.service.PresenceAudienceResolver;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import io.netty.channel.Channel;
@@ -22,6 +23,7 @@ public class UserChannelManager {
     private final InstanceIdProvider instanceIdProvider;
     private final PresenceDispatchService presenceDispatchService;
     private final LocalSessionDispatcher localSessionDispatcher;
+    private final PresenceAudienceResolver presenceAudienceResolver;
 
     public void bind(String userId, String token, Channel channel) {
         if (StringUtils.isBlank(userId) || StringUtils.isBlank(token)) {
@@ -111,6 +113,10 @@ public class UserChannelManager {
                         .setMessage(message == null ? "" : message)
                         .build())
                 .build();
-        presenceDispatchService.dispatch(presenceMessage);
+        Set<String> audienceUserIds = presenceAudienceResolver.resolveAudienceUserIds(userId);
+        if (audienceUserIds.isEmpty()) {
+            return;
+        }
+        presenceDispatchService.dispatch(presenceMessage, audienceUserIds);
     }
 }

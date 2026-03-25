@@ -106,7 +106,16 @@ public class RocketMQConsumerConfig {
                         continue;
                     }
                     ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.parseFrom(msg.getBody());
-                    localSessionDispatcher.sendToAllUsers(msgBody);
+                    String targetUserStr = msg.getProperty(RocketMQHeader.TARGET_USER_ID);
+                    if (targetUserStr == null || targetUserStr.isBlank()) {
+                        localSessionDispatcher.sendToAllUsers(msgBody);
+                    } else {
+                        Set<String> targetUserIds = Arrays.stream(targetUserStr.split(","))
+                                .filter(userId -> userId != null && !userId.isBlank())
+                                .filter(localSessionDispatcher::isLocalChannel)
+                                .collect(Collectors.toSet());
+                        localSessionDispatcher.sendToUsers(targetUserIds, msgBody);
+                    }
                 } catch (Exception e) {
                     logger.error("Consume presence event error", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;

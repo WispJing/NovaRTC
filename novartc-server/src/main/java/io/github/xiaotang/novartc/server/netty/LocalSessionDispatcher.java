@@ -96,6 +96,13 @@ public class LocalSessionDispatcher {
                 .forEach(channel -> channel.writeAndFlush(msg));
     }
 
+    public void sendToUsers(Set<String> userIds, Object msg) {
+        if (userIds == null || userIds.isEmpty()) {
+            return;
+        }
+        userIds.forEach(userId -> sendToUser(userId, msg));
+    }
+
     public void addGroupMember(String groupId, String userId) {
         groupMembers.computeIfAbsent(groupId, key -> ConcurrentHashMap.newKeySet()).add(userId);
     }

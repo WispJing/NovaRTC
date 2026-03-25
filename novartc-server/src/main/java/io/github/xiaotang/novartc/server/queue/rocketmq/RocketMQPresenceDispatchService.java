@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
@@ -27,14 +29,18 @@ public class RocketMQPresenceDispatchService implements PresenceDispatchService 
     private final IMConfigProperties imConfigProperties;
 
     @Override
-    public void dispatch(ChatMessage.MsgBody message) {
-        localSessionDispatcher.sendToAllUsers(message);
+    public void dispatch(ChatMessage.MsgBody message, Set<String> targetUserIds) {
+        if (targetUserIds == null || targetUserIds.isEmpty()) {
+            return;
+        }
+        localSessionDispatcher.sendToUsers(targetUserIds, message);
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(
                     imConfigProperties.getPresenceTopic(),
                     MessageBuilder.withPayload(message.toByteArray())
                             .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())
                             .setHeader(RocketMQHeader.SOURCE_INSTANCE_ID, instanceIdProvider.getInstanceId())
+                            .setHeader(RocketMQHeader.TARGET_USER_ID, String.join(",", targetUserIds))
                             .build()
             );
             logger.info("RocketMQ presence event send result: {}", JacksonUtil.toJson(sendResult));

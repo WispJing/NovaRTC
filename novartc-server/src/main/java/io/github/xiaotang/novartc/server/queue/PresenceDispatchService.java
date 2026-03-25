@@ -2,9 +2,11 @@ package io.github.xiaotang.novartc.server.queue;
 
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 
+import java.util.Set;
+
 /**
  * 在线状态派发服务
  */
 public interface PresenceDispatchService {
-    void dispatch(ChatMessage.MsgBody message);
+    void dispatch(ChatMessage.MsgBody message, Set<String> targetUserIds);
 }
