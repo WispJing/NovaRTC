@@ -43,25 +43,25 @@ public class RocketMQConsumerConfig {
     @Autowired
     private UserChannelManager userChannelManager;
 
-    private DefaultMQPushConsumer consumer;
+    private DefaultMQPushConsumer chatConsumer;
     private DefaultMQPushConsumer presenceConsumer;
 
     @Bean
-    public DefaultMQPushConsumer rocketMqConsumer() throws Exception {
-        consumer = new DefaultMQPushConsumer(imConfigProperties.getChatConsumerGroup());
-        consumer.setNamesrvAddr(nameServer);
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
-        // consumer.setMessageModel(MessageModel.CLUSTERING);
-        consumer.setMessageModel(MessageModel.BROADCASTING);
+    public DefaultMQPushConsumer chatMessageConsumer() throws Exception {
+        chatConsumer = new DefaultMQPushConsumer(imConfigProperties.getChatConsumerGroup());
+        chatConsumer.setNamesrvAddr(nameServer);
+        chatConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
+        // chatConsumer.setMessageModel(MessageModel.CLUSTERING);
+        chatConsumer.setMessageModel(MessageModel.BROADCASTING);
 
         // 动态订阅：Tag 为当前实例 ID
         String instanceId = instanceIdProvider.getInstanceId();
-        // consumer.subscribe(imConfigProperties.getChatTopic(), instanceId);
-        consumer.subscribe(imConfigProperties.getChatTopic(), "*");
-        // logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getChatTopic(), instanceId);
-        logger.info("RocketMQ consumer subscribed topic: {}, group: {}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup());
+        // chatConsumer.subscribe(imConfigProperties.getChatTopic(), instanceId);
+        chatConsumer.subscribe(imConfigProperties.getChatTopic(), "*");
+        // logger.info("RocketMQ chat consumer subscribed to topic: {}, tag: {}", imConfigProperties.getChatTopic(), instanceId);
+        logger.info("RocketMQ chat consumer subscribed to topic: {}, group: {}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup());
 
-        consumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
+        chatConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
                 try {
                     ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.parseFrom(msg.getBody());
@@ -73,26 +73,26 @@ public class RocketMQConsumerConfig {
                         userChannelManager.sendToUser(userId, msgBody);
                     }
                 } catch (Exception e) {
-                    logger.error("Consume message error", e);
+                    logger.error("Consume chat message error", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
 
-        consumer.start();
-        logger.info("RocketMQ consumer started");
-        return consumer;
+        chatConsumer.start();
+        logger.info("RocketMQ chat consumer started");
+        return chatConsumer;
     }
 
     @Bean
-    public DefaultMQPushConsumer rocketMqPresenceConsumer() throws Exception {
+    public DefaultMQPushConsumer presenceBroadcastConsumer() throws Exception {
         presenceConsumer = new DefaultMQPushConsumer(imConfigProperties.getPresenceConsumerGroup());
         presenceConsumer.setNamesrvAddr(nameServer);
         presenceConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         presenceConsumer.setMessageModel(MessageModel.BROADCASTING);
         presenceConsumer.subscribe(imConfigProperties.getPresenceTopic(), "*");
-        logger.info("RocketMQ presence consumer subscribed topic: {}, group: {}", imConfigProperties.getPresenceTopic(), imConfigProperties.getPresenceConsumerGroup());
+        logger.info("RocketMQ presence consumer subscribed to topic: {}, group: {}", imConfigProperties.getPresenceTopic(), imConfigProperties.getPresenceConsumerGroup());
 
         presenceConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
@@ -104,7 +104,7 @@ public class RocketMQConsumerConfig {
                     ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.parseFrom(msg.getBody());
                     userChannelManager.sendToAllUsers(msgBody);
                 } catch (Exception e) {
-                    logger.error("Consume presence message error", e);
+                    logger.error("Consume presence event error", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
             }
@@ -118,9 +118,9 @@ public class RocketMQConsumerConfig {
 
     @PreDestroy
     public void destroy() {
-        if (consumer != null) {
-            consumer.shutdown();
-            logger.info("RocketMQ consumer shutdown");
+        if (chatConsumer != null) {
+            chatConsumer.shutdown();
+            logger.info("RocketMQ chat consumer shutdown");
         }
         if (presenceConsumer != null) {
             presenceConsumer.shutdown();

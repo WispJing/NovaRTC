@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
-public class RocketMQMessageService implements MessageService {
-    private final Logger logger = LoggerFactory.getLogger(RocketMQMessageService.class);
+public class RocketMQChatMessageService implements MessageService {
+    private final Logger logger = LoggerFactory.getLogger(RocketMQChatMessageService.class);
     private final RocketMQTemplate rocketMQTemplate;
     private final UserRouteService userRouteService;
     private final UserChannelManager userChannelManager;
@@ -66,9 +66,9 @@ public class RocketMQMessageService implements MessageService {
                                 .build(),
                         message.getSender().getUserId()
                 );
-                logger.info("mq-sendResult: {}", JacksonUtil.toJson(sendResult));
+                logger.info("RocketMQ chat message send result: {}", JacksonUtil.toJson(sendResult));
             } catch (Exception e) {
-                logger.error("send mq failed", e);
+                logger.error("Send chat message to RocketMQ failed", e);
             }
         }
 

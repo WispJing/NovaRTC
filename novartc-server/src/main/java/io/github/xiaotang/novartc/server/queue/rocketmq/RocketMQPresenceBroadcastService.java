@@ -37,9 +37,9 @@ public class RocketMQPresenceBroadcastService implements PresenceBroadcastServic
                             .setHeader(RocketMQHeader.SOURCE_INSTANCE_ID, instanceIdProvider.getInstanceId())
                             .build()
             );
-            logger.info("presence-mq-sendResult: {}", JacksonUtil.toJson(sendResult));
+            logger.info("RocketMQ presence event send result: {}", JacksonUtil.toJson(sendResult));
         } catch (Exception e) {
-            logger.error("send presence mq failed", e);
+            logger.error("Send presence event to RocketMQ failed", e);
         }
     }
 }

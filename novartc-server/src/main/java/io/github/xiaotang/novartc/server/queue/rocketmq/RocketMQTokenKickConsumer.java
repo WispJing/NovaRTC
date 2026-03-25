@@ -5,6 +5,8 @@ import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,12 +17,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RocketMQMessageListener(topic = "${im.tokenKickTopic}", consumerGroup = "${im.tokenKickConsumerGroup}")
-public class TokenKickConsumer implements RocketMQListener<TokenKickMessage> {
+public class RocketMQTokenKickConsumer implements RocketMQListener<TokenKickMessage> {
+    private final Logger logger = LoggerFactory.getLogger(RocketMQTokenKickConsumer.class);
     @Autowired
     private UserChannelManager userChannelManager;
 
     @Override
     public void onMessage(TokenKickMessage message) {
+        logger.info("Received token kick message for userId: {}", message.getUserId());
         // 关闭本实例上该 token 对应的连接
         userChannelManager.closeByToken(message.getToken());
     }
