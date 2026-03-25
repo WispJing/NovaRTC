@@ -1,8 +1,8 @@
 package io.github.xiaotang.novartc.server.queue.local;
 
+import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
-import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.queue.PresenceBroadcastService;
+import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
-public class LocalPresenceBroadcastService implements PresenceBroadcastService {
+public class LocalTokenKickDispatchService implements TokenKickDispatchService {
     private final UserChannelManager userChannelManager;
 
     @Override
-    public void broadcast(ChatMessage.MsgBody message) {
-        userChannelManager.sendToAllUsers(message);
+    public void dispatch(TokenKickMessage message) {
+        userChannelManager.closeByToken(message.getToken());
     }
 }

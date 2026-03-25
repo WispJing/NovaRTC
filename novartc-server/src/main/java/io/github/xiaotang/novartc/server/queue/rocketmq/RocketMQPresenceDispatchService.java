@@ -4,7 +4,7 @@ import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.queue.PresenceBroadcastService;
+import io.github.xiaotang.novartc.server.queue.PresenceDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +19,15 @@ import org.springframework.stereotype.Service;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
-public class RocketMQPresenceBroadcastService implements PresenceBroadcastService {
-    private final Logger logger = LoggerFactory.getLogger(RocketMQPresenceBroadcastService.class);
+public class RocketMQPresenceDispatchService implements PresenceDispatchService {
+    private final Logger logger = LoggerFactory.getLogger(RocketMQPresenceDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
     private final UserChannelManager userChannelManager;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties imConfigProperties;
 
     @Override
-    public void broadcast(ChatMessage.MsgBody message) {
+    public void dispatch(ChatMessage.MsgBody message) {
         userChannelManager.sendToAllUsers(message);
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(

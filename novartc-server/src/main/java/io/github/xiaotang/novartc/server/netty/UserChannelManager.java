@@ -1,7 +1,7 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
-import io.github.xiaotang.novartc.server.queue.PresenceBroadcastService;
+import io.github.xiaotang.novartc.server.queue.PresenceDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
@@ -37,7 +37,7 @@ public class UserChannelManager {
     @Autowired
     private InstanceIdProvider instanceIdProvider;
     @Autowired
-    private PresenceBroadcastService presenceBroadcastService;
+    private PresenceDispatchService presenceDispatchService;
 
     // 绑定用户Channel（用户上线）
     public void bind(String userId, String token, Channel channel) {
@@ -172,6 +172,6 @@ public class UserChannelManager {
                         .setMessage(message == null ? "" : message)
                         .build())
                 .build();
-        presenceBroadcastService.broadcast(presenceMessage);
+        presenceDispatchService.dispatch(presenceMessage);
     }
 }

@@ -4,7 +4,7 @@ import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
-import io.github.xiaotang.novartc.server.queue.TokenKickBroadcastService;
+import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +21,15 @@ import java.nio.charset.StandardCharsets;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
-public class RocketMQTokenKickBroadcastService implements TokenKickBroadcastService {
-    private final Logger logger = LoggerFactory.getLogger(RocketMQTokenKickBroadcastService.class);
+public class RocketMQTokenKickDispatchService implements TokenKickDispatchService {
+    private final Logger logger = LoggerFactory.getLogger(RocketMQTokenKickDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
     private final UserChannelManager userChannelManager;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties imConfigProperties;
 
     @Override
-    public void broadcast(TokenKickMessage message) {
+    public void dispatch(TokenKickMessage message) {
         userChannelManager.closeByToken(message.getToken());
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(

@@ -8,6 +8,6 @@ import io.github.xiaotang.novartc.server.proto.ChatMessage;
  * @author tangj
  * @description
  */
-public interface MessageService {
-    void sendMessage(ChatMessage.MsgBody message);
+public interface ChatDispatchService {
+    void dispatch(ChatMessage.MsgBody message);
 }

@@ -2,7 +2,7 @@ package io.github.xiaotang.novartc.server.queue.local;
 
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.queue.MessageService;
+import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -18,11 +18,11 @@ import java.util.Set;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
-public class LocalChatMessageService implements MessageService {
+public class LocalChatDispatchService implements ChatDispatchService {
     private final UserChannelManager userChannelManager;
 
     @Override
-    public void sendMessage(ChatMessage.MsgBody message) {
+    public void dispatch(ChatMessage.MsgBody message) {
         // 根据消息类型解析接收者
         if (message.getIsGroup()) {
             String groupId = message.getGroupChatInfo().getGroupId();

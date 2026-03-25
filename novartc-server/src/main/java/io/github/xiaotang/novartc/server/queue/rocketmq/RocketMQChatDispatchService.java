@@ -4,7 +4,7 @@ import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.queue.MessageService;
+import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
-public class RocketMQChatMessageService implements MessageService {
-    private final Logger logger = LoggerFactory.getLogger(RocketMQChatMessageService.class);
+public class RocketMQChatDispatchService implements ChatDispatchService {
+    private final Logger logger = LoggerFactory.getLogger(RocketMQChatDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
     private final UserRouteService userRouteService;
     private final UserChannelManager userChannelManager;
@@ -41,7 +41,7 @@ public class RocketMQChatMessageService implements MessageService {
     private final IMConfigProperties iMConfigProperties;
 
     @Override
-    public void sendMessage(ChatMessage.MsgBody message) {
+    public void dispatch(ChatMessage.MsgBody message) {
         Set<String> targetUserIds = resolveTargetUserIds(message);
         if (targetUserIds.isEmpty()) {
             return;

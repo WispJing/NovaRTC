@@ -2,7 +2,7 @@ package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.queue.MessageService;
+import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
 import io.github.xiaotang.novartc.server.service.MessagePersistenceService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @ChannelHandler.Sharable
 @RequiredArgsConstructor
 public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
-    private final MessageService messageService;
+    private final ChatDispatchService chatDispatchService;
     private final MessagePersistenceService messagePersistenceService;
 
     @Override
@@ -52,6 +52,6 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
     private void handleMessage(ChatMessage.MsgBody msgBody, String userId) {
         ChatMessage.MsgBody persistedMessage = messagePersistenceService.persist(msgBody, userId);
         ChatMsgLog.msg(persistedMessage);
-        messageService.sendMessage(persistedMessage);
+        chatDispatchService.dispatch(persistedMessage);
     }
 }
