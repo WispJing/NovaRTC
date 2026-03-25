@@ -123,6 +123,7 @@ im:
   port: 9688
   imMsgTopic: 'IM_MSG_TOPIC'
   tokenKickTopic: 'im-token-kick'
+  tokenKickConsumerGroup: 'im-server-group'
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
   chatSeqKeyPreFix: 'im:chatseq:'

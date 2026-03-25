@@ -21,6 +21,7 @@ public class IMConfigProperties {
     private String chatSeqKeyPreFix;
     private String imMsgTopic;
     private String tokenKickTopic;
+    private String tokenKickConsumerGroup;
     private Long workerId;
     private Long datacenterId;
 }

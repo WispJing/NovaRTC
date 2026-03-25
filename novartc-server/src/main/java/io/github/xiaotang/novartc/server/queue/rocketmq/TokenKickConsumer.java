@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @description
  */
 @Component
-@RocketMQMessageListener(topic = "${im.tokenKickTopic}", consumerGroup = "im-server-group")
+@RocketMQMessageListener(topic = "${im.tokenKickTopic}", consumerGroup = "${im.tokenKickConsumerGroup}")
 public class TokenKickConsumer implements RocketMQListener<TokenKickMessage> {
     @Autowired
     private UserChannelManager userChannelManager;
