@@ -9,18 +9,27 @@ VALUES
     ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'e10adc3949ba59abbe56e057f20f883e', 'aqiang@example.com', 'https://img.example.com/u6.png');
 
 delete from im_friend where is_deleted = 0;
-INSERT INTO im_friend (id, user_id, friend_id)
+delete from im_friend_request where is_deleted = 0;
+
+INSERT INTO im_friend_request (id, requester_id, receiver_id, status, request_msg, handled_at, handler_id)
 VALUES
-    ('4f1a7c9d3b2e4e8c6a1d3b7f9c2e6a16', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
-    ('7c2e9a1d3b5f4e8c6a1d3b7f2c9e6a17', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10'),
-    ('1d7a3c9e5b2f4e8c6a1d3b7f9c2e6a18', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
-    ('8e2c7a1d3b5f4e8c6a1d3b7f2c9e6a19', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10'),
-    ('2a7d1c9e5b3f4e8c6a1d3b7f9c2e6a20', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13'),
-    ('9b3e7a1d5c2f4e8c6a1d3b7f2c9e6a21', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
-    ('3c7a1e9d5b2f4e8c6a1d3b7f9c2e6a22', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14'),
-    ('6d1e7a9c3b5f4e8c6a1d3b7f2c9e6a23', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
-    ('5a2c7e1d9b3f4e8c6a1d3b7f2c9e6a24', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14'),
-    ('1c9e7a3d5b2f4e8c6a1d3b7f2c9e6a25', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10');
+    ('4f1a7c9d3b2e4e8c6a1d3b7f9c2e6a16', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'ACCEPTED', '你好，我是小棠', NOW(), '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
+    ('1d7a3c9e5b2f4e8c6a1d3b7f9c2e6a18', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'ACCEPTED', '加个好友方便沟通', NOW(), '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
+    ('2a7d1c9e5b3f4e8c6a1d3b7f9c2e6a20', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', 'ACCEPTED', '以后多交流', NOW(), '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13'),
+    ('3c7a1e9d5b2f4e8c6a1d3b7f9c2e6a22', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'ACCEPTED', '一起聊产品呀', NOW(), '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14'),
+    ('5a2c7e1d9b3f4e8c6a1d3b7f2c9e6a24', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'PENDING', '认识一下', NULL, NULL),
+    ('8d2e7a1c3b5f4e8c6a1d3b7f9c2e6a26', '8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', 'REJECTED', '我是阿强', NOW(), '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10');
+
+INSERT INTO im_friend (id, user_id, friend_id, source_request_id)
+VALUES
+    ('7c2e9a1d3b5f4e8c6a1d3b7f2c9e6a17', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '4f1a7c9d3b2e4e8c6a1d3b7f9c2e6a16'),
+    ('6b3e7a1d5c2f4e8c6a1d3b7f2c9e6a17', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '4f1a7c9d3b2e4e8c6a1d3b7f9c2e6a16'),
+    ('8e2c7a1d3b5f4e8c6a1d3b7f2c9e6a19', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '1d7a3c9e5b2f4e8c6a1d3b7f9c2e6a18'),
+    ('7f2c8a1d3b5e4e8c6a1d3b7f9c2e6a19', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1d7a3c9e5b2f4e8c6a1d3b7f9c2e6a18'),
+    ('9b3e7a1d5c2f4e8c6a1d3b7f2c9e6a21', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', '2a7d1c9e5b3f4e8c6a1d3b7f9c2e6a20'),
+    ('4a7d1c9e5b3f4e8c6a1d3b7f9c2e6a21', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '2a7d1c9e5b3f4e8c6a1d3b7f9c2e6a20'),
+    ('6d1e7a9c3b5f4e8c6a1d3b7f2c9e6a23', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', '3c7a1e9d5b2f4e8c6a1d3b7f9c2e6a22'),
+    ('2e7a1c9d5b3f4e8c6a1d3b7f9c2e6a23', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '3c7a1e9d5b2f4e8c6a1d3b7f9c2e6a22');
 
 delete from im_group_chat where is_deleted = 0;
 INSERT INTO im_group_chat (id, chat_id, group_num, group_name)

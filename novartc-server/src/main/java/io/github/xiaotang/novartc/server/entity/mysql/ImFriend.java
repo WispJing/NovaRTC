@@ -33,4 +33,10 @@ public class ImFriend extends BaseEntity {
      */
     @TableField("friend_id")
     private String friendId;
+
+    /**
+     * 来源申请ID
+     */
+    @TableField("source_request_id")
+    private String sourceRequestId;
 }

@@ -16,12 +16,39 @@ CREATE TABLE IF NOT EXISTS `im_user`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户信息表';
 
+-- 好友申请表
+CREATE TABLE IF NOT EXISTS `im_friend_request`
+(
+    `id`            CHAR(32) NOT NULL COMMENT 'ID',
+    `requester_id`  CHAR(32) NOT NULL COMMENT '申请人用户ID',
+    `receiver_id`   CHAR(32) NOT NULL COMMENT '接收人用户ID',
+    `status`        VARCHAR(20) NOT NULL COMMENT '申请状态：PENDING/ACCEPTED/REJECTED/CANCELED',
+    `request_msg`   VARCHAR(255) COMMENT '申请附言',
+    `handled_at`    DATETIME COMMENT '处理时间',
+    `handler_id`    CHAR(32) COMMENT '处理人用户ID',
+
+    `is_deleted`    TINYINT  NOT NULL DEFAULT 0 COMMENT '逻辑删除标志 0-未删除 1-已删除',
+    `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+
+    PRIMARY KEY (`id`),
+
+    UNIQUE KEY `uk_request_pair` (`requester_id`, `receiver_id`),
+
+    INDEX `idx_requester_id` (`requester_id`),
+    INDEX `idx_receiver_id` (`receiver_id`),
+    INDEX `idx_status` (`status`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='好友申请表';
+
 -- 好友关系表
 CREATE TABLE IF NOT EXISTS `im_friend`
 (
     `id`         CHAR(32) NOT NULL COMMENT 'ID',
     `user_id`    CHAR(32) NOT NULL COMMENT '用户ID',
     `friend_id`  CHAR(32) NOT NULL COMMENT '好友用户ID',
+    `source_request_id` CHAR(32) COMMENT '来源申请ID',
 
     `is_deleted` TINYINT  NOT NULL DEFAULT 0 COMMENT '逻辑删除标志 0-未删除 1-已删除',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -32,7 +59,8 @@ CREATE TABLE IF NOT EXISTS `im_friend`
     UNIQUE KEY `uk_user_friend` (`user_id`, `friend_id`),
 
     INDEX `idx_user_id` (`user_id`),
-    INDEX `idx_friend_id` (`friend_id`)
+    INDEX `idx_friend_id` (`friend_id`),
+    INDEX `idx_source_request_id` (`source_request_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='好友关系表';

@@ -35,8 +35,8 @@ public class CodeGenerator {
                             )); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    // "im_user", "im_friend", "im_group_chat", "im_group_member", "im_single_chat"
-                    builder.addInclude("im_friend")
+                    // "im_user", "im_friend", "im_friend_request", "im_group_chat", "im_group_member", "im_single_chat"
+                    builder.addInclude("im_friend", "im_friend_request")
                             .entityBuilder()
                             .superClass("io.github.xiaotang.novartc.server.entity.mysql.BaseEntity")
                             .addSuperEntityColumns("id", "is_deleted", "created_at", "updated_at")
