@@ -122,6 +122,7 @@ im:
   host: localhost
   port: 9688
   imMsgTopic: 'IM_MSG_TOPIC'
+  tokenKickTopic: 'im-token-kick'
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
   chatSeqKeyPreFix: 'im:chatseq:'
