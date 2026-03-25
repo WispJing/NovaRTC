@@ -9,10 +9,12 @@ import io.github.xiaotang.novartc.server.dto.FriendRequestCreateRequest;
 import io.github.xiaotang.novartc.server.dto.FriendRequestHandleRequest;
 import io.github.xiaotang.novartc.server.dto.FriendRequestVO;
 import io.github.xiaotang.novartc.server.dto.StartChatRequest;
+import io.github.xiaotang.novartc.server.entity.mysql.ImFriend;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.service.IImFriendRequestService;
+import io.github.xiaotang.novartc.server.service.IImFriendService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +24,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/contact")
 public class ContactController {
     private final IImUserService imUserService;
+    private final IImFriendService imFriendService;
     private final IImSingleChatService imSingleChatService;
     private final IImFriendRequestService imFriendRequestService;
     private final UserChannelManager userChannelManager;
@@ -35,9 +40,21 @@ public class ContactController {
     @PostMapping("/list")
     public List<ContactVO> list() {
         String currentUserId = UserContextHolder.getUserId();
+        Set<String> friendUserIds = imFriendService.list(new LambdaQueryWrapper<ImFriend>()
+                        .eq(ImFriend::getIsDeleted, false)
+                        .eq(ImFriend::getUserId, currentUserId))
+                .stream()
+                .map(ImFriend::getFriendId)
+                .filter(friendId -> friendId != null && !friendId.isBlank())
+                .collect(Collectors.toSet());
+
+        if (friendUserIds.isEmpty()) {
+            return List.of();
+        }
+
         return imUserService.list(new LambdaQueryWrapper<ImUser>()
                         .eq(ImUser::getIsDeleted, false)
-                        .ne(ImUser::getId, currentUserId)
+                        .in(ImUser::getId, friendUserIds)
                         .orderByAsc(ImUser::getUserNum))
                 .stream()
                 .map(this::toContactVO)
@@ -46,12 +63,21 @@ public class ContactController {
 
     @PostMapping("/start")
     public ChatInfoVO start(@RequestBody StartChatRequest request) {
+        String currentUserId = UserContextHolder.getUserId();
         ImUser targetUser = imUserService.selectByUserId(request.getTargetUserId());
         if (targetUser == null) {
             throw new ApplicationException("target user not found");
         }
 
-        ImSingleChat singleChat = imSingleChatService.createOrGet(UserContextHolder.getUserId(), targetUser.getId());
+        boolean isFriend = imFriendService.count(new LambdaQueryWrapper<ImFriend>()
+                .eq(ImFriend::getIsDeleted, false)
+                .eq(ImFriend::getUserId, currentUserId)
+                .eq(ImFriend::getFriendId, targetUser.getId())) > 0;
+        if (!isFriend) {
+            throw new ApplicationException("can only start chat with friends");
+        }
+
+        ImSingleChat singleChat = imSingleChatService.createOrGet(currentUserId, targetUser.getId());
 
         ChatInfoVO vo = new ChatInfoVO();
         vo.setChatType("single");
