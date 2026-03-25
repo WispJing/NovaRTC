@@ -3,7 +3,7 @@ package io.github.xiaotang.novartc.server.queue.rocketmq;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
-import io.github.xiaotang.novartc.server.netty.UserChannelManager;
+import io.github.xiaotang.novartc.server.netty.LocalSessionDispatcher;
 import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
@@ -13,7 +13,6 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +24,13 @@ import java.nio.charset.StandardCharsets;
 public class RocketMQTokenKickDispatchService implements TokenKickDispatchService {
     private final Logger logger = LoggerFactory.getLogger(RocketMQTokenKickDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
-    private final ObjectProvider<UserChannelManager> userChannelManagerProvider;
+    private final LocalSessionDispatcher localSessionDispatcher;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties imConfigProperties;
 
     @Override
     public void dispatch(TokenKickMessage message) {
-        userChannelManagerProvider.getObject().closeByToken(message.getToken());
+        localSessionDispatcher.closeByToken(message.getToken());
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(
                     imConfigProperties.getTokenKickTopic(),

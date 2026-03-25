@@ -1,6 +1,6 @@
 package io.github.xiaotang.novartc.server.queue.local;
 
-import io.github.xiaotang.novartc.server.netty.UserChannelManager;
+import io.github.xiaotang.novartc.server.netty.LocalSessionDispatcher;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +19,20 @@ import java.util.Set;
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class LocalChatDispatchService implements ChatDispatchService {
-    private final UserChannelManager userChannelManager;
+    private final LocalSessionDispatcher localSessionDispatcher;
 
     @Override
     public void dispatch(ChatMessage.MsgBody message) {
         // 根据消息类型解析接收者
         if (message.getIsGroup()) {
             String groupId = message.getGroupChatInfo().getGroupId();
-            Set<String> members = userChannelManager.getGroupMembers(groupId);
+            Set<String> members = localSessionDispatcher.getGroupMembers(groupId);
             for (String userId : members) {
-                userChannelManager.sendToUser(userId, message);
+                localSessionDispatcher.sendToUser(userId, message);
             }
         } else {
             String targetUserId = message.getSingleChatInfo().getUser2Id();
-            userChannelManager.sendToUser(targetUserId, message);
+            localSessionDispatcher.sendToUser(targetUserId, message);
         }
     }
 }

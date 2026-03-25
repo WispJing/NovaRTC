@@ -2,7 +2,7 @@ package io.github.xiaotang.novartc.server.queue.rocketmq;
 
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
-import io.github.xiaotang.novartc.server.netty.UserChannelManager;
+import io.github.xiaotang.novartc.server.netty.LocalSessionDispatcher;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
@@ -36,7 +36,7 @@ public class RocketMQChatDispatchService implements ChatDispatchService {
     private final Logger logger = LoggerFactory.getLogger(RocketMQChatDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
     private final UserRouteService userRouteService;
-    private final UserChannelManager userChannelManager;
+    private final LocalSessionDispatcher localSessionDispatcher;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties iMConfigProperties;
 
@@ -49,8 +49,8 @@ public class RocketMQChatDispatchService implements ChatDispatchService {
 
         Set<String> mqToUsers = new HashSet<>();
         for (String userId : targetUserIds) {
-            if (userChannelManager.isLocalChannel(userId)) {
-                userChannelManager.sendToUser(userId, message);
+            if (localSessionDispatcher.isLocalChannel(userId)) {
+                localSessionDispatcher.sendToUser(userId, message);
                 continue;
             }
             mqToUsers.add(userId);
@@ -112,7 +112,7 @@ public class RocketMQChatDispatchService implements ChatDispatchService {
         Set<String> userIds = new HashSet<>();
         if (message.getIsGroup()) {
             String groupId = message.getGroupChatInfo().getGroupId();
-            userIds.addAll(userChannelManager.getGroupMembers(groupId));
+            userIds.addAll(localSessionDispatcher.getGroupMembers(groupId));
         } else {
             userIds.add(message.getSingleChatInfo().getUser2Id());
         }

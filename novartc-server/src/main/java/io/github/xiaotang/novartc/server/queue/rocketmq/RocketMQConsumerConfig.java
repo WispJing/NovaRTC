@@ -3,7 +3,7 @@ package io.github.xiaotang.novartc.server.queue.rocketmq;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
-import io.github.xiaotang.novartc.server.netty.UserChannelManager;
+import io.github.xiaotang.novartc.server.netty.LocalSessionDispatcher;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
 import io.github.xiaotang.novartc.server.queue.common.RocketMQHeader;
@@ -44,7 +44,7 @@ public class RocketMQConsumerConfig {
     @Autowired
     private InstanceIdProvider instanceIdProvider;
     @Autowired
-    private UserChannelManager userChannelManager;
+    private LocalSessionDispatcher localSessionDispatcher;
 
     private DefaultMQPushConsumer chatConsumer;
     private DefaultMQPushConsumer presenceConsumer;
@@ -72,9 +72,9 @@ public class RocketMQConsumerConfig {
                     String msgId = msg.getProperty(RocketMQHeader.MSG_ID);
                     String userStr = msg.getProperty(RocketMQHeader.TARGET_USER_ID);
                     Set<String> targetUserId = Arrays.stream(userStr.split(",")).collect(Collectors.toSet());
-                    targetUserId = targetUserId.stream().filter(userChannelManager::isLocalChannel).collect(Collectors.toSet());
+                    targetUserId = targetUserId.stream().filter(localSessionDispatcher::isLocalChannel).collect(Collectors.toSet());
                     for (String userId : targetUserId) {
-                        userChannelManager.sendToUser(userId, msgBody);
+                        localSessionDispatcher.sendToUser(userId, msgBody);
                     }
                 } catch (Exception e) {
                     logger.error("Consume chat message error", e);
@@ -106,7 +106,7 @@ public class RocketMQConsumerConfig {
                         continue;
                     }
                     ChatMessage.MsgBody msgBody = ChatMessage.MsgBody.parseFrom(msg.getBody());
-                    userChannelManager.sendToAllUsers(msgBody);
+                    localSessionDispatcher.sendToAllUsers(msgBody);
                 } catch (Exception e) {
                     logger.error("Consume presence event error", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
@@ -138,7 +138,7 @@ public class RocketMQConsumerConfig {
                     }
                     TokenKickMessage kickMessage = JacksonUtil.toObject(new String(msg.getBody(), StandardCharsets.UTF_8), TokenKickMessage.class);
                     logger.info("Received token kick message for userId: {}", kickMessage.getUserId());
-                    userChannelManager.closeByToken(kickMessage.getToken());
+                    localSessionDispatcher.closeByToken(kickMessage.getToken());
                 } catch (Exception e) {
                     logger.error("Consume token kick event error", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;

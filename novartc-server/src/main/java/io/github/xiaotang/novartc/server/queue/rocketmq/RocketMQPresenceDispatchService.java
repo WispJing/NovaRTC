@@ -2,7 +2,7 @@ package io.github.xiaotang.novartc.server.queue.rocketmq;
 
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
-import io.github.xiaotang.novartc.server.netty.UserChannelManager;
+import io.github.xiaotang.novartc.server.netty.LocalSessionDispatcher;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.PresenceDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
@@ -13,7 +13,6 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +22,13 @@ import org.springframework.stereotype.Service;
 public class RocketMQPresenceDispatchService implements PresenceDispatchService {
     private final Logger logger = LoggerFactory.getLogger(RocketMQPresenceDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
-    private final ObjectProvider<UserChannelManager> userChannelManagerProvider;
+    private final LocalSessionDispatcher localSessionDispatcher;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties imConfigProperties;
 
     @Override
     public void dispatch(ChatMessage.MsgBody message) {
-        userChannelManagerProvider.getObject().sendToAllUsers(message);
+        localSessionDispatcher.sendToAllUsers(message);
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(
                     imConfigProperties.getPresenceTopic(),
