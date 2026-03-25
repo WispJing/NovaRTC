@@ -13,6 +13,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +25,13 @@ import java.nio.charset.StandardCharsets;
 public class RocketMQTokenKickDispatchService implements TokenKickDispatchService {
     private final Logger logger = LoggerFactory.getLogger(RocketMQTokenKickDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
-    private final UserChannelManager userChannelManager;
+    private final ObjectProvider<UserChannelManager> userChannelManagerProvider;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties imConfigProperties;
 
     @Override
     public void dispatch(TokenKickMessage message) {
-        userChannelManager.closeByToken(message.getToken());
+        userChannelManagerProvider.getObject().closeByToken(message.getToken());
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(
                     imConfigProperties.getTokenKickTopic(),

@@ -5,16 +5,17 @@ import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.PresenceDispatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class LocalPresenceDispatchService implements PresenceDispatchService {
-    private final UserChannelManager userChannelManager;
+    private final ObjectProvider<UserChannelManager> userChannelManagerProvider;
 
     @Override
     public void dispatch(ChatMessage.MsgBody message) {
-        userChannelManager.sendToAllUsers(message);
+        userChannelManagerProvider.getObject().sendToAllUsers(message);
     }
 }

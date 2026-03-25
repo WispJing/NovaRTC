@@ -5,16 +5,17 @@ import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class LocalTokenKickDispatchService implements TokenKickDispatchService {
-    private final UserChannelManager userChannelManager;
+    private final ObjectProvider<UserChannelManager> userChannelManagerProvider;
 
     @Override
     public void dispatch(TokenKickMessage message) {
-        userChannelManager.closeByToken(message.getToken());
+        userChannelManagerProvider.getObject().closeByToken(message.getToken());
     }
 }

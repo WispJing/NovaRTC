@@ -13,6 +13,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +23,13 @@ import org.springframework.stereotype.Service;
 public class RocketMQPresenceDispatchService implements PresenceDispatchService {
     private final Logger logger = LoggerFactory.getLogger(RocketMQPresenceDispatchService.class);
     private final RocketMQTemplate rocketMQTemplate;
-    private final UserChannelManager userChannelManager;
+    private final ObjectProvider<UserChannelManager> userChannelManagerProvider;
     private final InstanceIdProvider instanceIdProvider;
     private final IMConfigProperties imConfigProperties;
 
     @Override
     public void dispatch(ChatMessage.MsgBody message) {
-        userChannelManager.sendToAllUsers(message);
+        userChannelManagerProvider.getObject().sendToAllUsers(message);
         try {
             SendResult sendResult = rocketMQTemplate.syncSend(
                     imConfigProperties.getPresenceTopic(),
