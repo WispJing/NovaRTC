@@ -8,6 +8,7 @@ import io.github.xiaotang.novartc.server.service.UserRelationCacheService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -24,10 +25,12 @@ import java.util.Set;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, ImGroupMember> implements IImGroupMemberService {
     private final UserRelationCacheService userRelationCacheService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean save(ImGroupMember entity) {
         boolean saved = super.save(entity);
         if (saved) {
@@ -37,6 +40,7 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean saveBatch(Collection<ImGroupMember> entityList) {
         boolean saved = super.saveBatch(entityList);
         if (saved) {
@@ -46,6 +50,7 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateById(ImGroupMember entity) {
         ImGroupMember before = entity == null || StringUtils.isBlank(entity.getId()) ? null : getById(entity.getId());
         boolean updated = super.updateById(entity);
@@ -63,6 +68,7 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeById(java.io.Serializable id) {
         ImGroupMember before = id == null ? null : getById(id);
         boolean removed = super.removeById(id);
@@ -73,6 +79,7 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeByIds(Collection<?> list) {
         List<java.io.Serializable> ids = list == null ? List.of() : list.stream()
                 .filter(java.io.Serializable.class::isInstance)
@@ -109,4 +116,3 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
         userRelationCacheService.rebuildGroupMembersCachesAsync(groupIds);
     }
 }
-

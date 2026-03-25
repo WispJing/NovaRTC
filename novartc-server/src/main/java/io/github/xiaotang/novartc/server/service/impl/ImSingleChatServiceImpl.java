@@ -9,11 +9,13 @@ import io.github.xiaotang.novartc.server.mapper.ImSingleChatMapper;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImSingleChat> implements IImSingleChatService {
 
     @Override
@@ -49,6 +51,7 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ImSingleChat createOrGet(String currentUserId, String targetUserId) {
         if (StringUtils.isAnyBlank(currentUserId, targetUserId)) {
             throw ex(ExceptionEnum.FRIEND_CHAT_USER_ID_REQUIRED);
