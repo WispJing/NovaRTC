@@ -16,6 +16,27 @@ CREATE TABLE IF NOT EXISTS `im_user`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户信息表';
 
+-- 好友关系表
+CREATE TABLE IF NOT EXISTS `im_friend`
+(
+    `id`         CHAR(32) NOT NULL COMMENT 'ID',
+    `user_id`    CHAR(32) NOT NULL COMMENT '用户ID',
+    `friend_id`  CHAR(32) NOT NULL COMMENT '好友用户ID',
+
+    `is_deleted` TINYINT  NOT NULL DEFAULT 0 COMMENT '逻辑删除标志 0-未删除 1-已删除',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+
+    PRIMARY KEY (`id`),
+
+    UNIQUE KEY `uk_user_friend` (`user_id`, `friend_id`),
+
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_friend_id` (`friend_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='好友关系表';
+
 -- 群聊表
 CREATE TABLE IF NOT EXISTS `im_group_chat`
 (

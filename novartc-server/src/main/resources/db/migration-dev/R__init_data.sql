@@ -8,6 +8,20 @@ VALUES
     ('2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'U1005', '小美', 'e10adc3949ba59abbe56e057f20f883e', 'xiaomei@example.com', 'https://img.example.com/u5.png'),
     ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'e10adc3949ba59abbe56e057f20f883e', 'aqiang@example.com', 'https://img.example.com/u6.png');
 
+delete from im_friend where is_deleted = 0;
+INSERT INTO im_friend (id, user_id, friend_id)
+VALUES
+    ('4f1a7c9d3b2e4e8c6a1d3b7f9c2e6a16', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
+    ('7c2e9a1d3b5f4e8c6a1d3b7f2c9e6a17', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10'),
+    ('1d7a3c9e5b2f4e8c6a1d3b7f9c2e6a18', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
+    ('8e2c7a1d3b5f4e8c6a1d3b7f2c9e6a19', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10'),
+    ('2a7d1c9e5b3f4e8c6a1d3b7f9c2e6a20', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13'),
+    ('9b3e7a1d5c2f4e8c6a1d3b7f2c9e6a21', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11'),
+    ('3c7a1e9d5b2f4e8c6a1d3b7f9c2e6a22', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14'),
+    ('6d1e7a9c3b5f4e8c6a1d3b7f2c9e6a23', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
+    ('5a2c7e1d9b3f4e8c6a1d3b7f2c9e6a24', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14'),
+    ('1c9e7a3d5b2f4e8c6a1d3b7f2c9e6a25', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10');
+
 delete from im_group_chat where is_deleted = 0;
 INSERT INTO im_group_chat (id, chat_id, group_num, group_name)
 VALUES
