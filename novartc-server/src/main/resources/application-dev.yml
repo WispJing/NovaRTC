@@ -116,16 +116,17 @@ rocketmq:
   enabled: true
   name-server: localhost:9876
   producer:
-    group: im-producer-group
+    group: im-chat-producer-group
 
 im:
   host: localhost
   port: 9688
-  imMsgTopic: 'IM_MSG_TOPIC'
-  presenceTopic: 'IM_PRESENCE_TOPIC'
-  tokenKickTopic: 'im-token-kick'
-  tokenKickConsumerGroup: 'im-server-group'
-  presenceConsumerGroup: 'im-presence-group'
+  chatTopic: 'im-chat-topic'
+  chatConsumerGroup: 'im-chat-consumer-group'
+  presenceTopic: 'im-presence-topic'
+  presenceConsumerGroup: 'im-presence-consumer-group'
+  tokenKickTopic: 'im-token-kick-topic'
+  tokenKickConsumerGroup: 'im-token-kick-consumer-group'
   userInstancesKeyPreFix: 'im:user:instances:'
   instanceKeyPreFix: 'im:user:instance:'
   chatSeqKeyPreFix: 'im:chatseq:'

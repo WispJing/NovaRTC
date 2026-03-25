@@ -58,7 +58,7 @@ public class RocketMQMessageService implements MessageService {
         if (!CollectionUtils.isEmpty(mqToUsers)) {
             try {
                 SendResult sendResult = rocketMQTemplate.syncSendOrderly(
-                        iMConfigProperties.getImMsgTopic(),
+                        iMConfigProperties.getChatTopic(),
                         MessageBuilder
                                 .withPayload(message.toByteArray())
                                 .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())
@@ -95,7 +95,7 @@ public class RocketMQMessageService implements MessageService {
             } else {
                 // 发送到RocketMQ
                 rocketMQTemplate.syncSendOrderly(
-                        iMConfigProperties.getImMsgTopic() + ":" + targetInstance,
+                        iMConfigProperties.getChatTopic() + ":" + targetInstance,
                         MessageBuilder
                                 .withPayload(message.toByteArray())
                                 .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())

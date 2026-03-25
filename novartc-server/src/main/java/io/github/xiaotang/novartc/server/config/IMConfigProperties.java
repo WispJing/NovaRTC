@@ -19,11 +19,12 @@ public class IMConfigProperties {
     private String userInstancesKeyPreFix;
     private String instanceKeyPreFix;
     private String chatSeqKeyPreFix;
-    private String imMsgTopic;
+    private String chatTopic;
+    private String chatConsumerGroup;
     private String presenceTopic;
+    private String presenceConsumerGroup;
     private String tokenKickTopic;
     private String tokenKickConsumerGroup;
-    private String presenceConsumerGroup;
     private Long workerId;
     private Long datacenterId;
 }

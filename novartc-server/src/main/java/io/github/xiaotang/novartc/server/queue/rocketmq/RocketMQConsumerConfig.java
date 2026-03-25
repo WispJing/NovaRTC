@@ -35,8 +35,6 @@ public class RocketMQConsumerConfig {
 
     @Value("${rocketmq.name-server}")
     private String nameServer;
-    @Value("${rocketmq.consumer.group:im_consumer_group}")
-    private String consumerGroup;
 
     @Autowired
     private IMConfigProperties imConfigProperties;
@@ -50,7 +48,7 @@ public class RocketMQConsumerConfig {
 
     @Bean
     public DefaultMQPushConsumer rocketMqConsumer() throws Exception {
-        consumer = new DefaultMQPushConsumer(consumerGroup);
+        consumer = new DefaultMQPushConsumer(imConfigProperties.getChatConsumerGroup());
         consumer.setNamesrvAddr(nameServer);
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         // consumer.setMessageModel(MessageModel.CLUSTERING);
@@ -58,10 +56,10 @@ public class RocketMQConsumerConfig {
 
         // 动态订阅：Tag 为当前实例 ID
         String instanceId = instanceIdProvider.getInstanceId();
-        // consumer.subscribe(imConfigProperties.getImMsgTopic(), instanceId);
-        consumer.subscribe(imConfigProperties.getImMsgTopic(), "*");
-        // logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getImMsgTopic(), instanceId);
-        logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getImMsgTopic(), "*");
+        // consumer.subscribe(imConfigProperties.getChatTopic(), instanceId);
+        consumer.subscribe(imConfigProperties.getChatTopic(), "*");
+        // logger.info("RocketMQ consumer subscribed topic: {}, tag: {}", imConfigProperties.getChatTopic(), instanceId);
+        logger.info("RocketMQ consumer subscribed topic: {}, group: {}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup());
 
         consumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
@@ -94,7 +92,7 @@ public class RocketMQConsumerConfig {
         presenceConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         presenceConsumer.setMessageModel(MessageModel.BROADCASTING);
         presenceConsumer.subscribe(imConfigProperties.getPresenceTopic(), "*");
-        logger.info("RocketMQ presence consumer subscribed topic: {}", imConfigProperties.getPresenceTopic());
+        logger.info("RocketMQ presence consumer subscribed topic: {}, group: {}", imConfigProperties.getPresenceTopic(), imConfigProperties.getPresenceConsumerGroup());
 
         presenceConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
