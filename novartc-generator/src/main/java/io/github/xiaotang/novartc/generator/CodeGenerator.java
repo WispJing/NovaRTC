@@ -20,7 +20,7 @@ public class CodeGenerator {
                         , "root", "123456")
                 .globalConfig(builder -> {
                     builder.author("xiaotang") // 设置作者
-                            .outputDir("D:\\project\\NovaRTC\\novartc-server\\src\\main\\java")
+                            .outputDir("D:\\NovaRTC\\NovaRTC\\novartc-server\\src\\main\\java")
                             .dateType(DateType.TIME_PACK); // 输出目录
                 })
                 .packageConfig(builder -> {
@@ -31,11 +31,12 @@ public class CodeGenerator {
                             .serviceImpl("service.impl") // 设置 Service 实现类包名
                             .pathInfo(Collections.singletonMap(
                                     OutputFile.xml,
-                                    "D:\\project\\NovaRTC\\novartc-server\\src\\main\\resources\\mappers"
+                                    "D:\\NovaRTC\\NovaRTC\\novartc-server\\src\\main\\resources\\mappers"
                             )); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("im_user", "im_group_chat", "im_group_member", "im_single_chat") // 设置需要生成的表名
+                    // "im_user", "im_friend", "im_group_chat", "im_group_member", "im_single_chat"
+                    builder.addInclude("im_friend")
                             .entityBuilder()
                             .superClass("io.github.xiaotang.novartc.server.entity.mysql.BaseEntity")
                             .addSuperEntityColumns("id", "is_deleted", "created_at", "updated_at")
