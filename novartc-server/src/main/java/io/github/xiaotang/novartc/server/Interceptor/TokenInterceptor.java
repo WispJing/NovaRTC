@@ -46,7 +46,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 
         UserContextHolder.setUserId(userId);
         UserContextHolder.setToken(token);
-        logger.info("用户上下文已设置: userId={}, token={}", userId, token);
+//        logger.info("用户上下文已设置: userId={}, token={}", userId, token);
 
         return true;
     }
@@ -54,6 +54,6 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         UserContextHolder.clear();
-        logger.info("用户上下文已清除");
+//        logger.info("用户上下文已清除");
     }
 }

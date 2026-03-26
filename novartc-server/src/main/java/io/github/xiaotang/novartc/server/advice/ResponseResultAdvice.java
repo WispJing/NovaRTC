@@ -3,11 +3,13 @@ package io.github.xiaotang.novartc.server.advice;
 import io.github.xiaotang.novartc.common.annotation.IgnoreResponseAdvice;
 import io.github.xiaotang.novartc.common.result.Result;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -19,6 +21,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  */
 @RestControllerAdvice
 public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
+    private static final String RESPONSE_BODY_ATTR = "responseBody";
+
     /**
      * 是否需要包装
      */
@@ -42,21 +46,30 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpRequest request,
                                   ServerHttpResponse response) {
 
-        // String 类型需要特殊处理
         if (body instanceof String) {
             try {
-                return JacksonUtil.getMapper().writeValueAsString(Result.success(body));
+                String wrappedBody = JacksonUtil.getMapper().writeValueAsString(Result.success(body));
+                saveResponseBody(request, wrappedBody);
+                return wrappedBody;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        // 已经是 Result 不处理
         if (body instanceof Result) {
+            saveResponseBody(request, body);
             return body;
         }
 
-        // 自动包装
-        return Result.success(body);
+        Object wrappedBody = Result.success(body);
+        saveResponseBody(request, wrappedBody);
+        return wrappedBody;
+    }
+
+    private void saveResponseBody(ServerHttpRequest request, Object body) {
+        if (request instanceof ServletServerHttpRequest servletServerHttpRequest) {
+            HttpServletRequest servletRequest = servletServerHttpRequest.getServletRequest();
+            servletRequest.setAttribute(RESPONSE_BODY_ATTR, body);
+        }
     }
 }
