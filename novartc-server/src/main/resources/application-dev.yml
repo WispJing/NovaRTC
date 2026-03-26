@@ -112,6 +112,10 @@ spring:
     table: flyway_schema_history
     validate-on-migrate: true
 
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
 rocketmq:
   enabled: true
   name-server: localhost:9876
@@ -140,5 +144,7 @@ logging:
   level:
     root: INFO
     io.github.xiaotang: INFO
+    io.github.xiaotang.novartc.server.mapper: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+    org.apache.ibatis: DEBUG
     io.netty: INFO
-
