@@ -108,7 +108,8 @@ services:
     ports:
       - "9876:9876"
     networks:
-      - novartc-net
+      novartc-net:
+        ipv4_address: 172.19.0.3
     command: sh mqnamesrv
     restart: unless-stopped
 
@@ -119,7 +120,8 @@ services:
       - "10909:10909"
       - "10911:10911"
     networks:
-      - novartc-net
+      novartc-net:
+        ipv4_address: 172.19.0.9
     environment:
       NAMESRV_ADDR: namesrv:9876
       TZ: Asia/Shanghai
@@ -160,7 +162,8 @@ services:
       - "7000:7000"
       - "9688:9688"
     networks:
-      - novartc-net
+      novartc-net:
+        ipv4_address: 172.19.0.10
     environment:
       TZ: Asia/Shanghai
       SPRING_PROFILES_ACTIVE: docker
