@@ -50,7 +50,8 @@ services:
       - ./backend/logs:/data/logs:ro
     depends_on:
       - elasticsearch
-      - novartc-server
+      - novartc-server-1
+      - novartc-server-2
     restart: unless-stopped
   mysql:
     build:
@@ -154,9 +155,9 @@ services:
       - namesrv
     restart: unless-stopped
 
-  novartc-server:
+  novartc-server-1:
     image: eclipse-temurin:21-jre
-    container_name: novartc-server
+    container_name: novartc-server-1
     working_dir: /opt/novartc
     ports:
       - "7000:7000"
@@ -168,6 +169,8 @@ services:
       TZ: Asia/Shanghai
       SPRING_PROFILES_ACTIVE: docker
       JAVA_OPTS: -Xms512m -Xmx1024m
+      IM_WORKERID: 1
+      IM_DATACENTERID: 1
     depends_on:
       - mysql
       - redis
@@ -177,13 +180,41 @@ services:
     volumes:
       - ../novartc-server/target/novartc-server-1.0.0-SNAPSHOT.jar:/opt/novartc/app.jar:ro
       - ./backend/config:/opt/novartc/config:ro
-      - ./backend/logs:/opt/novartc/logs
+      - ./backend/logs/server-1:/opt/novartc/logs
     command: >
       sh -c "java $$JAVA_OPTS -jar /opt/novartc/app.jar
       --spring.config.additional-location=file:/opt/novartc/config/"
     restart: unless-stopped
 
-
-
+  novartc-server-2:
+    image: eclipse-temurin:21-jre
+    container_name: novartc-server-2
+    working_dir: /opt/novartc
+    ports:
+      - "7001:7000"
+      - "9689:9688"
+    networks:
+      novartc-net:
+        ipv4_address: 172.19.0.11
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: -Xms512m -Xmx1024m
+      IM_WORKERID: 2
+      IM_DATACENTERID: 1
+    depends_on:
+      - mysql
+      - redis
+      - mongodb
+      - namesrv
+      - broker
+    volumes:
+      - ../novartc-server/target/novartc-server-1.0.0-SNAPSHOT.jar:/opt/novartc/app.jar:ro
+      - ./backend/config:/opt/novartc/config:ro
+      - ./backend/logs/server-2:/opt/novartc/logs
+    command: >
+      sh -c "java $$JAVA_OPTS -jar /opt/novartc/app.jar
+      --spring.config.additional-location=file:/opt/novartc/config/"
+    restart: unless-stopped
 
 
