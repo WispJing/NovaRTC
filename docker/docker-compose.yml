@@ -21,7 +21,7 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - D:/elk/esdata/novartc:/usr/share/elasticsearch/data
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.4
     container_name: kibana

@@ -5,7 +5,7 @@
 - `jar` 不打进镜像，直接挂载宿主机文件
 - 配置文件挂载到宿主机目录，便于改完即重启生效
 - 日志目录挂载到宿主机目录
-- MySQL、Redis、MongoDB、RocketMQ Dashboard 的数据或日志都落在 `docker` 目录下
+- MySQL、Redis、MongoDB、RocketMQ、ELK 相关数据或日志都落在 `docker` 目录下
 
 ### 目录说明
 
@@ -21,6 +21,8 @@
 - RocketMQ Broker 存储：`./rocketmq/store`
 - RocketMQ Dashboard 日志：`./dashboard/logs`
 - RocketMQ Dashboard 数据：`./dashboard/data`
+- Elasticsearch 数据：`./elasticsearch/data`
+- Filebeat 配置：`./filebeat/filebeat.yml`
 
 ### 启动前
 
@@ -56,6 +58,7 @@ docker compose -f docker-compose.local.yml up -d
 ```bash
 docker compose -f docker-compose.local.yml ps
 docker compose -f docker-compose.local.yml logs -f novartc-server
+docker compose -f docker-compose.local.yml logs -f filebeat
 ```
 
 ### 停止
@@ -69,8 +72,11 @@ docker compose -f docker-compose.local.yml down
 - 宿主机访问后端 HTTP：`http://localhost:7000`
 - 宿主机访问 IM 端口：`localhost:9688`
 - RocketMQ Dashboard：`http://localhost:8082`
+- Elasticsearch：`http://localhost:9200`
+- Kibana：`http://localhost:5601`
 - 容器内后端使用 `docker` profile，并通过服务名访问中间件，不再使用 `localhost`
 - Compose 已固定 Docker 网段为 `172.19.0.0/24`，网关为 `172.19.0.1`，便于和 Druid 白名单联动
+- Filebeat 现在采集的是 `./backend/logs`，对应后端容器实际输出日志目录
 - 如果你重新打包了 jar，重启后端容器即可：
 
 ```bash

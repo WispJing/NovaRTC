@@ -57,3 +57,5 @@ build/
 !/docker/dashboard/data/.gitkeep
 /docker/dashboard/logs/*
 !/docker/dashboard/logs/.gitkeep
+/docker/elasticsearch/data/*
+!/docker/elasticsearch/data/.gitkeep
