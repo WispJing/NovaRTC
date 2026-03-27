@@ -31,8 +31,8 @@
       filePattern   -> 滚动后的归档文件命名规则
     -->
     <RollingFile name="FILE"
-                 fileName="${LOG_HOME}/nova-rtc.log"
-                 filePattern="${LOG_HOME}/nova-rtc.%d{yyyy-MM-dd}.%i.log"
+                 fileName="${LOG_HOME}/app.log"
+                 filePattern="${LOG_HOME}/app.%d{yyyy-MM-dd}.%i.log"
                  append="false">
 
       <!-- 滚动策略 -->
