@@ -18,6 +18,8 @@ docker compose -f docker-compose.local.yml down
 ```bash
 docker-compose -f docker-compose.local.yml up -d --force-recreate novartc-server
 ```
+
+### 重启后端
 ```bash
 docker compose -f docker-compose.local.yml restart novartc-server
 ```
