@@ -44,18 +44,18 @@ rocketmq:
 im:
   host: 0.0.0.0
   port: 9688
-  chatTopic: im-chat-topic
-  chatConsumerGroup: im-chat-consumer-group
-  presenceTopic: im-presence-topic
-  presenceConsumerGroup: im-presence-consumer-group
-  tokenKickTopic: im-token-kick-topic
-  tokenKickConsumerGroup: im-token-kick-consumer-group
-  userInstancesKeyPreFix: im:user:instances:
-  instanceKeyPreFix: im:user:instance:
-  chatSeqKeyPreFix: im:chatseq:
-  userFriendCacheKeyPreFix: im:relation:user:friends:
-  userGroupCacheKeyPreFix: im:relation:user:groups:
-  groupMembersCacheKeyPreFix: im:relation:group:members:
+  chatTopic: 'im-chat-topic'
+  chatConsumerGroup: 'im-chat-consumer-group'
+  presenceTopic: 'im-presence-topic'
+  presenceConsumerGroup: 'im-presence-consumer-group'
+  tokenKickTopic: 'im-token-kick-topic'
+  tokenKickConsumerGroup: 'im-token-kick-consumer-group'
+  userInstancesKeyPreFix: 'im:user:instances:'
+  instanceKeyPreFix: 'im:user:instance:'
+  chatSeqKeyPreFix: 'im:chatseq:'
+  userFriendCacheKeyPreFix: 'im:relation:user:friends:'
+  userGroupCacheKeyPreFix: 'im:relation:user:groups:'
+  groupMembersCacheKeyPreFix: 'im:relation:group:members:'
   workerId: 1
   datacenterId: 1
 

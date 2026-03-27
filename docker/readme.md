@@ -14,3 +14,6 @@ docker compose down
 ```bash
 docker-compose up -d --force-recreate redis
 ```
+```bash
+docker compose -f docker-compose.local.yml restart novartc-server
+```
