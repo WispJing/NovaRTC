@@ -39,6 +39,12 @@ mvn -pl novartc-server -am -DskipTests package
 
 ### 启动
 
+首次启用固定网段，或你修改了网络配置后，请先执行：
+
+```bash
+docker compose -f docker-compose.local.yml down
+```
+
 在 `D:\NovaRTC\NovaRTC\docker` 目录执行：
 
 ```bash
@@ -64,6 +70,7 @@ docker compose -f docker-compose.local.yml down
 - 宿主机访问 IM 端口：`localhost:9688`
 - RocketMQ Dashboard：`http://localhost:8082`
 - 容器内后端使用 `docker` profile，并通过服务名访问中间件，不再使用 `localhost`
+- Compose 已固定 Docker 网段为 `172.19.0.0/24`，网关为 `172.19.0.1`，便于和 Druid 白名单联动
 - 如果你重新打包了 jar，重启后端容器即可：
 
 ```bash

@@ -3,6 +3,10 @@ name: novartc-local
 networks:
   novartc-net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/24
+          gateway: 172.19.0.1
 
 services:
   mysql:
@@ -132,5 +136,6 @@ services:
       sh -c "java $$JAVA_OPTS -jar /opt/novartc/app.jar
       --spring.config.additional-location=file:/opt/novartc/config/"
     restart: unless-stopped
+
 
 

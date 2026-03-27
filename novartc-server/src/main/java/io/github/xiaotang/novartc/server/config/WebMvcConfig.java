@@ -28,7 +28,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 2. Token 拦截器：排除登录接口、静态资源等
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/api/login")
-                .excludePathPatterns("/api/register");
+                .excludePathPatterns(
+                        "/api/login",
+                        "/api/register",
+                        "/druid/**",
+                        "/favicon.ico",
+                        "/error"
+                );
     }
 }
