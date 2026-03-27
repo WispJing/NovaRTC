@@ -1,0 +1,136 @@
+name: novartc-local
+
+networks:
+  novartc-net:
+    driver: bridge
+
+services:
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: novartc-mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - novartc-net
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: novartc
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ./mysql/logs:/var/log/mysql
+    restart: unless-stopped
+
+  redis:
+    image: redis:8.4.0
+    container_name: novartc-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - novartc-net
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:8.2.5
+    container_name: novartc-mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - novartc-net
+    volumes:
+      - ./mongodb/data:/data/db
+      - ./mongodb/config:/data/configdb
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  namesrv:
+    image: apache/rocketmq:4.9.6
+    container_name: novartc-rmqnamesrv
+    ports:
+      - "9876:9876"
+    networks:
+      - novartc-net
+    command: sh mqnamesrv
+    restart: unless-stopped
+
+  broker:
+    image: apache/rocketmq:4.9.6
+    container_name: novartc-rmqbroker
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+    networks:
+      - novartc-net
+    environment:
+      NAMESRV_ADDR: namesrv:9876
+      TZ: Asia/Shanghai
+    depends_on:
+      - namesrv
+    volumes:
+      - ./rocketmq/conf/broker.conf:/home/rocketmq/rocketmq-4.9.6/conf/broker.conf:ro
+      - ./rocketmq/logs:/home/rocketmq/logs
+      - ./rocketmq/store:/home/rocketmq/store
+    command: sh mqbroker -c /home/rocketmq/rocketmq-4.9.6/conf/broker.conf
+    restart: unless-stopped
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: novartc-rmqdashboard
+    ports:
+      - "8082:8080"
+    networks:
+      - novartc-net
+    environment:
+      JAVA_OPTS: >
+        -Drocketmq.namesrv.addr=namesrv:9876
+        -Drocketmq.config.loginRequired=true
+        -Xmx256M -Xms256M
+    volumes:
+      - ./dashboard/users.properties:/tmp/rocketmq-console/data/users.properties:ro
+      - ./dashboard/logs:/tmp/rocketmq-console/logs
+      - ./dashboard/data:/tmp/rocketmq-console/data
+    depends_on:
+      - namesrv
+    restart: unless-stopped
+
+  novartc-server:
+    image: eclipse-temurin:21-jre
+    container_name: novartc-server
+    working_dir: /opt/novartc
+    ports:
+      - "7000:7000"
+      - "9688:9688"
+    networks:
+      - novartc-net
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: -Xms512m -Xmx1024m
+    depends_on:
+      - mysql
+      - redis
+      - mongodb
+      - namesrv
+      - broker
+    volumes:
+      - ../novartc-server/target/novartc-server-1.0.0-SNAPSHOT.jar:/opt/novartc/app.jar:ro
+      - ./backend/config:/opt/novartc/config:ro
+      - ./backend/logs:/opt/novartc/logs
+    command: >
+      sh -c "java $$JAVA_OPTS -jar /opt/novartc/app.jar
+      --spring.config.additional-location=file:/opt/novartc/config/"
+    restart: unless-stopped
+
+
