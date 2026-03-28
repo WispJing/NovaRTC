@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 90
       containers:
         - name: novartc-server
-          image: novartc-server:20260328-1655
+          image: novartc-server:20260328-171900
           imagePullPolicy: Never
           env:
             - name: TZ
@@ -71,4 +71,7 @@ spec:
                   - sh
                   - -c
                   - sleep 20
+
+
+
 

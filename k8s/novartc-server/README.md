@@ -36,7 +36,29 @@
 
 如果你的本地服务端口或密码变化了，只需要改这两个文件。
 
-## 部署步骤
+## 一键重发版
+
+优先使用仓库内脚本:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File D:\NovaRTC\NovaRTC\k8s\novartc-server\redeploy-local.ps1
+```
+
+可选: 指定镜像 tag
+
+```powershell
+powershell -ExecutionPolicy Bypass -File D:\NovaRTC\NovaRTC\k8s\novartc-server\redeploy-local.ps1 -ImageTag 20260328-170500
+```
+
+脚本会自动完成:
+
+- Maven 打包 `novartc-server`
+- 本地构建镜像
+- 更新 `base/deployment.yaml` 里的镜像 tag
+- `kubectl apply -k`
+- 等待 rollout 完成
+
+## 手动部署步骤
 
 ### 1. 重新打包服务
 
@@ -56,7 +78,7 @@ docker build -t novartc-server:20260328-1655 .
 
 说明:
 
-- `deployment.yaml` 当前使用镜像 `novartc-server:20260328-1655`
+- `deployment.yaml` 当前使用镜像 tag
 - 如果后续重新发版，建议换一个新 tag，再同步修改 `deployment.yaml`
 
 ### 3. 部署到本机 K8s
@@ -129,3 +151,4 @@ Test-NetConnection -ComputerName 127.0.0.1 -Port 30688
 - `workerId/datacenterId` 的唯一分配
 - IM 长连接摘流和重连
 - 四层流量入口策略
+
