@@ -1,0 +1,28 @@
+# Optional ingress for Docker Desktop Kubernetes.
+#
+# Use this only when an NGINX Ingress Controller is already installed in the cluster.
+# If your current cluster has no IngressClass, keep using NodePort instead:
+# - http://127.0.0.1:30070
+#
+# The host below uses nip.io so it resolves to 127.0.0.1 automatically,
+# which avoids editing the local hosts file.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: novartc-server-http
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: novartc.127.0.0.1.nip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: novartc-server-http
+                port:
+                  number: 7000

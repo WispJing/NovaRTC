@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: novartc-server-config
+data:
+  SPRING_PROFILES_ACTIVE: dev
+  SERVER_PORT: "7000"
+  SPRING_APPLICATION_NAME: NovaRTC
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
+  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+  MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED: "true"
+  MANAGEMENT_HEALTH_READINESSSTATE_ENABLED: "true"
+  SPRING_DATA_REDIS_HOST: "host.docker.internal"
+  SPRING_DATA_REDIS_PORT: "6379"
+  SPRING_DATA_REDIS_DATABASE: "0"
+  SPRING_DATA_MONGODB_URI: "mongodb://host.docker.internal:27017/novartc"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3307/novartc?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+  ROCKETMQ_ENABLED: "true"
+  ROCKETMQ_NAME_SERVER: "host.docker.internal:9876"
+  IM_HOST: "127.0.0.1"
+  IM_PORT: "30688"
+  IM_CHAT_TOPIC: "im-chat-topic"
+  IM_CHAT_CONSUMER_GROUP: "im-chat-consumer-group"
+  IM_PRESENCE_TOPIC: "im-presence-topic"
+  IM_PRESENCE_CONSUMER_GROUP: "im-presence-consumer-group"
+  IM_TOKEN_KICK_TOPIC: "im-token-kick-topic"
+  IM_TOKEN_KICK_CONSUMER_GROUP: "im-token-kick-consumer-group"
+  IM_USER_INSTANCES_KEY_PRE_FIX: "im:user:instances:"
+  IM_INSTANCE_KEY_PRE_FIX: "im:user:instance:"
+  IM_CHAT_SEQ_KEY_PRE_FIX: "im:chatseq:"
+  IM_USER_FRIEND_CACHE_KEY_PRE_FIX: "im:relation:user:friends:"
+  IM_USER_GROUP_CACHE_KEY_PRE_FIX: "im:relation:user:groups:"
+  IM_GROUP_MEMBERS_CACHE_KEY_PRE_FIX: "im:relation:group:members:"
+  IM_WORKER_ID: "1"
+  IM_DATACENTER_ID: "1"
+  JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Duser.timezone=UTC"

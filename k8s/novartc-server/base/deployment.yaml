@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: novartc-server
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: novartc-server
+  template:
+    metadata:
+      labels:
+        app: novartc-server
+    spec:
+      terminationGracePeriodSeconds: 90
+      containers:
+        - name: novartc-server
+          image: novartc-server:20260328-1655
+          imagePullPolicy: Never
+          env:
+            - name: TZ
+              value: UTC
+          envFrom:
+            - configMapRef:
+                name: novartc-server-config
+            - secretRef:
+                name: novartc-server-secret
+          ports:
+            - name: http
+              containerPort: 7000
+              protocol: TCP
+            - name: im
+              containerPort: 9688
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - sleep 20
+
