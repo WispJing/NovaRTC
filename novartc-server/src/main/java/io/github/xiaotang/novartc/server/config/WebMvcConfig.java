@@ -32,6 +32,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/login",
                         "/api/register",
                         "/druid/**",
+                        "/actuator/health",
+                        "/actuator/health/**",
+                        "/actuator/info",
+                        "/actuator/metrics",
+                        "/actuator/metrics/**",
                         "/favicon.ico",
                         "/error"
                 );
