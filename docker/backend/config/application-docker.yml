@@ -117,6 +117,7 @@ im:
   datacenterId: 1
 
 logging:
+  config: classpath:log4j2-console.xml
   level:
     root: INFO
     io.github.xiaotang: INFO

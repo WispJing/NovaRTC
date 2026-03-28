@@ -11,7 +11,7 @@
 
 - 后端 jar：`../novartc-server/target/novartc-server-1.0.0-SNAPSHOT.jar`
 - 后端配置：`./backend/config/application-docker.yml`
-- 后端日志：`./backend/logs/server-1` 和 `./backend/logs/server-2`
+- 后端日志：容器标准输出/标准错误，由 Docker 容器日志统一承载
 - MySQL 数据：`./mysql/data`
 - MySQL 日志：`./mysql/logs`
 - Redis 数据：`./redis/data`
@@ -22,7 +22,7 @@
 - RocketMQ Dashboard 日志：`./dashboard/logs`
 - RocketMQ Dashboard 数据：`./dashboard/data`
 - Elasticsearch 数据：`./elasticsearch/data`
-- Filebeat 配置：`./filebeat/filebeat.yml`
+- Filebeat 配置：`./filebeat/filebeat.yml`（文件日志版）和 `./filebeat/filebeat-docker.yml`（Docker 容器日志版）
 
 ### 启动前
 
@@ -57,8 +57,7 @@ docker compose -f docker-compose.local.yml up -d
 
 ```bash
 docker compose -f docker-compose.local.yml ps
-docker compose -f docker-compose.local.yml logs -f novartc-server-1
-docker compose -f docker-compose.local.yml logs -f novartc-server-2
+docker compose -f docker-compose.local.yml logs -f novartc-server
 docker compose -f docker-compose.local.yml logs -f filebeat
 ```
 
@@ -77,10 +76,10 @@ docker compose -f docker-compose.local.yml down
 - Kibana：`http://localhost:5601`
 - 容器内后端使用 `docker` profile，并通过服务名访问中间件，不再使用 `localhost`
 - Compose 已固定 Docker 网段为 `172.19.0.0/24`，网关为 `172.19.0.1`，便于和 Druid 白名单联动
-- Filebeat 现在采集的是 `./backend/logs/server-1` 和 `./backend/logs/server-2`，分别对应两个后端实例的日志目录
+- Filebeat 容器日志版配置采集的是 Docker 容器日志（`/var/lib/docker/containers`），并按容器名与 JSON 日志中的 logger 字段自动分类
 - 如果你重新打包了 jar，重启后端容器即可：
 
 ```bash
-docker compose -f docker-compose.local.yml restart novartc-server-1 novartc-server-2
+docker compose -f docker-compose.local.yml restart novartc-server filebeat
 ```
 

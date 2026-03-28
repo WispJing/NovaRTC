@@ -1,0 +1,114 @@
+filebeat.inputs:
+  - type: filestream
+    id: novartc_docker_containers
+    enabled: true
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    parsers:
+      - container:
+          stream: all
+          format: docker
+    processors:
+      - add_docker_metadata:
+          host: unix:///var/run/docker.sock
+      - drop_event:
+          when:
+            not:
+              regexp:
+                container.name: 'novartc-server'
+      - decode_json_fields:
+          fields: ["message"]
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+      - drop_event:
+          when:
+            has_fields: ["error.message"]
+      - copy_fields:
+          fields:
+            - from: container.name
+              to: instance
+          fail_on_error: false
+          ignore_missing: true
+      - add_fields:
+          target: ""
+          fields:
+            log_type: nova_app
+        when:
+          equals:
+            stream: stdout
+      - add_fields:
+          target: ""
+          fields:
+            log_type: nova_error
+        when:
+          equals:
+            stream: stderr
+      - add_fields:
+          target: ""
+          fields:
+            log_type: im_app
+        when:
+          equals:
+            logger: im.app
+      - add_fields:
+          target: ""
+          fields:
+            log_type: im_access
+        when:
+          equals:
+            logger: im.access
+      - add_fields:
+          target: ""
+          fields:
+            log_type: im_msg
+        when:
+          equals:
+            logger: im.msg
+      - add_fields:
+          target: ""
+          fields:
+            log_type: im_error
+        when:
+          equals:
+            logger: im.error
+
+queue.mem:
+  events: 8192
+  flush.min_events: 1
+  flush.timeout: 1s
+
+output.elasticsearch:
+  hosts: [ "http://elasticsearch:9200" ]
+  worker: 2
+  bulk_max_size: 10
+  indices:
+    - index: "nova-app-%{+yyyy.MM.dd}"
+      when.equals:
+        log_type: nova_app
+
+    - index: "nova-error-%{+yyyy.MM.dd}"
+      when.equals:
+        log_type: nova_error
+
+    - index: "im-app-%{+yyyy.MM.dd}"
+      when.equals:
+        log_type: im_app
+
+    - index: "im-access-%{+yyyy.MM.dd}"
+      when.equals:
+        log_type: im_access
+
+    - index: "im-msg-%{+yyyy.MM.dd}"
+      when.equals:
+        log_type: im_msg
+
+    - index: "im-error-%{+yyyy.MM.dd}"
+      when.equals:
+        log_type: im_error
+
+setup.template.enabled: true
+setup.template.name: "im-logs"
+setup.template.pattern: "*-*-*"
+
+logging.level: info
