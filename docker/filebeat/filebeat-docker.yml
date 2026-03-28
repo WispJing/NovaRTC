@@ -30,48 +30,54 @@ filebeat.inputs:
               to: instance
           fail_on_error: false
           ignore_missing: true
-      - add_fields:
-          target: ""
-          fields:
-            log_type: nova_app
-        when:
+      - if:
           equals:
             stream: stdout
-      - add_fields:
-          target: ""
-          fields:
-            log_type: nova_error
-        when:
+        then:
+          - add_fields:
+              target: ""
+              fields:
+                log_type: nova_app
+      - if:
           equals:
             stream: stderr
-      - add_fields:
-          target: ""
-          fields:
-            log_type: im_app
-        when:
+        then:
+          - add_fields:
+              target: ""
+              fields:
+                log_type: nova_error
+      - if:
           equals:
             logger: im.app
-      - add_fields:
-          target: ""
-          fields:
-            log_type: im_access
-        when:
+        then:
+          - add_fields:
+              target: ""
+              fields:
+                log_type: im_app
+      - if:
           equals:
             logger: im.access
-      - add_fields:
-          target: ""
-          fields:
-            log_type: im_msg
-        when:
+        then:
+          - add_fields:
+              target: ""
+              fields:
+                log_type: im_access
+      - if:
           equals:
             logger: im.msg
-      - add_fields:
-          target: ""
-          fields:
-            log_type: im_error
-        when:
+        then:
+          - add_fields:
+              target: ""
+              fields:
+                log_type: im_msg
+      - if:
           equals:
             logger: im.error
+        then:
+          - add_fields:
+              target: ""
+              fields:
+                log_type: im_error
 
 queue.mem:
   events: 8192
@@ -112,5 +118,3 @@ setup.template.name: "im-logs"
 setup.template.pattern: "*-*-*"
 
 logging.level: info
-
-
