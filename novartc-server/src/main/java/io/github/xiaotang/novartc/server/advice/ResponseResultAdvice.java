@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @RestControllerAdvice
 public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
     private static final String RESPONSE_BODY_ATTR = "responseBody";
+    private static final String ACTUATOR_PACKAGE_PREFIX = "org.springframework.boot.actuate";
 
     /**
      * 是否需要包装
@@ -29,6 +30,10 @@ public class ResponseResultAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType,
                             Class<? extends HttpMessageConverter<?>> converterType) {
+        Class<?> containingClass = returnType.getContainingClass();
+        if (containingClass.getName().startsWith(ACTUATOR_PACKAGE_PREFIX)) {
+            return false;
+        }
 
         // 已经是 Result 类型就不再包装
         return !returnType.hasMethodAnnotation(IgnoreResponseAdvice.class)
