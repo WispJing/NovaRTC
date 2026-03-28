@@ -72,7 +72,7 @@ kubectl apply -k (Join-Path $PSScriptRoot 'base')
 Assert-LastExitCode 'kubectl apply'
 
 Write-Host "[6/6] Wait for rollout..." -ForegroundColor Cyan
-kubectl -n $Namespace rollout status "$workloadKind/$WorkloadName" --timeout=180s
+kubectl -n $Namespace rollout status "$workloadKind/$WorkloadName" --timeout=300s
 Assert-LastExitCode 'kubectl rollout status'
 
 Write-Host ""
@@ -82,3 +82,4 @@ Write-Host "Verify:" -ForegroundColor Yellow
 Write-Host "  kubectl -n $Namespace get pods -l app=novartc-server -o wide"
 Write-Host "  curl.exe -i http://127.0.0.1:30070/actuator/health/readiness"
 Write-Host "  Test-NetConnection -ComputerName 127.0.0.1 -Port 30688"
+
