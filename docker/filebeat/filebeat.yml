@@ -2,163 +2,79 @@ filebeat.inputs:
 
   # ================= 主系统日志 =================
   - type: filestream
-    id: nova_app_server_1
+    id: nova_app
     paths:
-      - /data/logs/server-1/app*.log
+      - /data/logs/app*.log
     parsers:
       - ndjson:
           overwrite_keys: true
     fields:
       log_type: nova_app
-      instance: server-1
-    fields_under_root: true
-    scan_frequency: 1s
-
-  - type: filestream
-    id: nova_app_server_2
-    paths:
-      - /data/logs/server-2/app*.log
-    parsers:
-      - ndjson:
-          overwrite_keys: true
-    fields:
-      log_type: nova_app
-      instance: server-2
     fields_under_root: true
     scan_frequency: 1s
 
   # ================= 主错误日志 =================
   - type: filestream
-    id: nova_error_server_1
+    id: nova_error
     paths:
-      - /data/logs/server-1/error*.log
+      - /data/logs/error*.log
     parsers:
       - ndjson:
           overwrite_keys: true
     fields:
       log_type: nova_error
-      instance: server-1
-    fields_under_root: true
-    scan_frequency: 1s
-
-  - type: filestream
-    id: nova_error_server_2
-    paths:
-      - /data/logs/server-2/error*.log
-    parsers:
-      - ndjson:
-          overwrite_keys: true
-    fields:
-      log_type: nova_error
-      instance: server-2
     fields_under_root: true
     scan_frequency: 1s
 
   # ================= IM 应用日志 =================
   - type: filestream
-    id: im_app_server_1
+    id: im_app
     paths:
-      - /data/logs/server-1/IM/app*.log
+      - /data/logs/IM/app*.log
     parsers:
       - ndjson:
           overwrite_keys: true
     fields:
       log_type: im_app
-      instance: server-1
-    fields_under_root: true
-    scan_frequency: 1s
-
-  - type: filestream
-    id: im_app_server_2
-    paths:
-      - /data/logs/server-2/IM/app*.log
-    parsers:
-      - ndjson:
-          overwrite_keys: true
-    fields:
-      log_type: im_app
-      instance: server-2
     fields_under_root: true
     scan_frequency: 1s
 
   # ================= IM 访问日志 =================
   - type: filestream
-    id: im_access_server_1
+    id: im_access
     paths:
-      - /data/logs/server-1/IM/access*.log
+      - /data/logs/IM/access*.log
     parsers:
       - ndjson:
           overwrite_keys: true
     fields:
       log_type: im_access
-      instance: server-1
-    fields_under_root: true
-    scan_frequency: 1s
-
-  - type: filestream
-    id: im_access_server_2
-    paths:
-      - /data/logs/server-2/IM/access*.log
-    parsers:
-      - ndjson:
-          overwrite_keys: true
-    fields:
-      log_type: im_access
-      instance: server-2
     fields_under_root: true
     scan_frequency: 1s
 
   # ================= IM 消息日志 =================
   - type: filestream
-    id: im_msg_server_1
+    id: im_msg
     paths:
-      - /data/logs/server-1/IM/msg*.log
+      - /data/logs/IM/msg*.log
     parsers:
       - ndjson:
           overwrite_keys: true
     fields:
       log_type: im_msg
-      instance: server-1
-    fields_under_root: true
-    scan_frequency: 1s
-
-  - type: filestream
-    id: im_msg_server_2
-    paths:
-      - /data/logs/server-2/IM/msg*.log
-    parsers:
-      - ndjson:
-          overwrite_keys: true
-    fields:
-      log_type: im_msg
-      instance: server-2
     fields_under_root: true
     scan_frequency: 1s
 
   # ================= IM 错误日志 =================
   - type: filestream
-    id: im_error_server_1
+    id: im_error
     paths:
-      - /data/logs/server-1/IM/error*.log
+      - /data/logs/IM/error*.log
     parsers:
       - ndjson:
           overwrite_keys: true
     fields:
       log_type: im_error
-      instance: server-1
-    fields_under_root: true
-    scan_frequency: 1s
-
-  - type: filestream
-    id: im_error_server_2
-    paths:
-      - /data/logs/server-2/IM/error*.log
-    parsers:
-      - ndjson:
-          overwrite_keys: true
-    fields:
-      log_type: im_error
-      instance: server-2
     fields_under_root: true
     scan_frequency: 1s
 
@@ -167,6 +83,7 @@ queue.mem:
   flush.min_events: 1
   flush.timeout: 1s
 
+# ================= 输出到 ES =================
 output.elasticsearch:
   hosts: [ "http://elasticsearch:9200" ]
   worker: 2

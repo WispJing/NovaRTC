@@ -15,7 +15,7 @@ filebeat.inputs:
           when:
             not:
               regexp:
-                container.name: 'novartc-server'
+                container.name: '.*novartc-server.*'
       - decode_json_fields:
           fields: ["message"]
           target: ""
@@ -112,3 +112,5 @@ setup.template.name: "im-logs"
 setup.template.pattern: "*-*-*"
 
 logging.level: info
+
+

@@ -12,6 +12,7 @@
 - 后端 jar：`../novartc-server/target/novartc-server-1.0.0-SNAPSHOT.jar`
 - 后端配置：`./backend/config/application-docker.yml`
 - 后端日志：容器标准输出/标准错误，由 Docker 容器日志统一承载
+- workerId/datacenterId：容器启动脚本自动分配，仍可用环境变量 IM_WORKERID、IM_DATACENTERID 手工覆盖
 - MySQL 数据：`./mysql/data`
 - MySQL 日志：`./mysql/logs`
 - Redis 数据：`./redis/data`
@@ -51,6 +52,7 @@ docker compose -f docker-compose.local.yml down
 
 ```bash
 docker compose -f docker-compose.local.yml up -d
+docker compose -f docker-compose.local.yml up -d --scale novartc-server=3
 ```
 
 ### 查看状态
@@ -69,8 +71,8 @@ docker compose -f docker-compose.local.yml down
 
 ### 说明
 
-- 宿主机访问后端 HTTP：`http://localhost:7000`
-- 宿主机访问 IM 端口：`localhost:9688`
+- 宿主机访问后端 HTTP：`http://localhost:7000`，由 HAProxy 负载到多个 `novartc-server` 实例
+- 宿主机访问 IM 端口：`localhost:9688`，由 HAProxy 以 TCP 四层方式负载到多个 `novartc-server` 实例
 - RocketMQ Dashboard：`http://localhost:8082`
 - Elasticsearch：`http://localhost:9200`
 - Kibana：`http://localhost:5601`
@@ -82,4 +84,3 @@ docker compose -f docker-compose.local.yml down
 ```bash
 docker compose -f docker-compose.local.yml restart novartc-server filebeat
 ```
-

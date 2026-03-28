@@ -51,8 +51,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - elasticsearch
-      - novartc-server-1
+      - novartc-server
     restart: unless-stopped
+
   mysql:
     build:
       context: ./mysql
@@ -70,6 +71,12 @@ services:
       - ./mysql/data:/var/lib/mysql
       - ./mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ./mysql/logs:/var/log/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
     restart: unless-stopped
 
   redis:
@@ -109,8 +116,7 @@ services:
     ports:
       - "9876:9876"
     networks:
-      novartc-net:
-        ipv4_address: 172.19.0.3
+      - novartc-net
     command: sh mqnamesrv
     restart: unless-stopped
 
@@ -121,8 +127,7 @@ services:
       - "10909:10909"
       - "10911:10911"
     networks:
-      novartc-net:
-        ipv4_address: 172.19.0.9
+      - novartc-net
     environment:
       NAMESRV_ADDR: namesrv:9876
       TZ: UTC
@@ -155,34 +160,47 @@ services:
       - namesrv
     restart: unless-stopped
 
-  novartc-server:
-    image: eclipse-temurin:21-jre
-    container_name: novartc-server
-    working_dir: /opt/novartc
+  haproxy:
+    image: haproxy:2.9
+    container_name: novartc-haproxy
     ports:
       - "7000:7000"
       - "9688:9688"
     networks:
-      novartc-net:
-        ipv4_address: 172.19.0.10
+      - novartc-net
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - novartc-server
+    restart: unless-stopped
+
+  novartc-server:
+    image: eclipse-temurin:21-jre
+    working_dir: /opt/novartc
+    networks:
+      - novartc-net
     environment:
       TZ: UTC
       SPRING_PROFILES_ACTIVE: docker
       JAVA_OPTS: -Xms512m -Xmx1024m
-      IM_WORKERID: 1
-      IM_DATACENTERID: 1
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-novartc-local}
     depends_on:
-      - mysql
-      - redis
-      - mongodb
-      - namesrv
-      - broker
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      namesrv:
+        condition: service_started
+      broker:
+        condition: service_started
     volumes:
       - ../novartc-server/target/novartc-server-1.0.0-SNAPSHOT.jar:/opt/novartc/app.jar:ro
       - ./backend/config:/opt/novartc/config:ro
+      - ./backend/start-server.sh:/opt/novartc/start-server.sh:ro
     command: >
-      sh -c "java $$JAVA_OPTS -jar /opt/novartc/app.jar
-      --spring.config.additional-location=file:/opt/novartc/config/"
+      sh /opt/novartc/start-server.sh
     restart: unless-stopped
 
 
