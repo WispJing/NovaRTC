@@ -125,7 +125,7 @@ services:
         ipv4_address: 172.19.0.9
     environment:
       NAMESRV_ADDR: namesrv:9876
-      TZ: Asia/Shanghai
+      TZ: UTC
     depends_on:
       - namesrv
     volumes:

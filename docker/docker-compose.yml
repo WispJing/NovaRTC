@@ -17,7 +17,7 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - TZ=Asia/Shanghai
+      - TZ=UTC
     ports:
       - "9200:9200"
     volumes:
@@ -138,6 +138,7 @@ services:
       - novartc-net
     environment:
       - NAMESRV_ADDR=namesrv:9876
+      - TZ=UTC
     depends_on:
       - namesrv
     volumes:

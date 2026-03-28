@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -123,7 +124,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         }
 
         entity.setStatus(targetStatus.name());
-        entity.setHandledAt(LocalDateTime.now());
+        entity.setHandledAt(LocalDateTime.now(ZoneOffset.UTC));
         entity.setHandlerId(currentUserId);
         updateById(entity);
 
@@ -235,5 +236,3 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         return UUID.randomUUID().toString().replace("-", "");
     }
 }
-
-

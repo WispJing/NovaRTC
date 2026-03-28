@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -102,6 +102,6 @@ public class FriendRequestNotificationService {
         if (value == null) {
             return 0L;
         }
-        return value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return value.toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 }
