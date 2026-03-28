@@ -20,7 +20,7 @@ services:
       discovery.type: single-node
       xpack.security.enabled: "false"
       ES_JAVA_OPTS: -Xms1g -Xmx1g
-      TZ: Asia/Shanghai
+      TZ: UTC
     volumes:
       - ./elasticsearch/data:/usr/share/elasticsearch/data
     restart: unless-stopped
