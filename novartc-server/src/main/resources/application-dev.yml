@@ -137,8 +137,6 @@ im:
   userFriendCacheKeyPreFix: 'im:relation:user:friends:'
   userGroupCacheKeyPreFix: 'im:relation:user:groups:'
   groupMembersCacheKeyPreFix: 'im:relation:group:members:'
-  workerId: 1
-  datacenterId: 1
 
 logging:
   level:
@@ -148,3 +146,4 @@ logging:
     com.baomidou.mybatisplus: DEBUG
     org.apache.ibatis: DEBUG
     io.netty: INFO
+

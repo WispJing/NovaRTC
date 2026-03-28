@@ -1,9 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: novartc-server
 spec:
-  replicas: 1
+  serviceName: novartc-server-headless
+  replicas: 2
+  podManagementPolicy: OrderedReady
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -16,11 +18,15 @@ spec:
       terminationGracePeriodSeconds: 90
       containers:
         - name: novartc-server
-          image: novartc-server:20260328-172500
+          image: novartc-server:20260328-184200
           imagePullPolicy: Never
           env:
             - name: TZ
               value: UTC
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           envFrom:
             - configMapRef:
                 name: novartc-server-config
@@ -71,8 +77,7 @@ spec:
                   - sh
                   - -c
                   - sleep 20
-
-
-
+  updateStrategy:
+    type: RollingUpdate
 
 

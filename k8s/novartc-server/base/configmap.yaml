@@ -32,6 +32,4 @@ data:
   IM_USER_FRIEND_CACHE_KEY_PRE_FIX: "im:relation:user:friends:"
   IM_USER_GROUP_CACHE_KEY_PRE_FIX: "im:relation:user:groups:"
   IM_GROUP_MEMBERS_CACHE_KEY_PRE_FIX: "im:relation:group:members:"
-  IM_WORKER_ID: "1"
-  IM_DATACENTER_ID: "1"
   JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Duser.timezone=UTC"

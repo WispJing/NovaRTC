@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -26,7 +27,15 @@ public class InstanceIdProvider {
     @PostConstruct
     public void init() {
         try {
-            instanceId = InetAddress.getLocalHost().getHostName();
+            instanceId = Optional.ofNullable(System.getenv("POD_NAME"))
+                    .filter(name -> !name.isBlank())
+                    .orElseGet(() -> {
+                        try {
+                            return InetAddress.getLocalHost().getHostName();
+                        } catch (Exception e) {
+                            return UUID.randomUUID().toString();
+                        }
+                    });
         } catch (Exception e) {
             instanceId = UUID.randomUUID().toString();
         }
