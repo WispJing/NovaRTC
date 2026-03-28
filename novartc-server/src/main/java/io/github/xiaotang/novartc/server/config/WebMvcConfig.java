@@ -25,18 +25,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(logInterceptor)
                 .addPathPatterns("/**");
 
-        // 2. Token 拦截器：排除登录接口、静态资源等
+        // 2. Token 拦截器只拦业务接口，避免影响 actuator、druid 等基础设施端点
         registry.addInterceptor(tokenInterceptor)
-                .addPathPatterns("/**")
+                .addPathPatterns("/api/**")
                 .excludePathPatterns(
                         "/api/login",
                         "/api/register",
-                        "/druid/**",
-                        "/actuator/health",
-                        "/actuator/health/**",
-                        "/actuator/info",
-                        "/actuator/metrics",
-                        "/actuator/metrics/**",
                         "/favicon.ico",
                         "/error"
                 );
