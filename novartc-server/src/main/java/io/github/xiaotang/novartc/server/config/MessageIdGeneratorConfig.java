@@ -44,20 +44,27 @@ public class MessageIdGeneratorConfig {
     }
 
     private SnowflakeNodeId resolveNodeId(String instanceId) {
-        long podNodeId = extractOrdinal(instanceId);
-        if (podNodeId < 0) {
-            long hashedNodeId = Math.floorMod(instanceId == null ? 0 : instanceId.hashCode(), MAX_NODE_ID + 1);
-            log.warn("Could not extract pod ordinal from instanceId={}, fallback to hashed node id={}", instanceId, hashedNodeId);
-            podNodeId = hashedNodeId;
-        }
-
-        if (podNodeId > MAX_NODE_ID) {
-            throw new IllegalStateException("Pod ordinal exceeds supported snowflake node id range: " + podNodeId);
-        }
-
+        long podNodeId = resolveRawNodeId(instanceId);
         long datacenterId = podNodeId / WORKER_ID_MOD;
         long workerId = podNodeId % WORKER_ID_MOD;
         return new SnowflakeNodeId(datacenterId, workerId);
+    }
+
+    private long resolveRawNodeId(String instanceId) {
+        long extractedOrdinal = extractOrdinal(instanceId);
+        if (extractedOrdinal >= 0 && extractedOrdinal <= MAX_NODE_ID) {
+            return extractedOrdinal;
+        }
+
+        long hashedNodeId = Math.floorMod(instanceId == null ? 0 : instanceId.hashCode(), MAX_NODE_ID + 1);
+        if (extractedOrdinal > MAX_NODE_ID) {
+            log.warn(
+                    "Extracted ordinal {} from instanceId={} exceeds max snowflake node id {}, fallback to hashed node id={}",
+                    extractedOrdinal, instanceId, MAX_NODE_ID, hashedNodeId);
+        } else {
+            log.warn("Could not extract pod ordinal from instanceId={}, fallback to hashed node id={}", instanceId, hashedNodeId);
+        }
+        return hashedNodeId;
     }
 
     private long extractOrdinal(String instanceId) {
