@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 import java.util.Collections;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Created on 2026/3/18 11:35
@@ -15,12 +17,16 @@ import java.util.Collections;
  */
 public class CodeGenerator {
     public static void main(String[] args) {
+        Path projectRoot = resolveProjectRoot();
+        Path javaOutputDir = projectRoot.resolve("novartc-server").resolve("src").resolve("main").resolve("java");
+        Path mapperOutputDir = projectRoot.resolve("novartc-server").resolve("src").resolve("main").resolve("resources").resolve("mappers");
+
         // 使用 FastAutoGenerator 快速配置代码生成器
         FastAutoGenerator.create("jdbc:mysql://localhost:3307/novartc?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
                         , "root", "123456")
                 .globalConfig(builder -> {
                     builder.author("xiaotang") // 设置作者
-                            .outputDir("D:\\NovaRTC\\NovaRTC\\novartc-server\\src\\main\\java")
+                            .outputDir(javaOutputDir.toString())
                             .dateType(DateType.TIME_PACK); // 输出目录
                 })
                 .packageConfig(builder -> {
@@ -31,7 +37,7 @@ public class CodeGenerator {
                             .serviceImpl("service.impl") // 设置 Service 实现类包名
                             .pathInfo(Collections.singletonMap(
                                     OutputFile.xml,
-                                    "D:\\NovaRTC\\NovaRTC\\novartc-server\\src\\main\\resources\\mappers"
+                                    mapperOutputDir.toString()
                             )); // 设置 Mapper XML 文件包名
                 })
                 .strategyConfig(builder -> {
@@ -53,5 +59,17 @@ public class CodeGenerator {
                 // 使用 Freemarker 模板引擎
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
+    }
+
+    private static Path resolveProjectRoot() {
+        Path current = Path.of("").toAbsolutePath().normalize();
+        while (current != null) {
+            if (Files.isDirectory(current.resolve("novartc-generator"))
+                    && Files.isDirectory(current.resolve("novartc-server"))) {
+                return current;
+            }
+            current = current.getParent();
+        }
+        throw new IllegalStateException("Cannot locate NovaRTC project root from current working directory.");
     }
 }
