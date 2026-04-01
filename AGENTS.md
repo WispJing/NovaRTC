@@ -26,6 +26,7 @@ Use Java 21. `JAVA_HOME` must point to a JDK, not a JRE.
 - Keep package names lowercase under `io.github.xiaotang.novartc`.
 - Prefer concise Chinese JavaDoc for controller/service/mapper public APIs when the surrounding module already uses that style.
 - Preserve existing Spring/MyBatis patterns: service interfaces in `service`, implementations in `service/impl`, XML mappers in `src/main/resources/mappers`.
+- Backend time must be unified to UTC. When adding or modifying time-related logic, use UTC explicitly in Java APIs, JDBC/MySQL parameters, JSON serialization, scheduled tasks, and logs; do not depend on the machine default time zone or implicit local time.
 
 ## Testing Guidelines
 Current automated test coverage is minimal. Existing tests live under `*/src/test/java`; at present, `novartc-common/src/test/java/MD5Common.java` is the main example.
