@@ -36,7 +36,7 @@ public class CodeGenerator {
                 })
                 .strategyConfig(builder -> {
                     // "im_user", "im_friend", "im_friend_request", "im_group_chat", "im_group_member", "im_single_chat"
-                    builder.addInclude("im_friend", "im_friend_request")
+                    builder.addInclude("admin_menu", "admin_role", "admin_user_role", "admin_role_menu", "admin_user_menu", "admin_operate_log", "admin_login_log")
                             .entityBuilder()
                             .superClass("io.github.xiaotang.novartc.server.entity.mysql.BaseEntity")
                             .addSuperEntityColumns("id", "is_deleted", "created_at", "updated_at")
