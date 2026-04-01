@@ -67,3 +67,56 @@ VALUES
     ('3e7a1c9d5b2f4e8c6a1d3b7f9c2e6a63', '7c2e9a1d3b5f4e8c6a1d3b7f2c9e6a64', '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12'),
     ('9a2c7e1d3b5f4e8c6a1d3b7f2c9e6a65', '2e7a1c9d5b3f4e8c6a1d3b7f9c2e6a66', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', '7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13'),
     ('5c1e7a9d3b2f4e8c6a1d3b7f9c2e6a67', '8a3d1c9e5b2f4e8c6a1d3b7f2c9e6a68', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', '2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14');
+
+update im_user set is_admin = 0 where is_deleted = 0;
+update im_user set is_admin = 1 where id = '9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10';
+
+delete from admin_user_menu where is_deleted = 0;
+delete from admin_role_menu where is_deleted = 0;
+delete from admin_user_role where is_deleted = 0;
+delete from admin_role where is_deleted = 0;
+delete from admin_menu where is_deleted = 0;
+delete from admin_operate_log where is_deleted = 0;
+delete from admin_login_log where is_deleted = 0;
+
+insert into admin_menu (id, parent_id, menu_code, menu_name, menu_type, path, component, icon, sort_no, status, visible)
+values
+    ('a1000000000000000000000000000001', '', 'dashboard', '管理总览', 'CATALOG', '/dashboard', 'layouts', 'HomeFilled', 10, 1, 1),
+    ('a1000000000000000000000000000002', 'a1000000000000000000000000000001', 'dashboard:view', '管理总览', 'PAGE', '/dashboard', 'dashboard/index', 'HomeFilled', 11, 1, 1),
+    ('a1000000000000000000000000000010', '', 'user', '账号管理', 'CATALOG', '/users', 'layouts', 'UserFilled', 20, 1, 1),
+    ('a1000000000000000000000000000011', 'a1000000000000000000000000000010', 'user:manage', '账号管理', 'PAGE', '/users', 'users/index', 'UserFilled', 21, 1, 1),
+    ('a1000000000000000000000000000012', 'a1000000000000000000000000000010', 'permission:manage', '页面权限', 'PAGE', '/permissions', 'permissions/index', 'Lock', 22, 1, 1),
+    ('a1000000000000000000000000000020', '', 'online', '在线管理', 'CATALOG', '/online', 'layouts', 'Monitor', 30, 1, 1),
+    ('a1000000000000000000000000000021', 'a1000000000000000000000000000020', 'online:view', '在线管理', 'PAGE', '/online', 'online/index', 'Monitor', 31, 1, 1),
+    ('a1000000000000000000000000000022', 'a1000000000000000000000000000020', 'online:kick', '踢下线', 'BUTTON', '', '', '', 32, 1, 0),
+    ('a1000000000000000000000000000030', '', 'chat', '会话管理', 'CATALOG', '/chats', 'layouts', 'ChatDotSquare', 40, 1, 1),
+    ('a1000000000000000000000000000031', 'a1000000000000000000000000000030', 'chat:view', '会话台账', 'PAGE', '/chats', 'chats/index', 'ChatDotSquare', 41, 1, 1),
+    ('a1000000000000000000000000000032', 'a1000000000000000000000000000030', 'group:view', '群组资产', 'PAGE', '/groups', 'groups/index', 'Tickets', 42, 1, 1),
+    ('a1000000000000000000000000000033', 'a1000000000000000000000000000030', 'message:audit', '消息审计', 'PAGE', '/history', 'history/index', 'Document', 43, 1, 1),
+    ('a1000000000000000000000000000040', '', 'friend-request', '好友审核', 'CATALOG', '/friend-requests', 'layouts', 'Promotion', 50, 1, 1),
+    ('a1000000000000000000000000000041', 'a1000000000000000000000000000040', 'friend-request:audit', '申请审核', 'PAGE', '/friend-requests', 'friends/index', 'Promotion', 51, 1, 1),
+    ('a1000000000000000000000000000050', '', 'log', '日志审计', 'CATALOG', '/logs', 'layouts', 'Memo', 60, 1, 1),
+    ('a1000000000000000000000000000051', 'a1000000000000000000000000000050', 'log:view', '操作日志', 'PAGE', '/logs', 'logs/index', 'Memo', 61, 1, 1);
+
+insert into admin_role (id, role_code, role_name, data_scope, status)
+values
+    ('b1000000000000000000000000000001', 'OPS_AUDITOR', '运营审计员', 'SELF', 1);
+
+insert into admin_role_menu (id, role_id, menu_id)
+values
+    ('b2000000000000000000000000000001', 'b1000000000000000000000000000001', 'a1000000000000000000000000000002'),
+    ('b2000000000000000000000000000002', 'b1000000000000000000000000000001', 'a1000000000000000000000000000021'),
+    ('b2000000000000000000000000000003', 'b1000000000000000000000000000001', 'a1000000000000000000000000000031'),
+    ('b2000000000000000000000000000004', 'b1000000000000000000000000000001', 'a1000000000000000000000000000032'),
+    ('b2000000000000000000000000000005', 'b1000000000000000000000000000001', 'a1000000000000000000000000000033'),
+    ('b2000000000000000000000000000006', 'b1000000000000000000000000000001', 'a1000000000000000000000000000041'),
+    ('b2000000000000000000000000000007', 'b1000000000000000000000000000001', 'a1000000000000000000000000000051');
+
+insert into admin_user_role (id, user_id, role_id)
+values
+    ('b3000000000000000000000000000001', '1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'b1000000000000000000000000000001');
+
+insert into admin_user_menu (id, user_id, menu_id)
+values
+    ('b4000000000000000000000000000001', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'a1000000000000000000000000000002'),
+    ('b4000000000000000000000000000002', '5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'a1000000000000000000000000000041');
