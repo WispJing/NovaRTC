@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
+import io.github.xiaotang.novartc.server.admin.service.RiskControlService;
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
@@ -21,6 +22,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
     private final ChatDispatchService chatDispatchService;
     private final MessagePersistenceService messagePersistenceService;
     private final UserRelationCacheService userRelationCacheService;
+    private final RiskControlService riskControlService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,
@@ -48,6 +50,13 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
     }
 
     private void handleMessage(ChannelHandlerContext ctx, ChatMessage.MsgBody msgBody, String userId) {
+        String riskMessage = riskControlService.validateSendMessage(userId, msgBody);
+        if (StringUtils.isNotBlank(riskMessage)) {
+            ChatMsgLog.msgLog.warn("message blocked by risk control, sender {}, reason {}", userId, riskMessage);
+            WebSocketMsgHandler.sendSystemMessage(ctx, riskMessage);
+            return;
+        }
+
         if (!canSendMessage(userId, msgBody)) {
             ChatMsgLog.msgLog.warn("message blocked because sender {} and target {} are not friends",
                     userId,

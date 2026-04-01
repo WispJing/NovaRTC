@@ -35,36 +35,48 @@ public class AdminAuthService {
     private final IImUserService imUserService;
     private final IAdminLoginLogService adminLoginLogService;
     private final AdminPermissionService adminPermissionService;
+    private final RiskControlService riskControlService;
 
     public AdminLoginVO login(AdminLoginRequest request, HttpServletRequest httpRequest) {
+        String clientType = request == null ? null : request.getClientType();
+        String ip = resolveIp(httpRequest);
+        String userAgent = httpRequest == null ? null : httpRequest.getHeader("User-Agent");
         if (request == null || StringUtils.isAnyBlank(request.getUserNum(), request.getPassword())) {
-            saveLoginLog(null, null, null, request == null ? null : request.getClientType(), null, (byte) 0, "参数错误", httpRequest);
+            saveLoginLog(null, null, null, clientType, null, (byte) 0, "参数错误", httpRequest);
             throw new BusinessException(ResultCode.PARAM_ERROR);
         }
         ImUser user = imUserService.selectByUserNum(request.getUserNum());
         if (user == null || !MD5Util.verify(request.getPassword(), user.getPassword())) {
-            saveLoginLog(null, request.getUserNum(), null, request.getClientType(), null, (byte) 0, "用户名或密码错误", httpRequest);
+            riskControlService.recordPasswordError(user, request.getUserNum(), user == null ? null : user.getUsername(), clientType, ip, userAgent);
+            saveLoginLog(null, request.getUserNum(), null, clientType, null, (byte) 0, "用户名或密码错误", httpRequest);
             throw new BusinessException(ResultCode.LOGIN_FAIL);
         }
         if (!adminPermissionService.hasAdminAccess(user.getId())) {
-            saveLoginLog(user, user.getUserNum(), user.getUsername(), request.getClientType(), null, (byte) 0, "无后台访问权限", httpRequest);
+            saveLoginLog(user, user.getUserNum(), user.getUsername(), clientType, null, (byte) 0, "无后台访问权限", httpRequest);
             throw new BusinessException(ResultCode.FORBIDDEN);
         }
 
-        String clientType = StringUtils.defaultIfBlank(request.getClientType(), "admin-web");
-        String token = JwtUtil.generateToken(user.getId(), Map.of("loginType", "ADMIN", "clientType", clientType));
-        kickByClientType(user.getId(), clientType);
+        String finalClientType = StringUtils.defaultIfBlank(clientType, "admin-web");
+        try {
+            riskControlService.assertLoginAllowed(user, "ADMIN", finalClientType, ip, userAgent);
+        } catch (BusinessException ex) {
+            saveLoginLog(user, user.getUserNum(), user.getUsername(), finalClientType, null, (byte) 0, ex.getMessage(), httpRequest);
+            throw ex;
+        }
+
+        String token = JwtUtil.generateToken(user.getId(), Map.of("loginType", "ADMIN", "clientType", finalClientType));
+        kickByClientType(user.getId(), finalClientType);
 
         String tokenKey = LoginConstant.ADMIN_TOKEN_PREFIX + token;
         Map<String, String> tokenInfo = new HashMap<>();
         tokenInfo.put("userId", user.getId());
-        tokenInfo.put("clientType", clientType);
+        tokenInfo.put("clientType", finalClientType);
         tokenInfo.put("loginTime", String.valueOf(System.currentTimeMillis()));
         redisTemplate.opsForHash().putAll(tokenKey, tokenInfo);
         redisTemplate.expire(tokenKey, LoginConstant.ADMIN_TOKEN_TTL, TimeUnit.SECONDS);
         redisTemplate.opsForSet().add(LoginConstant.ADMIN_USER_TOKEN_PREFIX + user.getId(), token);
 
-        saveLoginLog(user, user.getUserNum(), user.getUsername(), clientType, token, (byte) 1, null, httpRequest);
+        saveLoginLog(user, user.getUserNum(), user.getUsername(), finalClientType, token, (byte) 1, null, httpRequest);
         return buildLoginVO(user, token);
     }
 

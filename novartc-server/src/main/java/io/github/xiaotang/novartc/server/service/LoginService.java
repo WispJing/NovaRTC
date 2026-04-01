@@ -5,6 +5,7 @@ import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JwtUtil;
 import io.github.xiaotang.novartc.common.util.MD5Util;
+import io.github.xiaotang.novartc.server.admin.service.RiskControlService;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
@@ -36,19 +37,24 @@ public class LoginService {
     private final IImUserService imUserService;
     private final TokenKickDispatchService tokenKickDispatchService;
     private final UserRelationCacheService userRelationCacheService;
+    private final RiskControlService riskControlService;
 
     /**
      * 登录（支持多端）
      */
-    public LoginResponse login(String userNum, String password, String clientType) {
+    public LoginResponse login(String userNum, String password, String clientType, String ip, String userAgent) {
         ImUser imUser = imUserService.selectByUserNum(userNum);
         if (imUser == null) {
+            riskControlService.recordPasswordError(null, userNum, null, clientType, ip, userAgent);
             throw new BusinessException(ResultCode.LOGIN_FAIL);
         }
         String userId = imUser.getId();
         if (!MD5Util.verify(password, imUser.getPassword())) {
+            riskControlService.recordPasswordError(imUser, imUser.getUserNum(), imUser.getUsername(), clientType, ip, userAgent);
             throw new BusinessException(ResultCode.LOGIN_FAIL);
         }
+
+        riskControlService.assertLoginAllowed(imUser, "IM", clientType, ip, userAgent);
 
         String token = JwtUtil.generateToken(userId, Map.of("clientType", clientType));
 

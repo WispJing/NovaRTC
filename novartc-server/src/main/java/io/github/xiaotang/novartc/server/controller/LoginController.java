@@ -28,11 +28,31 @@ public class LoginController {
         if (StringUtils.isBlank(clientType)) {
             clientType = UserAgentUtil.parseClientTypeFromUserAgent(request.getHeader("User-Agent"));
         }
-        return loginService.login(imUserDTO.getUserNum(), imUserDTO.getPassword(), clientType);
+        return loginService.login(
+                imUserDTO.getUserNum(),
+                imUserDTO.getPassword(),
+                clientType,
+                resolveIp(request),
+                request == null ? null : request.getHeader("User-Agent")
+        );
     }
 
     @PostMapping("/logout")
     public void logout(@RequestBody LoginResponse loginResponse) {
         loginService.logout(loginResponse.getToken());
+    }
+
+    private String resolveIp(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        String ip = request.getHeader("X-Forwarded-For");
+        if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            return ip.split(",")[0].trim();
+        }
+        return ip;
     }
 }
