@@ -14,16 +14,25 @@ import java.time.ZoneOffset;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * 好友申请通知服务，负责将申请创建和处理事件分发给相关用户。
+ */
 @Service
 @RequiredArgsConstructor
 public class FriendRequestNotificationService {
     private final ChatDispatchService chatDispatchService;
     private final IImUserService imUserService;
 
+    /**
+     * 推送好友申请创建事件。
+     */
     public void notifyCreated(ImFriendRequest request) {
         dispatch(request, request.getRequesterId(), request.getReceiverId(), ChatMessage.FriendRequestEventType.FRIEND_REQUEST_CREATED, true);
     }
 
+    /**
+     * 推送好友申请状态更新事件。
+     */
     public void notifyUpdated(ImFriendRequest request) {
         String actorUserId = StringUtils.defaultIfBlank(request.getHandlerId(), request.getRequesterId());
         Set<String> targetUserIds = new LinkedHashSet<>();

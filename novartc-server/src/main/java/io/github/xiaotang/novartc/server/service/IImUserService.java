@@ -6,14 +6,16 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * <p>
- * 用户信息表 服务类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 用户服务，负责用户信息查询与基础数据操作。
  */
 public interface IImUserService extends IService<ImUser> {
+    /**
+     * 按用户主键查询用户信息。
+     */
     ImUser selectByUserId(String userId);
+
+    /**
+     * 按用户编号查询用户信息。
+     */
     ImUser selectByUserNum(String userNum);
 }

@@ -6,14 +6,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * <p>
- * 群聊信息表 服务类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 群聊服务，负责群会话信息查询与基础数据操作。
  */
 public interface IImGroupChatService extends IService<ImGroupChat> {
-
+    /**
+     * 查询指定用户参与的群聊列表。
+     */
     List<ImGroupChat> getByUserId(String userId);
 }

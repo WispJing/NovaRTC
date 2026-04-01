@@ -4,12 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 
 /**
- * <p>
- * 单聊信息表 Mapper 接口
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 单聊会话 Mapper，负责单聊信息表的数据访问。
  */
 public interface ImSingleChatMapper extends BaseMapper<ImSingleChat> {
 

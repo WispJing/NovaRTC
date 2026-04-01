@@ -24,10 +24,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created on 2026/3/18 15:37
- *
- * @author tangj
- * @description
+ * 登录服务，负责 IM 端登录、续期、登出和踢端控制。
  */
 @Service
 @RequiredArgsConstructor
@@ -78,6 +75,9 @@ public class LoginService {
         return LoginResponse.of(imUser, token);
     }
 
+    /**
+     * 校验 token 是否有效。
+     */
     public Boolean checkToken(String token) {
         if (!JwtUtil.validate(token)) {
             return false;
@@ -145,7 +145,9 @@ public class LoginService {
         tokenKickDispatchService.dispatch(kickMsg);
     }
 
-    // 踢掉指定 token
+    /**
+     * 踢掉指定 token 对应的在线会话。
+     */
     public void kick(String userId, String token) {
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
         redisTemplate.delete(tokenKey);
@@ -153,7 +155,9 @@ public class LoginService {
         tokenKickDispatchService.dispatch(new TokenKickMessage(userId, token));
     }
 
-    // 踢掉用户的所有指定类型的设备
+    /**
+     * 踢掉用户指定客户端类型的所有在线会话。
+     */
     public void kickByClientType(String userId, String clientType) {
         String userTokensKey = LoginConstant.USER_TOKEN_PREFIX + userId;
         Set<String> tokens = redisTemplate.opsForSet().members(userTokensKey);
@@ -168,7 +172,9 @@ public class LoginService {
         }
     }
 
-    // 踢掉所有设备
+    /**
+     * 踢掉用户的全部在线设备。
+     */
     public void kickAll(String userId) {
         String userTokensKey = LoginConstant.USER_TOKEN_PREFIX + userId;
         Set<String> tokens = redisTemplate.opsForSet().members(userTokensKey);

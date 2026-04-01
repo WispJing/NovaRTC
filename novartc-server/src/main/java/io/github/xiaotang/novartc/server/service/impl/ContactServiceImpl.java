@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 联系人服务实现，负责联系人列表、单聊会话和好友申请入口处理。
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +39,9 @@ public class ContactServiceImpl implements ContactService {
     private final IImFriendRequestService imFriendRequestService;
     private final UserChannelManager userChannelManager;
 
+    /**
+     * 查询当前用户的好友联系人列表。
+     */
     @Override
     public List<ContactVO> listContacts(String currentUserId) {
         Set<String> friendUserIds = imFriendService.list(new LambdaQueryWrapper<ImFriend>()
@@ -59,6 +65,9 @@ public class ContactServiceImpl implements ContactService {
                 .toList();
     }
 
+    /**
+     * 与目标用户创建或获取单聊会话。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ChatInfoVO startChat(String currentUserId, StartChatRequest request) {
@@ -94,17 +103,26 @@ public class ContactServiceImpl implements ContactService {
         return vo;
     }
 
+    /**
+     * 查询当前用户相关的好友申请列表。
+     */
     @Override
     public List<FriendRequestVO> listFriendRequests(String currentUserId) {
         return imFriendRequestService.listByUserId(currentUserId);
     }
 
+    /**
+     * 发起新的好友申请。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO sendFriendRequest(String currentUserId, FriendRequestCreateRequest request) {
         return imFriendRequestService.sendRequest(currentUserId, request);
     }
 
+    /**
+     * 处理指定好友申请。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO handleFriendRequest(String currentUserId, FriendRequestHandleRequest request) {

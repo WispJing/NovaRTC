@@ -4,12 +4,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.AdminUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * <p>
- * 后台用户角色关系表 服务类
- * </p>
- *
- * @author xiaotang
- * @since 2026-04-01
+ * 后台用户角色服务，提供用户与角色关系的基础数据操作能力。
  */
 public interface IAdminUserRoleService extends IService<AdminUserRole> {
 

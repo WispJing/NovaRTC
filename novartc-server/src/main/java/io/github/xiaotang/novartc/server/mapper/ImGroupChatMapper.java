@@ -7,13 +7,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * <p>
- * 群聊信息表 Mapper 接口
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 群聊 Mapper，负责群聊信息表的数据访问。
  */
 public interface ImGroupChatMapper extends BaseMapper<ImGroupChat> {
+    /**
+     * 查询指定用户参与的群聊列表。
+     */
     List<ImGroupChat> selectGroupChatsByUserId(@Param("userId") String userId);
 }

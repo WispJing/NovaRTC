@@ -14,10 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 单聊会话服务实现，负责单聊会话查询、复用与创建。
+ */
 @Service
 @Transactional(readOnly = true)
 public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImSingleChat> implements IImSingleChatService {
 
+    /**
+     * 查询指定用户参与的单聊会话列表。
+     */
     @Override
     public List<ImSingleChat> getByUserId(String userId) {
         return list(new LambdaQueryWrapper<ImSingleChat>()
@@ -29,6 +35,9 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
         );
     }
 
+    /**
+     * 按双方用户标识查询已有单聊会话。
+     */
     @Override
     public ImSingleChat getByUsers(String user1Id, String user2Id) {
         if (StringUtils.isAnyBlank(user1Id, user2Id)) {
@@ -50,6 +59,9 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
                 .last("limit 1"));
     }
 
+    /**
+     * 创建单聊会话，若已存在则返回现有会话。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ImSingleChat createOrGet(String currentUserId, String targetUserId) {

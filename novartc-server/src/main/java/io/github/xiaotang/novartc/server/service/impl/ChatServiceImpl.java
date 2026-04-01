@@ -36,10 +36,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created on 2026/3/20 11:35
- *
- * @author tangj
- * @description
+ * IM 会话服务实现，负责会话列表、历史消息和已读状态处理。
  */
 @RequiredArgsConstructor
 @Service
@@ -52,6 +49,9 @@ public class ChatServiceImpl implements ChatService {
     private final IMReadStatusRepository imReadStatusRepository;
     private final UserRouteService userRouteService;
 
+    /**
+     * 查询当前用户的会话列表，并附带最后一条消息与未读数。
+     */
     @Override
     public List<ChatInfoVO> chatList() {
         String currentUserId = UserContextHolder.getUserId();
@@ -171,6 +171,9 @@ public class ChatServiceImpl implements ChatService {
                 .toList();
     }
 
+    /**
+     * 分页查询指定会话的历史消息，并补充已读状态。
+     */
     @Override
     public ChatHistoryPageVO history(String chatId, Long beforeChatSeq, Integer limit) {
         String currentUserId = UserContextHolder.getUserId();
@@ -208,6 +211,9 @@ public class ChatServiceImpl implements ChatService {
         return page;
     }
 
+    /**
+     * 将当前用户在指定会话中的未读消息批量标记为已读。
+     */
     @Override
     public void markRead(String chatId) {
         String currentUserId = UserContextHolder.getUserId();

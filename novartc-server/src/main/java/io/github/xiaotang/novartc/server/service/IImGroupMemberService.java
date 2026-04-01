@@ -4,12 +4,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImGroupMember;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * <p>
- * 群成员关系表 服务类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 群成员服务，提供群成员关系的基础数据操作能力。
  */
 public interface IImGroupMemberService extends IService<ImGroupMember> {
 

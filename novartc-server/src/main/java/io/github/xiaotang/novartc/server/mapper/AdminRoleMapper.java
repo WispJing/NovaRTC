@@ -4,12 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.github.xiaotang.novartc.server.entity.mysql.AdminRole;
 
 /**
- * <p>
- * 后台角色表 Mapper 接口
- * </p>
- *
- * @author xiaotang
- * @since 2026-04-01
+ * 后台角色 Mapper，负责后台角色表的数据访问。
  */
 public interface AdminRoleMapper extends BaseMapper<AdminRole> {
 

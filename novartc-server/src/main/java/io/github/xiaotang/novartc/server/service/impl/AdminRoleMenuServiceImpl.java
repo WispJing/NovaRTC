@@ -7,12 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- * 后台角色菜单关系表 服务实现类
- * </p>
- *
- * @author xiaotang
- * @since 2026-04-01
+ * 后台角色菜单服务实现，提供角色与菜单关系的基础数据操作能力。
  */
 @Service
 public class AdminRoleMenuServiceImpl extends ServiceImpl<AdminRoleMenuMapper, AdminRoleMenu> implements IAdminRoleMenuService {

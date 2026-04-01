@@ -8,13 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
- * Created on 2026/3/16 16:01
- * <p>
- * 每个 chatId 独立递增
- * 用于保证会话内消息顺序
- *
- * @author tangj
- * @description 聊天会话序列号生成器
+ * 会话序列号服务，负责为每个会话生成递增消息序号。
  */
 @RequiredArgsConstructor
 @Service
@@ -23,7 +17,7 @@ public class ChatSeqService {
     private final IRedisService redisService;
 
     /**
-     * 获取下一个聊天序号
+     * 获取指定会话的下一个消息序号。
      */
     public long nextSeq(String chatId) {
         if (StringUtils.isBlank(chatId)) {

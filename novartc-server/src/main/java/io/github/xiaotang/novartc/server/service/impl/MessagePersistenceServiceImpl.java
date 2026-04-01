@@ -17,10 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created on 2026/3/24 10:32
- *
- * @author tangj
- * @description
+ * 消息持久化服务实现，负责写入消息存储并补全服务端生成字段。
  */
 @Service
 @RequiredArgsConstructor
@@ -29,6 +26,9 @@ public class MessagePersistenceServiceImpl implements MessagePersistenceService 
     private final ChatSeqService chatSeqService;
     private final MessageIdUtil messageIdUtil;
 
+    /**
+     * 持久化消息并返回补全消息编号、发送人等信息后的消息体。
+     */
     @Override
     public ChatMessage.MsgBody persist(ChatMessage.MsgBody message, String authenticatedUserId) {
         String chatId = resolveChatId(message);

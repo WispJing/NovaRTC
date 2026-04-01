@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 用户关系缓存服务，负责好友关系和群成员缓存的重建与查询。
+ */
 @Service
 @RequiredArgsConstructor
 public class UserRelationCacheService {
@@ -26,11 +29,17 @@ public class UserRelationCacheService {
     private final ImFriendMapper imFriendMapper;
     private final ImGroupMemberMapper imGroupMemberMapper;
 
+    /**
+     * 异步重建指定用户的关系缓存。
+     */
     @Async
     public void rebuildUserRelationsCacheAsync(String userId) {
         rebuildUserRelationsCache(userId);
     }
 
+    /**
+     * 异步批量重建多个用户的关系缓存。
+     */
     @Async
     public void rebuildUserRelationsCachesAsync(Collection<String> userIds) {
         if (userIds == null) {
@@ -42,11 +51,17 @@ public class UserRelationCacheService {
                 .forEach(this::rebuildUserRelationsCache);
     }
 
+    /**
+     * 异步重建指定群的成员缓存。
+     */
     @Async
     public void rebuildGroupMembersCacheAsync(String groupId) {
         rebuildGroupMembersCache(groupId);
     }
 
+    /**
+     * 异步批量重建多个群的成员缓存。
+     */
     @Async
     public void rebuildGroupMembersCachesAsync(Collection<String> groupIds) {
         if (groupIds == null) {
@@ -58,6 +73,9 @@ public class UserRelationCacheService {
                 .forEach(this::rebuildGroupMembersCache);
     }
 
+    /**
+     * 同步重建指定用户的关系缓存。
+     */
     public void rebuildUserRelationsCache(String userId) {
         if (StringUtils.isBlank(userId)) {
             return;
@@ -86,6 +104,9 @@ public class UserRelationCacheService {
         groupIds.forEach(this::rebuildGroupMembersCache);
     }
 
+    /**
+     * 同步重建指定群的成员缓存。
+     */
     public void rebuildGroupMembersCache(String groupId) {
         if (StringUtils.isBlank(groupId)) {
             return;
@@ -102,6 +123,9 @@ public class UserRelationCacheService {
         replaceSet(buildGroupMembersKey(groupId), memberUserIds);
     }
 
+    /**
+     * 判断两个用户是否为好友。
+     */
     public boolean isFriend(String userId, String targetUserId) {
         if (StringUtils.isAnyBlank(userId, targetUserId)) {
             return false;
@@ -112,6 +136,9 @@ public class UserRelationCacheService {
         return getFriendUserIds(userId).contains(targetUserId);
     }
 
+    /**
+     * 获取指定用户的好友用户 ID 集合。
+     */
     public Set<String> getFriendUserIds(String userId) {
         return loadSet(buildUserFriendKey(userId), () -> {
             rebuildUserRelationsCache(userId);
@@ -119,6 +146,9 @@ public class UserRelationCacheService {
         });
     }
 
+    /**
+     * 获取指定用户加入的群组 ID 集合。
+     */
     public Set<String> getUserGroupIds(String userId) {
         return loadSet(buildUserGroupKey(userId), () -> {
             rebuildUserRelationsCache(userId);
@@ -126,6 +156,9 @@ public class UserRelationCacheService {
         });
     }
 
+    /**
+     * 获取指定群的成员用户 ID 集合。
+     */
     public Set<String> getGroupMemberUserIds(String groupId) {
         return loadSet(buildGroupMembersKey(groupId), () -> {
             rebuildGroupMembersCache(groupId);

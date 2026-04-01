@@ -11,15 +11,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- * 用户信息表 服务实现类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 用户服务实现，负责用户信息查询与基础数据操作。
  */
 @Service
 public class ImUserServiceImpl extends ServiceImpl<ImUserMapper, ImUser> implements IImUserService {
+    /**
+     * 按用户主键查询有效用户。
+     */
     @Override
     public ImUser selectByUserId(String userId) {
         if (StringUtils.isBlank(userId)) {
@@ -30,6 +28,9 @@ public class ImUserServiceImpl extends ServiceImpl<ImUserMapper, ImUser> impleme
                 .eq(ImUser::getId, userId));
     }
 
+    /**
+     * 按用户编号查询有效用户。
+     */
     @Override
     public ImUser selectByUserNum(String userNum) {
         if (StringUtils.isBlank(userNum)) {

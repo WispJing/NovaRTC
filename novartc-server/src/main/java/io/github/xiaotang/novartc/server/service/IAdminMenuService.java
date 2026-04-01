@@ -4,12 +4,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.AdminMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * <p>
- * 后台菜单表 服务类
- * </p>
- *
- * @author xiaotang
- * @since 2026-04-01
+ * 后台菜单服务，提供后台菜单的基础数据操作能力。
  */
 public interface IAdminMenuService extends IService<AdminMenu> {
 

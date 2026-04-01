@@ -16,6 +16,9 @@ import java.util.Set;
 public class PresenceAudienceResolver {
     private final UserRelationCacheService userRelationCacheService;
 
+    /**
+     * 解析用户在线状态变更需要通知的目标用户集合。
+     */
     public Set<String> resolveAudienceUserIds(String userId) {
         if (StringUtils.isBlank(userId)) {
             return Set.of();

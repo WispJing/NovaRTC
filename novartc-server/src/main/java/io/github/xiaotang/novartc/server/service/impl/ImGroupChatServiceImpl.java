@@ -9,16 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * <p>
- * 群聊信息表 服务实现类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 群聊服务实现，负责群会话信息查询与基础数据操作。
  */
 @Service
 public class ImGroupChatServiceImpl extends ServiceImpl<ImGroupChatMapper, ImGroupChat> implements IImGroupChatService {
 
+    /**
+     * 查询指定用户参与的群聊列表。
+     */
     @Override
     public List<ImGroupChat> getByUserId(String userId) {
         return baseMapper.selectGroupChatsByUserId(userId);

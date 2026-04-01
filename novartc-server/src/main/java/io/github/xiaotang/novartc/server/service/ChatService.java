@@ -6,15 +6,21 @@ import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 import java.util.List;
 
 /**
- * Created on 2026/3/20 11:35
- *
- * @author tangj
- * @description
+ * IM 会话服务，负责会话列表、历史消息和已读状态查询。
  */
 public interface ChatService {
+    /**
+     * 查询当前用户的会话列表。
+     */
     List<ChatInfoVO> chatList();
 
+    /**
+     * 分页查询指定会话的历史消息。
+     */
     ChatHistoryPageVO history(String chatId, Long beforeChatSeq, Integer limit);
 
+    /**
+     * 将指定会话中的未读消息标记为已读。
+     */
     void markRead(String chatId);
 }

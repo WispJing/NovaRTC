@@ -28,6 +28,9 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 好友申请服务实现，负责好友申请的查询、流转和好友关系落库。
+ */
 @Service
 @RequiredArgsConstructor
 public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMapper, ImFriendRequest> implements IImFriendRequestService {
@@ -37,6 +40,9 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
     private final FriendRequestNotificationService friendRequestNotificationService;
     private final UserRelationCacheService userRelationCacheService;
 
+    /**
+     * 查询当前用户相关的好友申请列表。
+     */
     @Override
     public List<FriendRequestVO> listByUserId(String currentUserId) {
         if (StringUtils.isBlank(currentUserId)) {
@@ -53,6 +59,9 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
                 .toList();
     }
 
+    /**
+     * 创建新的好友申请，必要时复用历史申请记录。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO sendRequest(String currentUserId, FriendRequestCreateRequest request) {
@@ -99,6 +108,9 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         return toVO(latest);
     }
 
+    /**
+     * 处理好友申请，并在同意时建立双向好友关系与单聊会话。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO handleRequest(String currentUserId, FriendRequestHandleRequest request) {

@@ -16,12 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <p>
- * 群成员关系表 服务实现类
- * </p>
- *
- * @author xiaotang
- * @since 2026-03-18
+ * 群成员服务实现，负责群成员关系维护并同步刷新关系缓存。
  */
 @Service
 @RequiredArgsConstructor
@@ -29,6 +24,9 @@ import java.util.Set;
 public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, ImGroupMember> implements IImGroupMemberService {
     private final UserRelationCacheService userRelationCacheService;
 
+    /**
+     * 新增群成员关系并刷新相关缓存。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean save(ImGroupMember entity) {
@@ -39,6 +37,9 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
         return saved;
     }
 
+    /**
+     * 批量新增群成员关系并刷新相关缓存。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean saveBatch(Collection<ImGroupMember> entityList) {
@@ -49,6 +50,9 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
         return saved;
     }
 
+    /**
+     * 更新群成员关系并刷新相关缓存。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(ImGroupMember entity) {
@@ -67,6 +71,9 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
         return updated;
     }
 
+    /**
+     * 删除单个群成员关系并刷新相关缓存。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean removeById(java.io.Serializable id) {
@@ -78,6 +85,9 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
         return removed;
     }
 
+    /**
+     * 批量删除群成员关系并刷新相关缓存。
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean removeByIds(Collection<?> list) {
