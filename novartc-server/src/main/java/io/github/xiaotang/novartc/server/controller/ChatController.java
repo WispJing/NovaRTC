@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Created on 2026/3/20 11:31
- *
- * @author tangj
- * @description
+ * IM 会话控制器，提供会话列表、历史消息和已读回执接口。
  */
 @RequiredArgsConstructor
 @RestController
@@ -25,16 +22,25 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
 
+    /**
+     * 查询当前登录用户的会话列表。
+     */
     @PostMapping("/list")
     public List<ChatInfoVO> chatList() {
         return chatService.chatList();
     }
 
+    /**
+     * 查询指定会话的历史消息。
+     */
     @PostMapping("/history")
     public ChatHistoryPageVO history(@RequestBody ChatHistoryRequest request) {
         return chatService.history(request.getChatId(), request.getBeforeChatSeq(), request.getLimit());
     }
 
+    /**
+     * 将指定会话标记为已读。
+     */
     @PostMapping("/read")
     public void markRead(@RequestBody ChatReadRequest request) {
         chatService.markRead(request.getChatId());

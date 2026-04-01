@@ -31,6 +31,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +72,7 @@ public class RiskControlService {
         entity.setControlType("LOGIN_BAN");
         entity.setScope(scope);
         entity.setReason(request.getReason());
-        entity.setExpiresAt(request.getExpiresAt());
+        entity.setExpiresAt(toLocalDateTime(request.getExpiresAt()));
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
         entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
@@ -91,7 +93,7 @@ public class RiskControlService {
         entity.setControlType("SEND_MUTE");
         entity.setScope("ALL");
         entity.setReason(request.getReason());
-        entity.setExpiresAt(request.getExpiresAt());
+        entity.setExpiresAt(toLocalDateTime(request.getExpiresAt()));
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
         entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
@@ -129,7 +131,7 @@ public class RiskControlService {
         entity.setGroupId(request.getGroupId());
         entity.setMuteScope("GROUP_ALL");
         entity.setReason(request.getReason());
-        entity.setExpiresAt(request.getExpiresAt());
+        entity.setExpiresAt(toLocalDateTime(request.getExpiresAt()));
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
         entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
@@ -149,7 +151,7 @@ public class RiskControlService {
         entity.setUserId(request.getUserId());
         entity.setMuteScope("USER");
         entity.setReason(request.getReason());
-        entity.setExpiresAt(request.getExpiresAt());
+        entity.setExpiresAt(toLocalDateTime(request.getExpiresAt()));
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
         entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
@@ -242,7 +244,7 @@ public class RiskControlService {
         entity.setHandledStatus(request.getHandledStatus() == null ? (byte) 1 : request.getHandledStatus());
         entity.setHandlerUserId(operatorUserId);
         entity.setHandlerName(resolveOperatorName(operatorUserId, operatorName));
-        entity.setHandledAt(Instant.now());
+        entity.setHandledAt(LocalDateTime.now(ZoneOffset.UTC));
         riskLoginAlertService.updateById(entity);
     }
 
@@ -359,11 +361,11 @@ public class RiskControlService {
     }
 
     private boolean isActive(RiskUserControl item) {
-        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(Instant.now()));
+        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC)));
     }
 
     private boolean isActive(RiskGroupMute item) {
-        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(Instant.now()));
+        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC)));
     }
 
     private void validateUser(String userId) {
@@ -475,7 +477,13 @@ public class RiskControlService {
         return operator == null ? null : operator.getUsername();
     }
 
+    private LocalDateTime toLocalDateTime(Instant instant) {
+        return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
     private String uuid32() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 }
+
+

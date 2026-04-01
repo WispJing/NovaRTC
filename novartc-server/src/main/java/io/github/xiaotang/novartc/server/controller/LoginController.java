@@ -10,10 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Created on 2026/3/11 9:11
- *
- * @author tangj
- * @description
+ * IM 登录控制器，提供客户端登录和登出接口。
  */
 @RequiredArgsConstructor
 @RestController
@@ -21,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
     private final LoginService loginService;
 
+    /**
+     * IM 账号登录。
+     */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody IMUserDTO imUserDTO,
                                HttpServletRequest request) {
@@ -37,6 +37,9 @@ public class LoginController {
         );
     }
 
+    /**
+     * IM 账号登出。
+     */
     @PostMapping("/logout")
     public void logout(@RequestBody LoginResponse loginResponse) {
         loginService.logout(loginResponse.getToken());
