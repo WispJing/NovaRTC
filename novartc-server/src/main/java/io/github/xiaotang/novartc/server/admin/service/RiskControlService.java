@@ -12,17 +12,30 @@ import io.github.xiaotang.novartc.server.admin.vo.RiskBlacklistVO;
 import io.github.xiaotang.novartc.server.admin.vo.RiskGroupMuteVO;
 import io.github.xiaotang.novartc.server.admin.vo.RiskLoginAlertVO;
 import io.github.xiaotang.novartc.server.admin.vo.RiskUserControlVO;
-import io.github.xiaotang.novartc.server.entity.mysql.*;
+import io.github.xiaotang.novartc.server.entity.mysql.ImGroupChat;
+import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
+import io.github.xiaotang.novartc.server.entity.mysql.RiskBlacklist;
+import io.github.xiaotang.novartc.server.entity.mysql.RiskGroupMute;
+import io.github.xiaotang.novartc.server.entity.mysql.RiskLoginAlert;
+import io.github.xiaotang.novartc.server.entity.mysql.RiskUserControl;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
-import io.github.xiaotang.novartc.server.service.*;
+import io.github.xiaotang.novartc.server.service.IImGroupChatService;
+import io.github.xiaotang.novartc.server.service.IImUserService;
+import io.github.xiaotang.novartc.server.service.IRiskBlacklistService;
+import io.github.xiaotang.novartc.server.service.IRiskGroupMuteService;
+import io.github.xiaotang.novartc.server.service.IRiskLoginAlertService;
+import io.github.xiaotang.novartc.server.service.IRiskUserControlService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,6 +49,8 @@ public class RiskControlService {
     private final IImUserService imUserService;
     private final IImGroupChatService imGroupChatService;
     private final StringRedisTemplate redisTemplate;
+    private final RiskControlCacheService riskControlCacheService;
+    private final RiskControlEnforcementService riskControlEnforcementService;
 
     public List<RiskUserControlVO> listUserControls() {
         List<RiskUserControl> items = riskUserControlService.list(new LambdaQueryWrapper<RiskUserControl>()
@@ -47,19 +62,22 @@ public class RiskControlService {
 
     public RiskUserControlVO banLogin(String operatorUserId, String operatorName, AdminRiskUserControlRequest request) {
         validateUser(request.getUserId());
-        closeUserControls(request.getUserId(), "LOGIN_BAN", request.getScope());
+        String scope = StringUtils.defaultIfBlank(request.getScope(), "IM");
+        closeUserControls(request.getUserId(), "LOGIN_BAN", scope);
         RiskUserControl entity = new RiskUserControl();
         entity.setId(uuid32());
         entity.setUserId(request.getUserId());
         entity.setControlType("LOGIN_BAN");
-        entity.setScope(StringUtils.defaultIfBlank(request.getScope(), "IM"));
+        entity.setScope(scope);
         entity.setReason(request.getReason());
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
-        entity.setOperatorName(operatorName);
+        entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
         entity.setIsDeleted(false);
         riskUserControlService.save(entity);
+        riskControlCacheService.refreshUserControlCache(request.getUserId());
+        riskControlEnforcementService.forceLogoutForLoginBan(request.getUserId(), scope);
         ImUser user = imUserService.selectByUserId(request.getUserId());
         return toUserControlVO(entity, user);
     }
@@ -76,9 +94,10 @@ public class RiskControlService {
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
-        entity.setOperatorName(operatorName);
+        entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
         entity.setIsDeleted(false);
         riskUserControlService.save(entity);
+        riskControlCacheService.refreshUserControlCache(request.getUserId());
         ImUser user = imUserService.selectByUserId(request.getUserId());
         return toUserControlVO(entity, user);
     }
@@ -90,6 +109,7 @@ public class RiskControlService {
         }
         entity.setStatus((byte) 0);
         riskUserControlService.updateById(entity);
+        riskControlCacheService.refreshUserControlCache(entity.getUserId());
     }
 
     public List<RiskGroupMuteVO> listGroupMutes() {
@@ -112,9 +132,10 @@ public class RiskControlService {
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
-        entity.setOperatorName(operatorName);
+        entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
         entity.setIsDeleted(false);
         riskGroupMuteService.save(entity);
+        riskControlCacheService.refreshGroupMuteCache(request.getGroupId());
         return toGroupMuteVO(entity, imGroupChatService.getById(request.getGroupId()), null);
     }
 
@@ -131,9 +152,10 @@ public class RiskControlService {
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
-        entity.setOperatorName(operatorName);
+        entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
         entity.setIsDeleted(false);
         riskGroupMuteService.save(entity);
+        riskControlCacheService.refreshGroupMuteCache(request.getGroupId());
         return toGroupMuteVO(entity, imGroupChatService.getById(request.getGroupId()), imUserService.selectByUserId(request.getUserId()));
     }
 
@@ -144,6 +166,7 @@ public class RiskControlService {
         }
         entity.setStatus((byte) 0);
         riskGroupMuteService.updateById(entity);
+        riskControlCacheService.refreshGroupMuteCache(entity.getGroupId());
     }
 
     public List<RiskBlacklistVO> listBlacklists() {
@@ -172,8 +195,10 @@ public class RiskControlService {
             existing.setReason(request.getReason());
             existing.setSource("MANUAL");
             existing.setOperatorUserId(operatorUserId);
-            existing.setOperatorName(operatorName);
+            existing.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
             riskBlacklistService.updateById(existing);
+            riskControlCacheService.refreshBlacklistCache(existing.getOwnerUserId());
+            riskControlEnforcementService.forceBlockBlacklistSessions(existing.getOwnerUserId(), existing.getBlockedUserId());
             return toBlacklistVO(existing, imUserService.selectByUserId(existing.getOwnerUserId()), imUserService.selectByUserId(existing.getBlockedUserId()));
         }
         RiskBlacklist entity = new RiskBlacklist();
@@ -184,9 +209,11 @@ public class RiskControlService {
         entity.setReason(request.getReason());
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
-        entity.setOperatorName(operatorName);
+        entity.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
         entity.setIsDeleted(false);
         riskBlacklistService.save(entity);
+        riskControlCacheService.refreshBlacklistCache(entity.getOwnerUserId());
+        riskControlEnforcementService.forceBlockBlacklistSessions(entity.getOwnerUserId(), entity.getBlockedUserId());
         return toBlacklistVO(entity, imUserService.selectByUserId(entity.getOwnerUserId()), imUserService.selectByUserId(entity.getBlockedUserId()));
     }
 
@@ -197,6 +224,7 @@ public class RiskControlService {
         }
         entity.setStatus((byte) 0);
         riskBlacklistService.updateById(entity);
+        riskControlCacheService.refreshBlacklistCache(entity.getOwnerUserId());
     }
 
     public List<RiskLoginAlertVO> listLoginAlerts() {
@@ -213,7 +241,7 @@ public class RiskControlService {
         }
         entity.setHandledStatus(request.getHandledStatus() == null ? (byte) 1 : request.getHandledStatus());
         entity.setHandlerUserId(operatorUserId);
-        entity.setHandlerName(operatorName);
+        entity.setHandlerName(resolveOperatorName(operatorUserId, operatorName));
         entity.setHandledAt(Instant.now());
         riskLoginAlertService.updateById(entity);
     }
@@ -222,7 +250,7 @@ public class RiskControlService {
         if (user == null) {
             return;
         }
-        RiskUserControl activeControl = findActiveUserControl(user.getId(), "LOGIN_BAN", scope);
+        RiskUserControl activeControl = riskControlCacheService.findActiveUserControl(user.getId(), "LOGIN_BAN", scope);
         if (activeControl != null) {
             createLoginAlert(user, clientType, ip, userAgent, "LOGIN_BANNED", "HIGH", StringUtils.defaultIfBlank(activeControl.getReason(), "账号已被封禁，禁止登录"));
             throw new BusinessException(ResultCode.FORBIDDEN.code(), "账号已被封禁，禁止登录");
@@ -237,7 +265,7 @@ public class RiskControlService {
     }
 
     public String validateSendMessage(String userId, ChatMessage.MsgBody msgBody) {
-        RiskUserControl sendMute = findActiveUserControl(userId, "SEND_MUTE", "ALL");
+        RiskUserControl sendMute = riskControlCacheService.findActiveUserControl(userId, "SEND_MUTE", "ALL");
         if (sendMute != null) {
             return StringUtils.defaultIfBlank(sendMute.getReason(), "当前账号已被禁言");
         }
@@ -247,11 +275,11 @@ public class RiskControlService {
             if (StringUtils.isBlank(groupId)) {
                 return null;
             }
-            RiskGroupMute groupAll = findActiveGroupMute(groupId, null, "GROUP_ALL");
+            RiskGroupMute groupAll = riskControlCacheService.findActiveGroupMute(groupId, null, "GROUP_ALL");
             if (groupAll != null) {
                 return StringUtils.defaultIfBlank(groupAll.getReason(), "当前群已开启全员禁言");
             }
-            RiskGroupMute userMute = findActiveGroupMute(groupId, userId, "USER");
+            RiskGroupMute userMute = riskControlCacheService.findActiveGroupMute(groupId, userId, "USER");
             if (userMute != null) {
                 return StringUtils.defaultIfBlank(userMute.getReason(), "你已被该群禁言");
             }
@@ -260,7 +288,7 @@ public class RiskControlService {
 
         if (msgBody.hasSingleChatInfo()) {
             String targetUserId = msgBody.getSingleChatInfo().getUser2Id();
-            if (StringUtils.isNotBlank(targetUserId) && isBlacklisted(userId, targetUserId)) {
+            if (StringUtils.isNotBlank(targetUserId) && riskControlCacheService.isBlacklisted(userId, targetUserId)) {
                 return "当前会话受黑名单限制，无法发送消息";
             }
         }
@@ -286,41 +314,6 @@ public class RiskControlService {
         entity.setHandledStatus((byte) 0);
         entity.setIsDeleted(false);
         riskLoginAlertService.save(entity);
-    }
-
-    private RiskUserControl findActiveUserControl(String userId, String controlType, String scope) {
-        if (StringUtils.isBlank(userId)) {
-            return null;
-        }
-        List<String> scopes = "ALL".equals(scope) ? List.of("ALL") : List.of(scope, "ALL");
-        List<RiskUserControl> items = riskUserControlService.list(new LambdaQueryWrapper<RiskUserControl>()
-                .eq(RiskUserControl::getUserId, userId)
-                .eq(RiskUserControl::getControlType, controlType)
-                .in(RiskUserControl::getScope, scopes)
-                .eq(RiskUserControl::getStatus, (byte) 1)
-                .eq(RiskUserControl::getIsDeleted, false)
-                .orderByDesc(RiskUserControl::getCreatedAt));
-        return items.stream().filter(this::isActive).findFirst().orElse(null);
-    }
-
-    private RiskGroupMute findActiveGroupMute(String groupId, String userId, String muteScope) {
-        List<RiskGroupMute> items = riskGroupMuteService.list(new LambdaQueryWrapper<RiskGroupMute>()
-                .eq(RiskGroupMute::getGroupId, groupId)
-                .eq(RiskGroupMute::getMuteScope, muteScope)
-                .eq(userId != null, RiskGroupMute::getUserId, userId)
-                .eq(RiskGroupMute::getStatus, (byte) 1)
-                .eq(RiskGroupMute::getIsDeleted, false)
-                .orderByDesc(RiskGroupMute::getCreatedAt));
-        return items.stream().filter(this::isActive).findFirst().orElse(null);
-    }
-
-    private boolean isBlacklisted(String leftUserId, String rightUserId) {
-        return riskBlacklistService.count(new LambdaQueryWrapper<RiskBlacklist>()
-                .eq(RiskBlacklist::getStatus, (byte) 1)
-                .eq(RiskBlacklist::getIsDeleted, false)
-                .and(wrapper -> wrapper
-                        .and(w -> w.eq(RiskBlacklist::getOwnerUserId, leftUserId).eq(RiskBlacklist::getBlockedUserId, rightUserId))
-                        .or(w -> w.eq(RiskBlacklist::getOwnerUserId, rightUserId).eq(RiskBlacklist::getBlockedUserId, leftUserId)))) > 0;
     }
 
     private boolean hasDifferentClientOnline(String userId, String clientType, boolean adminScope) {
@@ -469,6 +462,17 @@ public class RiskControlService {
         vo.setHandledAt(item.getHandledAt());
         vo.setCreatedAt(item.getCreatedAt());
         return vo;
+    }
+
+    private String resolveOperatorName(String operatorUserId, String operatorName) {
+        if (StringUtils.isNotBlank(operatorName)) {
+            return operatorName;
+        }
+        if (StringUtils.isBlank(operatorUserId)) {
+            return null;
+        }
+        ImUser operator = imUserService.selectByUserId(operatorUserId);
+        return operator == null ? null : operator.getUsername();
     }
 
     private String uuid32() {

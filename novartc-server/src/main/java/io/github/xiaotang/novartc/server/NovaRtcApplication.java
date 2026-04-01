@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.server;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import io.github.xiaotang.novartc.server.admin.service.RiskControlCacheService;
 import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.netty.NovaRTCServer;
 import jakarta.annotation.PostConstruct;
@@ -30,6 +31,8 @@ import java.util.TimeZone;
 @RequiredArgsConstructor
 public class NovaRtcApplication implements CommandLineRunner {
     private final Logger logger = LoggerFactory.getLogger(NovaRtcApplication.class);
+    private final NovaRTCServer novaRtcServer;
+    private final RiskControlCacheService riskControlCacheService;
 
     @PostConstruct
     public void init() {
@@ -43,10 +46,9 @@ public class NovaRtcApplication implements CommandLineRunner {
         JSONObject.defaultTimeZone = TimeZone.getTimeZone("UTC");
     }
 
-    private final NovaRTCServer novaRtcServer;
-
     @Override
     public void run(String... args) {
+        riskControlCacheService.warmupAllCaches();
         novaRtcServer.init();
         novaRtcServer.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
