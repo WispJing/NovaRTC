@@ -102,7 +102,6 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
                 if (count >= 2) {
                     ChatAccessLog.log.warn("心跳超时关闭连接 {}", channel.id());
-                    userChannelManager.remove(channel);
                     channel.close();
                 } else {
                     ChatAccessLog.log.info("检测到读空闲，发送Ping {}", channel.id());
