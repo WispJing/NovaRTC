@@ -87,7 +87,13 @@ public class AdminConsoleService {
         if (user == null) {
             return List.of();
         }
-        return getRedisSessions(LoginConstant.USER_TOKEN_PREFIX + targetUserId, LoginConstant.TOKEN_PREFIX, user, "IM");
+        return getRedisSessions(
+                LoginConstant.USER_TOKEN_PREFIX + targetUserId,
+                LoginConstant.TOKEN_PREFIX,
+                user,
+                "IM",
+                userChannelManager.isOnline(targetUserId)
+        );
     }
 
     public List<AdminSessionVO> listAdminSessions(String currentUserId) {
@@ -96,7 +102,13 @@ public class AdminConsoleService {
                 : Optional.ofNullable(imUserService.selectByUserId(currentUserId)).map(List::of).orElse(List.of());
         List<AdminSessionVO> result = new ArrayList<>();
         for (ImUser user : users) {
-            result.addAll(getRedisSessions(LoginConstant.ADMIN_USER_TOKEN_PREFIX + user.getId(), LoginConstant.ADMIN_TOKEN_PREFIX, user, "ADMIN"));
+            result.addAll(getRedisSessions(
+                    LoginConstant.ADMIN_USER_TOKEN_PREFIX + user.getId(),
+                    LoginConstant.ADMIN_TOKEN_PREFIX,
+                    user,
+                    "ADMIN",
+                    true
+            ));
         }
         result.sort(Comparator.comparing(AdminSessionVO::getLoginTime, Comparator.nullsLast(Long::compareTo)).reversed());
         return result;
@@ -511,7 +523,11 @@ public class AdminConsoleService {
         vo.setReceiverAvatarUrl(user == null ? null : user.getAvatarUrl());
     }
 
-    private List<AdminSessionVO> getRedisSessions(String userTokensKey, String tokenPrefix, ImUser user, String source) {
+    private List<AdminSessionVO> getRedisSessions(String userTokensKey,
+                                                 String tokenPrefix,
+                                                 ImUser user,
+                                                 String source,
+                                                 boolean onlineStatus) {
         Set<String> tokens = redisTemplate.opsForSet().members(userTokensKey);
         if (tokens == null || tokens.isEmpty()) {
             return List.of();
@@ -531,7 +547,7 @@ public class AdminConsoleService {
             vo.setClientType((String) redisTemplate.opsForHash().get(tokenKey, "clientType"));
             Object loginTime = redisTemplate.opsForHash().get(tokenKey, "loginTime");
             vo.setLoginTime(loginTime == null ? null : Long.parseLong(loginTime.toString()));
-            vo.setOnline(redisTemplate.hasKey(tokenKey));
+            vo.setOnline("IM".equals(source) ? onlineStatus : redisTemplate.hasKey(tokenKey));
             vo.setSource(source);
             sessions.add(vo);
         }

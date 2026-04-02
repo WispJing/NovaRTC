@@ -2,6 +2,8 @@ package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
+import io.github.xiaotang.novartc.server.queue.common.InstanceIdProvider;
+import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,6 +11,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -24,11 +27,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     private final UserChannelManager userChannelManager;
+    private final UserRouteService userRouteService;
+    private final InstanceIdProvider instanceIdProvider;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         if (msg instanceof ChatMessage.MsgBody body) {
+            touchRoute(ctx.channel());
 
             if (body.getMessageType() == ChatMessage.MessageType.PING) {
                 handlePing(ctx, body);
@@ -42,6 +48,12 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
         }
 
         super.channelRead(ctx, msg);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        userChannelManager.remove(ctx.channel());
+        super.channelInactive(ctx);
     }
 
     private void handlePing(ChannelHandlerContext ctx, ChatMessage.MsgBody ping) {
@@ -61,6 +73,15 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
     private void resetHeartbeat(Channel channel) {
         channel.attr(NettyAttributes.HEARTBEAT_COUNT).set(0);
+        touchRoute(channel);
+    }
+
+    private void touchRoute(Channel channel) {
+        String userId = channel.attr(NettyAttributes.USER_ID).get();
+        if (StringUtils.isBlank(userId)) {
+            return;
+        }
+        userRouteService.renewUser(userId, instanceIdProvider.getInstanceId());
     }
 
     @Override
