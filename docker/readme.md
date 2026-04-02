@@ -8,12 +8,14 @@ docker compose up -d
 docker compose down
 ```
 
-### 修改文件重新创建，以*dashboard*为例
+### 变更 RocketMQ 配置后重建
+
 ```bash
-docker-compose up -d --force-recreate redis
+docker compose up -d --force-recreate namesrv broker dashboard
 ```
 
-### 重启
+### 重启单个服务
+
 ```bash
 docker compose restart redis
 ```
