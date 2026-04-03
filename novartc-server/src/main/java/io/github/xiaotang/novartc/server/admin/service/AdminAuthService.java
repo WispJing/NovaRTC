@@ -54,22 +54,22 @@ public class AdminAuthService {
             throw new BusinessException(ResultCode.FORBIDDEN);
         }
 
-        String finalClientType = StringUtils.defaultIfBlank(clientType, "admin-web");
+        String finalClientType = StringUtils.defaultIfBlank(clientType, LoginConstant.DEFAULT_ADMIN_CLIENT_TYPE);
         try {
-            riskControlService.assertLoginAllowed(user, "ADMIN", finalClientType, ip, userAgent);
+            riskControlService.assertLoginAllowed(user, LoginConstant.LOGIN_SCOPE_ADMIN, finalClientType, ip, userAgent);
         } catch (BusinessException ex) {
             saveLoginLog(user, user.getUserNum(), user.getUsername(), finalClientType, null, (byte) 0, ex.getMessage(), httpRequest);
             throw ex;
         }
 
-        String token = JwtUtil.generateToken(user.getId(), Map.of("loginType", "ADMIN", "clientType", finalClientType));
+        String token = JwtUtil.generateToken(user.getId(), Map.of("loginType", LoginConstant.LOGIN_TYPE_ADMIN, "clientType", finalClientType));
         kickByClientType(user.getId(), finalClientType);
 
         String tokenKey = LoginConstant.ADMIN_TOKEN_PREFIX + token;
         Map<String, String> tokenInfo = new HashMap<>();
-        tokenInfo.put("userId", user.getId());
-        tokenInfo.put("clientType", finalClientType);
-        tokenInfo.put("loginTime", String.valueOf(System.currentTimeMillis()));
+        tokenInfo.put(LoginConstant.TOKEN_INFO_USER_ID, user.getId());
+        tokenInfo.put(LoginConstant.TOKEN_INFO_CLIENT_TYPE, finalClientType);
+        tokenInfo.put(LoginConstant.TOKEN_INFO_LOGIN_TIME, String.valueOf(System.currentTimeMillis()));
         redisTemplate.opsForHash().putAll(tokenKey, tokenInfo);
         redisTemplate.expire(tokenKey, LoginConstant.ADMIN_TOKEN_TTL, TimeUnit.SECONDS);
         redisTemplate.opsForSet().add(LoginConstant.ADMIN_USER_TOKEN_PREFIX + user.getId(), token);
@@ -91,7 +91,7 @@ public class AdminAuthService {
             throw new RuntimeException("token非法");
         }
         String tokenKey = LoginConstant.ADMIN_TOKEN_PREFIX + token;
-        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
         if (StringUtils.isBlank(userId)) {
             throw new RuntimeException("token已过期");
         }
@@ -132,7 +132,7 @@ public class AdminAuthService {
         Set<String> tokens = getActiveTokens(userId);
         for (String token : tokens) {
             String tokenKey = LoginConstant.ADMIN_TOKEN_PREFIX + token;
-            String type = (String) redisTemplate.opsForHash().get(tokenKey, "clientType");
+            String type = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_CLIENT_TYPE);
             if (clientType.equals(type)) {
                 invalidateToken(token, (byte) 2, null);
             }
@@ -164,7 +164,7 @@ public class AdminAuthService {
             return;
         }
         String tokenKey = LoginConstant.ADMIN_TOKEN_PREFIX + token;
-        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
         if (StringUtils.isNotBlank(userId)) {
             redisTemplate.delete(tokenKey);
             redisTemplate.opsForSet().remove(LoginConstant.ADMIN_USER_TOKEN_PREFIX + userId, token);
@@ -194,8 +194,8 @@ public class AdminAuthService {
         log.setUserId(user == null ? null : user.getId());
         log.setUserNum(user == null ? userNum : user.getUserNum());
         log.setUsername(user == null ? username : user.getUsername());
-        log.setLoginType("ADMIN");
-        log.setClientType(StringUtils.defaultIfBlank(clientType, "admin-web"));
+        log.setLoginType(LoginConstant.LOGIN_TYPE_ADMIN);
+        log.setClientType(StringUtils.defaultIfBlank(clientType, LoginConstant.DEFAULT_ADMIN_CLIENT_TYPE));
         log.setToken(token);
         log.setLoginTime(Instant.now());
         log.setStatus(status);

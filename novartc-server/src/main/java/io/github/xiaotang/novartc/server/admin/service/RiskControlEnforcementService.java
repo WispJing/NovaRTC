@@ -26,11 +26,11 @@ public class RiskControlEnforcementService {
         if (StringUtils.isBlank(userId)) {
             return;
         }
-        String finalScope = StringUtils.defaultIfBlank(scope, "IM");
-        if ("IM".equals(finalScope) || "ALL".equals(finalScope)) {
+        String finalScope = StringUtils.defaultIfBlank(scope, LoginConstant.LOGIN_SCOPE_IM);
+        if (LoginConstant.LOGIN_SCOPE_IM.equals(finalScope) || LoginConstant.LOGIN_SCOPE_ALL.equals(finalScope)) {
             forceLogoutImSessions(userId);
         }
-        if ("ADMIN".equals(finalScope) || "ALL".equals(finalScope)) {
+        if (LoginConstant.LOGIN_SCOPE_ADMIN.equals(finalScope) || LoginConstant.LOGIN_SCOPE_ALL.equals(finalScope)) {
             forceLogoutAdminSessions(userId);
         }
     }

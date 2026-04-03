@@ -51,16 +51,16 @@ public class LoginService {
             throw new BusinessException(ResultCode.LOGIN_FAIL);
         }
 
-        riskControlService.assertLoginAllowed(imUser, "IM", clientType, ip, userAgent);
+        riskControlService.assertLoginAllowed(imUser, LoginConstant.LOGIN_SCOPE_IM, clientType, ip, userAgent);
 
         String token = JwtUtil.generateToken(userId, Map.of("clientType", clientType));
 
         // 使用 Hash 存储 token 的详细信息
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
         Map<String, String> tokenInfo = new HashMap<>();
-        tokenInfo.put("userId", userId);
-        tokenInfo.put("clientType", clientType);
-        tokenInfo.put("loginTime", String.valueOf(System.currentTimeMillis()));
+        tokenInfo.put(LoginConstant.TOKEN_INFO_USER_ID, userId);
+        tokenInfo.put(LoginConstant.TOKEN_INFO_CLIENT_TYPE, clientType);
+        tokenInfo.put(LoginConstant.TOKEN_INFO_LOGIN_TIME, String.valueOf(System.currentTimeMillis()));
 
         // 踢出同端登录用户
         kickByClientType(userId, clientType);
@@ -85,7 +85,7 @@ public class LoginService {
 
         // 2. Redis校验
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
-        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
 
         return userId != null;
     }
@@ -101,7 +101,7 @@ public class LoginService {
 
         // 2. 从 Redis Hash 中获取 userId
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
-        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
 
         if (userId == null) {
             throw new RuntimeException("token已过期");
@@ -131,8 +131,8 @@ public class LoginService {
         }
 
         String tokenKey = LoginConstant.TOKEN_PREFIX + token;
-        String userId = (String) redisTemplate.opsForHash().get(tokenKey, "userId");
-        String clientType = (String) redisTemplate.opsForHash().get(tokenKey, "clientType");
+        String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
+        String clientType = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_CLIENT_TYPE);
         if (userId != null) {
             // 删除 Hash
             redisTemplate.delete(tokenKey);
@@ -164,7 +164,7 @@ public class LoginService {
         if (tokens != null) {
             for (String token : tokens) {
                 String tokenKey = LoginConstant.TOKEN_PREFIX + token;
-                String type = (String) redisTemplate.opsForHash().get(tokenKey, "clientType");
+                String type = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_CLIENT_TYPE);
                 if (clientType.equals(type)) {
                     kick(userId, token);
                 }

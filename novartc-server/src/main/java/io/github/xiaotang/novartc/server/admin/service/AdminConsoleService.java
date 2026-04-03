@@ -90,7 +90,7 @@ public class AdminConsoleService {
                 LoginConstant.USER_TOKEN_PREFIX + targetUserId,
                 LoginConstant.TOKEN_PREFIX,
                 user,
-                "IM",
+                LoginConstant.SESSION_SOURCE_IM,
                 userChannelManager.isOnline(targetUserId)
         );
     }
@@ -105,7 +105,7 @@ public class AdminConsoleService {
                     LoginConstant.ADMIN_USER_TOKEN_PREFIX + user.getId(),
                     LoginConstant.ADMIN_TOKEN_PREFIX,
                     user,
-                    "ADMIN",
+                    LoginConstant.SESSION_SOURCE_ADMIN,
                     true
             ));
         }
@@ -534,7 +534,7 @@ public class AdminConsoleService {
         List<AdminSessionVO> sessions = new ArrayList<>();
         for (String token : tokens) {
             String tokenKey = tokenPrefix + token;
-            Object userId = redisTemplate.opsForHash().get(tokenKey, "userId");
+            Object userId = redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
             if (userId == null) {
                 continue;
             }
@@ -543,10 +543,10 @@ public class AdminConsoleService {
             vo.setUserNum(user.getUserNum());
             vo.setUsername(user.getUsername());
             vo.setToken(token);
-            vo.setClientType((String) redisTemplate.opsForHash().get(tokenKey, "clientType"));
-            Object loginTime = redisTemplate.opsForHash().get(tokenKey, "loginTime");
+            vo.setClientType((String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_CLIENT_TYPE));
+            Object loginTime = redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_LOGIN_TIME);
             vo.setLoginTime(loginTime == null ? null : Long.parseLong(loginTime.toString()));
-            vo.setOnline("IM".equals(source) ? onlineStatus : redisTemplate.hasKey(tokenKey));
+            vo.setOnline(LoginConstant.SESSION_SOURCE_IM.equals(source) ? onlineStatus : redisTemplate.hasKey(tokenKey));
             vo.setSource(source);
             sessions.add(vo);
         }

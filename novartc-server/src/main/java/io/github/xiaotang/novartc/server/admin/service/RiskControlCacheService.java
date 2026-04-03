@@ -2,6 +2,8 @@ package io.github.xiaotang.novartc.server.admin.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.xiaotang.novartc.common.constant.LoginConstant;
+import io.github.xiaotang.novartc.common.constant.RiskConstant;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.server.entity.mysql.RiskBlacklist;
 import io.github.xiaotang.novartc.server.entity.mysql.RiskGroupMute;
@@ -30,13 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RiskControlCacheService {
     private static final Logger logger = LoggerFactory.getLogger(RiskControlCacheService.class);
-
-    private static final String RISK_PREFIX = "risk:";
-    private static final String USER_CONTROL_PREFIX = "risk:user:controls:";
-    private static final String GROUP_ALL_MUTE_PREFIX = "risk:group:mutes:all:";
-    private static final String GROUP_USER_MUTE_PREFIX = "risk:group:mutes:user:";
-    private static final String GROUP_USER_MUTE_INDEX_PREFIX = "risk:group:mutes:index:";
-    private static final String BLACKLIST_PREFIX = "risk:blacklist:";
 
     private final StringRedisTemplate redisTemplate;
     private final IRiskUserControlService riskUserControlService;
@@ -86,12 +81,12 @@ public class RiskControlCacheService {
         clearGroupMuteCache(groupId);
 
         List<RiskGroupMute> groupAllMutes = items.stream()
-                .filter(item -> StringUtils.equals(item.getMuteScope(), "GROUP_ALL"))
+                .filter(item -> StringUtils.equals(item.getMuteScope(), RiskConstant.GROUP_MUTE_SCOPE_ALL))
                 .toList();
         writeJson(buildGroupAllMuteKey(groupId), groupAllMutes);
 
         Map<String, List<RiskGroupMute>> userMuteMap = items.stream()
-                .filter(item -> StringUtils.equals(item.getMuteScope(), "USER") && StringUtils.isNotBlank(item.getUserId()))
+                .filter(item -> StringUtils.equals(item.getMuteScope(), RiskConstant.GROUP_MUTE_SCOPE_USER) && StringUtils.isNotBlank(item.getUserId()))
                 .collect(Collectors.groupingBy(RiskGroupMute::getUserId, LinkedHashMap::new, Collectors.toCollection(ArrayList::new)));
 
         userMuteMap.forEach((userId, userMutes) -> {
@@ -116,7 +111,7 @@ public class RiskControlCacheService {
         if (StringUtils.isBlank(userId)) {
             return null;
         }
-        List<String> scopes = "ALL".equals(scope) ? List.of("ALL") : List.of(scope, "ALL");
+        List<String> scopes = LoginConstant.LOGIN_SCOPE_ALL.equals(scope) ? List.of(LoginConstant.LOGIN_SCOPE_ALL) : List.of(scope, LoginConstant.LOGIN_SCOPE_ALL);
         return loadJsonList(buildUserControlKey(userId), new TypeReference<List<RiskUserControl>>() {
                 }, () -> refreshUserControlCache(userId))
                 .stream()
@@ -131,7 +126,7 @@ public class RiskControlCacheService {
         if (StringUtils.isBlank(groupId) || StringUtils.isBlank(muteScope)) {
             return null;
         }
-        if (StringUtils.equals(muteScope, "GROUP_ALL")) {
+        if (StringUtils.equals(muteScope, RiskConstant.GROUP_MUTE_SCOPE_ALL)) {
             return loadJsonList(buildGroupAllMuteKey(groupId), new TypeReference<List<RiskGroupMute>>() {
                     }, () -> refreshGroupMuteCache(groupId))
                     .stream()
@@ -268,30 +263,30 @@ public class RiskControlCacheService {
     }
 
     private void clearAllRiskCaches() {
-        Set<String> keys = redisTemplate.keys(RISK_PREFIX + "*");
+        Set<String> keys = redisTemplate.keys(RiskConstant.REDIS_PREFIX + "*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }
     }
 
     private String buildUserControlKey(String userId) {
-        return USER_CONTROL_PREFIX + userId;
+        return RiskConstant.USER_CONTROL_PREFIX + userId;
     }
 
     private String buildGroupAllMuteKey(String groupId) {
-        return GROUP_ALL_MUTE_PREFIX + groupId;
+        return RiskConstant.GROUP_ALL_MUTE_PREFIX + groupId;
     }
 
     private String buildGroupUserMuteKey(String groupId, String userId) {
-        return GROUP_USER_MUTE_PREFIX + groupId + ":" + userId;
+        return RiskConstant.GROUP_USER_MUTE_PREFIX + groupId + ":" + userId;
     }
 
     private String buildGroupMuteIndexKey(String groupId) {
-        return GROUP_USER_MUTE_INDEX_PREFIX + groupId;
+        return RiskConstant.GROUP_USER_MUTE_INDEX_PREFIX + groupId;
     }
 
     private String buildBlacklistKey(String ownerUserId) {
-        return BLACKLIST_PREFIX + ownerUserId;
+        return RiskConstant.BLACKLIST_PREFIX + ownerUserId;
     }
 
     private String buildLoadedKey(String key) {

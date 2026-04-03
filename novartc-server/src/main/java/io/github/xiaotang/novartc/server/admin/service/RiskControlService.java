@@ -2,6 +2,7 @@ package io.github.xiaotang.novartc.server.admin.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.xiaotang.novartc.common.constant.LoginConstant;
+import io.github.xiaotang.novartc.common.constant.RiskConstant;
 import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.server.admin.dto.AdminRiskAlertHandleRequest;
@@ -62,12 +63,12 @@ public class RiskControlService {
 
     public RiskUserControlVO banLogin(String operatorUserId, String operatorName, AdminRiskUserControlRequest request) {
         validateUser(request.getUserId());
-        String scope = StringUtils.defaultIfBlank(request.getScope(), "IM");
-        closeUserControls(request.getUserId(), "LOGIN_BAN", scope);
+        String scope = StringUtils.defaultIfBlank(request.getScope(), LoginConstant.LOGIN_SCOPE_IM);
+        closeUserControls(request.getUserId(), RiskConstant.USER_CONTROL_LOGIN_BAN, scope);
         RiskUserControl entity = new RiskUserControl();
         entity.setId(uuid32());
         entity.setUserId(request.getUserId());
-        entity.setControlType("LOGIN_BAN");
+        entity.setControlType(RiskConstant.USER_CONTROL_LOGIN_BAN);
         entity.setScope(scope);
         entity.setReason(request.getReason());
         entity.setExpiresAt(request.getExpiresAt());
@@ -84,12 +85,12 @@ public class RiskControlService {
 
     public RiskUserControlVO muteUser(String operatorUserId, String operatorName, AdminRiskUserControlRequest request) {
         validateUser(request.getUserId());
-        closeUserControls(request.getUserId(), "SEND_MUTE", "ALL");
+        closeUserControls(request.getUserId(), RiskConstant.USER_CONTROL_SEND_MUTE, LoginConstant.LOGIN_SCOPE_ALL);
         RiskUserControl entity = new RiskUserControl();
         entity.setId(uuid32());
         entity.setUserId(request.getUserId());
-        entity.setControlType("SEND_MUTE");
-        entity.setScope("ALL");
+        entity.setControlType(RiskConstant.USER_CONTROL_SEND_MUTE);
+        entity.setScope(LoginConstant.LOGIN_SCOPE_ALL);
         entity.setReason(request.getReason());
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
@@ -123,11 +124,11 @@ public class RiskControlService {
 
     public RiskGroupMuteVO muteGroupAll(String operatorUserId, String operatorName, AdminRiskGroupMuteRequest request) {
         validateGroup(request.getGroupId());
-        closeGroupMutes(request.getGroupId(), null, "GROUP_ALL");
+        closeGroupMutes(request.getGroupId(), null, RiskConstant.GROUP_MUTE_SCOPE_ALL);
         RiskGroupMute entity = new RiskGroupMute();
         entity.setId(uuid32());
         entity.setGroupId(request.getGroupId());
-        entity.setMuteScope("GROUP_ALL");
+        entity.setMuteScope(RiskConstant.GROUP_MUTE_SCOPE_ALL);
         entity.setReason(request.getReason());
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
@@ -142,12 +143,12 @@ public class RiskControlService {
     public RiskGroupMuteVO muteGroupUser(String operatorUserId, String operatorName, AdminRiskGroupMuteRequest request) {
         validateGroup(request.getGroupId());
         validateUser(request.getUserId());
-        closeGroupMutes(request.getGroupId(), request.getUserId(), "USER");
+        closeGroupMutes(request.getGroupId(), request.getUserId(), RiskConstant.GROUP_MUTE_SCOPE_USER);
         RiskGroupMute entity = new RiskGroupMute();
         entity.setId(uuid32());
         entity.setGroupId(request.getGroupId());
         entity.setUserId(request.getUserId());
-        entity.setMuteScope("USER");
+        entity.setMuteScope(RiskConstant.GROUP_MUTE_SCOPE_USER);
         entity.setReason(request.getReason());
         entity.setExpiresAt(request.getExpiresAt());
         entity.setStatus((byte) 1);
@@ -193,7 +194,7 @@ public class RiskControlService {
         if (existing != null) {
             existing.setStatus((byte) 1);
             existing.setReason(request.getReason());
-            existing.setSource("MANUAL");
+            existing.setSource(RiskConstant.BLACKLIST_SOURCE_MANUAL);
             existing.setOperatorUserId(operatorUserId);
             existing.setOperatorName(resolveOperatorName(operatorUserId, operatorName));
             riskBlacklistService.updateById(existing);
@@ -205,7 +206,7 @@ public class RiskControlService {
         entity.setId(uuid32());
         entity.setOwnerUserId(request.getOwnerUserId());
         entity.setBlockedUserId(request.getBlockedUserId());
-        entity.setSource("MANUAL");
+        entity.setSource(RiskConstant.BLACKLIST_SOURCE_MANUAL);
         entity.setReason(request.getReason());
         entity.setStatus((byte) 1);
         entity.setOperatorUserId(operatorUserId);
@@ -250,22 +251,22 @@ public class RiskControlService {
         if (user == null) {
             return;
         }
-        RiskUserControl activeControl = riskControlCacheService.findActiveUserControl(user.getId(), "LOGIN_BAN", scope);
+        RiskUserControl activeControl = riskControlCacheService.findActiveUserControl(user.getId(), RiskConstant.USER_CONTROL_LOGIN_BAN, scope);
         if (activeControl != null) {
-            createLoginAlert(user, clientType, ip, userAgent, "LOGIN_BANNED", "HIGH", StringUtils.defaultIfBlank(activeControl.getReason(), "账号已被封禁，禁止登录"));
+            createLoginAlert(user, clientType, ip, userAgent, RiskConstant.ALERT_TYPE_LOGIN_BANNED, RiskConstant.ALERT_LEVEL_HIGH, StringUtils.defaultIfBlank(activeControl.getReason(), "账号已被封禁，禁止登录"));
             throw new BusinessException(ResultCode.FORBIDDEN.code(), "账号已被封禁，禁止登录");
         }
-        if (hasDifferentClientOnline(user.getId(), clientType, "ADMIN".equals(scope))) {
-            createLoginAlert(user, clientType, ip, userAgent, "MULTI_CLIENT", "LOW", "同账号在其他客户端存在有效登录");
+        if (hasDifferentClientOnline(user.getId(), clientType, LoginConstant.LOGIN_SCOPE_ADMIN.equals(scope))) {
+            createLoginAlert(user, clientType, ip, userAgent, RiskConstant.ALERT_TYPE_MULTI_CLIENT, RiskConstant.ALERT_LEVEL_LOW, "同账号在其他客户端存在有效登录");
         }
     }
 
     public void recordPasswordError(ImUser user, String userNum, String username, String clientType, String ip, String userAgent) {
-        createLoginAlert(user, userNum, username, clientType, ip, userAgent, "PASSWORD_ERROR", "MEDIUM", "密码错误或异常登录尝试");
+        createLoginAlert(user, userNum, username, clientType, ip, userAgent, RiskConstant.ALERT_TYPE_PASSWORD_ERROR, RiskConstant.ALERT_LEVEL_MEDIUM, "密码错误或异常登录尝试");
     }
 
     public String validateSendMessage(String userId, ChatMessage.MsgBody msgBody) {
-        RiskUserControl sendMute = riskControlCacheService.findActiveUserControl(userId, "SEND_MUTE", "ALL");
+        RiskUserControl sendMute = riskControlCacheService.findActiveUserControl(userId, RiskConstant.USER_CONTROL_SEND_MUTE, LoginConstant.LOGIN_SCOPE_ALL);
         if (sendMute != null) {
             return StringUtils.defaultIfBlank(sendMute.getReason(), "当前账号已被禁言");
         }
@@ -275,11 +276,11 @@ public class RiskControlService {
             if (StringUtils.isBlank(groupId)) {
                 return null;
             }
-            RiskGroupMute groupAll = riskControlCacheService.findActiveGroupMute(groupId, null, "GROUP_ALL");
+            RiskGroupMute groupAll = riskControlCacheService.findActiveGroupMute(groupId, null, RiskConstant.GROUP_MUTE_SCOPE_ALL);
             if (groupAll != null) {
                 return StringUtils.defaultIfBlank(groupAll.getReason(), "当前群已开启全员禁言");
             }
-            RiskGroupMute userMute = riskControlCacheService.findActiveGroupMute(groupId, userId, "USER");
+            RiskGroupMute userMute = riskControlCacheService.findActiveGroupMute(groupId, userId, RiskConstant.GROUP_MUTE_SCOPE_USER);
             if (userMute != null) {
                 return StringUtils.defaultIfBlank(userMute.getReason(), "你已被该群禁言");
             }
@@ -324,7 +325,7 @@ public class RiskControlService {
             return false;
         }
         for (String token : tokens) {
-            String currentType = (String) redisTemplate.opsForHash().get(tokenPrefix + token, "clientType");
+            String currentType = (String) redisTemplate.opsForHash().get(tokenPrefix + token, LoginConstant.TOKEN_INFO_CLIENT_TYPE);
             if (StringUtils.isNotBlank(currentType) && !StringUtils.equals(currentType, clientType)) {
                 return true;
             }
