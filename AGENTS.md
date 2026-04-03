@@ -38,6 +38,7 @@ Current automated test coverage is minimal. Existing tests live under `*/src/tes
 
 ## Commit & Pull Request Guidelines
 Recent commits use short Chinese summaries such as `Codex-增加注释` and `Codex-增加Admin`. Keep commit messages short, imperative, and scoped to one change.
+Suggested Git commit messages in assistant responses must be written in Chinese.
 
 PRs should include:
 - a brief summary of behavior changes,
