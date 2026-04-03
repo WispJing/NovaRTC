@@ -23,8 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -136,7 +135,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         }
 
         entity.setStatus(targetStatus.name());
-        entity.setHandledAt(LocalDateTime.now(ZoneOffset.UTC));
+        entity.setHandledAt(Instant.now());
         entity.setHandlerId(currentUserId);
         updateById(entity);
 

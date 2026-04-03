@@ -9,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -107,10 +106,10 @@ public class FriendRequestNotificationService {
         };
     }
 
-    private long toEpochMillis(LocalDateTime value) {
+    private long toEpochMillis(Instant value) {
         if (value == null) {
             return 0L;
         }
-        return value.toInstant(ZoneOffset.UTC).toEpochMilli();
+        return value.toEpochMilli();
     }
 }

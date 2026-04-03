@@ -6,9 +6,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
+import java.util.TimeZone;
 
 /**
  * Created on 2026/2/27 16:43
@@ -37,6 +39,10 @@ public class JacksonUtil {
 
         // 时间戳格式关闭
         getJackson().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // 显式绑定 UTC，避免依赖宿主或 JVM 默认时区
+        getJackson().setTimeZone(TimeZone.getTimeZone("UTC"));
+        getJackson().setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getTimeZone("UTC")));
 
         // 忽略未知字段
         getJackson().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

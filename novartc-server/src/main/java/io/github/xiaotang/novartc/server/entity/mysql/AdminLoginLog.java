@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiaotang
- * @since 2026-04-01
+ * @since 2026-04-03
  */
 @Getter
 @Setter
@@ -63,13 +63,13 @@ public class AdminLoginLog extends BaseEntity {
      * 登录时间
      */
     @TableField("login_time")
-    private LocalDateTime loginTime;
+    private Instant loginTime;
 
     /**
      * 登出时间
      */
     @TableField("logout_time")
-    private LocalDateTime logoutTime;
+    private Instant logoutTime;
 
     /**
      * 登录状态：0-失败，1-成功，2-已踢下线，3-已登出

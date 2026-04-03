@@ -24,8 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -268,7 +267,7 @@ public class AdminConsoleService {
         }
         FriendRequestStatus targetStatus = FriendRequestStatus.valueOf(status);
         entity.setStatus(targetStatus.name());
-        entity.setHandledAt(LocalDateTime.now(ZoneOffset.UTC));
+        entity.setHandledAt(Instant.now());
         entity.setHandlerId(currentUserId);
         imFriendRequestService.updateById(entity);
         if (targetStatus == FriendRequestStatus.ACCEPTED) {

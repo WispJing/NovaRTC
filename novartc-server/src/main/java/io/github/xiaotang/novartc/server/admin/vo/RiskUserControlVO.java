@@ -3,7 +3,6 @@ package io.github.xiaotang.novartc.server.admin.vo;
 import lombok.Data;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Data
 public class RiskUserControlVO {
@@ -14,7 +13,7 @@ public class RiskUserControlVO {
     private String controlType;
     private String scope;
     private String reason;
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
     private Byte status;
     private Boolean active;
     private Instant createdAt;

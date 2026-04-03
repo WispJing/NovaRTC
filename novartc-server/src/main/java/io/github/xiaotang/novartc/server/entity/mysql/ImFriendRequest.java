@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiaotang
- * @since 2026-03-25
+ * @since 2026-04-03
  */
 @Getter
 @Setter
@@ -51,7 +51,7 @@ public class ImFriendRequest extends BaseEntity {
      * 处理时间
      */
     @TableField("handled_at")
-    private LocalDateTime handledAt;
+    private Instant handledAt;
 
     /**
      * 处理人用户ID

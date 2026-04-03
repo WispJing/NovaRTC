@@ -3,7 +3,6 @@ package io.github.xiaotang.novartc.server.admin.vo;
 import lombok.Data;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Data
 public class RiskLoginAlertVO {
@@ -20,6 +19,6 @@ public class RiskLoginAlertVO {
     private Byte handledStatus;
     private String handlerUserId;
     private String handlerName;
-    private LocalDateTime handledAt;
+    private Instant handledAt;
     private Instant createdAt;
 }

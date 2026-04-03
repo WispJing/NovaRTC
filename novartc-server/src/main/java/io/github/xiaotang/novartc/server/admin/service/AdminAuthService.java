@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +103,7 @@ public class AdminAuthService {
         if (StringUtils.isBlank(token)) {
             return;
         }
-        invalidateToken(token, (byte) 3, LocalDateTime.now(ZoneOffset.UTC));
+        invalidateToken(token, (byte) 3, Instant.now());
     }
 
     public List<String> getMenuCodes(String userId) {
@@ -161,7 +159,7 @@ public class AdminAuthService {
         return vo;
     }
 
-    private void invalidateToken(String token, Byte status, LocalDateTime logoutTime) {
+    private void invalidateToken(String token, Byte status, Instant logoutTime) {
         if (StringUtils.isBlank(token)) {
             return;
         }
@@ -178,7 +176,7 @@ public class AdminAuthService {
                 .last("limit 1"));
         if (log != null) {
             log.setStatus(status);
-            log.setLogoutTime(logoutTime == null ? LocalDateTime.now(ZoneOffset.UTC) : logoutTime);
+            log.setLogoutTime(logoutTime == null ? Instant.now() : logoutTime);
             adminLoginLogService.updateById(log);
         }
     }
@@ -199,7 +197,7 @@ public class AdminAuthService {
         log.setLoginType("ADMIN");
         log.setClientType(StringUtils.defaultIfBlank(clientType, "admin-web"));
         log.setToken(token);
-        log.setLoginTime(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
+        log.setLoginTime(Instant.now());
         log.setStatus(status);
         log.setFailReason(failReason);
         log.setIp(resolveIp(request));

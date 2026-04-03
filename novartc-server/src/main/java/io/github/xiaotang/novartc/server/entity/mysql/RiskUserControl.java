@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiaotang
- * @since 2026-04-01
+ * @since 2026-04-03
  */
 @Getter
 @Setter
@@ -51,7 +51,7 @@ public class RiskUserControl extends BaseEntity {
      * 失效时间，空表示永久
      */
     @TableField("expires_at")
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
 
     /**
      * 状态：0-关闭，1-生效

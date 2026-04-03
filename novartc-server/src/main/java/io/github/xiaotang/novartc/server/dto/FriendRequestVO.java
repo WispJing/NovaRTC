@@ -3,7 +3,6 @@ package io.github.xiaotang.novartc.server.dto;
 import lombok.Data;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * Created on 2026/3/25
@@ -24,7 +23,7 @@ public class FriendRequestVO {
     private String receiverAvatarUrl;
     private String status;
     private String requestMsg;
-    private LocalDateTime handledAt;
+    private Instant handledAt;
     private String handlerId;
     private Instant createdAt;
     private Instant updatedAt;

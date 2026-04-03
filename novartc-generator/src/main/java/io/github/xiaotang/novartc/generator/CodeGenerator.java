@@ -3,11 +3,13 @@ package io.github.xiaotang.novartc.generator;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.IColumnType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import org.apache.ibatis.type.JdbcType;
 
-import java.util.Collections;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * Created on 2026/3/18 11:35
@@ -16,6 +18,18 @@ import java.nio.file.Path;
  * @description
  */
 public class CodeGenerator {
+    private static final IColumnType INSTANT_COLUMN_TYPE = new IColumnType() {
+        @Override
+        public String getType() {
+            return "Instant";
+        }
+
+        @Override
+        public String getPkg() {
+            return "java.time.Instant";
+        }
+    };
+
     public static void main(String[] args) {
         Path projectRoot = resolveProjectRoot();
         Path javaOutputDir = projectRoot.resolve("novartc-server").resolve("src").resolve("main").resolve("java");
@@ -29,6 +43,16 @@ public class CodeGenerator {
                             .outputDir(javaOutputDir.toString())
                             .dateType(DateType.TIME_PACK); // 输出目录
                 })
+                .dataSourceConfig(builder -> builder.typeConvertHandler((globalConfig, typeRegistry, metaInfo) -> {
+                    JdbcType jdbcType = metaInfo.getJdbcType();
+                    if (jdbcType == JdbcType.TIMESTAMP) {
+                        String typeName = metaInfo.getTypeName();
+                        if ("datetime".equalsIgnoreCase(typeName)) {
+                            return INSTANT_COLUMN_TYPE;
+                        }
+                    }
+                    return typeRegistry.getColumnType(metaInfo);
+                }))
                 .packageConfig(builder -> {
                     builder.parent("io.github.xiaotang.novartc.server") // 设置父包名
                             .entity("entity.mysql") // 设置实体类包名
@@ -42,7 +66,7 @@ public class CodeGenerator {
                 })
                 .strategyConfig(builder -> {
                     // "im_user", "im_friend", "im_friend_request", "im_group_chat", "im_group_member", "im_single_chat"
-                    builder.addInclude("risk_user_control", "risk_group_mute", "risk_blacklist", "risk_login_alert")
+                    builder.addInclude("admin_login_log", "im_friend_request", "risk_group_mute", "risk_login_alert", "risk_user_control")
                             .entityBuilder()
                             .superClass("io.github.xiaotang.novartc.server.entity.mysql.BaseEntity")
                             .addSuperEntityColumns("id", "is_deleted", "created_at", "updated_at")

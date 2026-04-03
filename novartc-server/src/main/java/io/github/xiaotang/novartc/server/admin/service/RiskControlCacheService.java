@@ -17,8 +17,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -191,11 +189,11 @@ public class RiskControlCacheService {
     }
 
     private boolean isActive(RiskUserControl item) {
-        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC)));
+        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(Instant.now()));
     }
 
     private boolean isActive(RiskGroupMute item) {
-        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC)));
+        return item != null && Byte.valueOf((byte) 1).equals(item.getStatus()) && (item.getExpiresAt() == null || item.getExpiresAt().isAfter(Instant.now()));
     }
 
     private <T> List<T> loadJsonList(String key, TypeReference<List<T>> typeReference, Runnable reloader) {

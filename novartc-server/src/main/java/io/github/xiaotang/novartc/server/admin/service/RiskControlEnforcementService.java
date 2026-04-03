@@ -11,8 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -73,7 +72,7 @@ public class RiskControlEnforcementService {
             redisTemplate.delete(userTokensKey);
             return;
         }
-        LocalDateTime logoutTime = LocalDateTime.now(ZoneOffset.UTC);
+        Instant logoutTime = Instant.now();
         for (String token : new LinkedHashSet<>(tokens)) {
             if (StringUtils.isBlank(token)) {
                 continue;
