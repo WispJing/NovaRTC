@@ -3,7 +3,8 @@
 ## Project Structure & Module Organization
 This repository is a Maven multi-module Java 21 project.
 
-- `novartc-server/`: main Spring Boot backend, including controllers, services, mappers, Flyway SQL, and MyBatis XML under `src/main/resources/mappers`.
+- `novartc-server/`: main Spring Boot backend, including controllers, services, mappers, runtime config, and MyBatis XML under `src/main/resources/mappers`.
+- `novartc-flyway/`: Flyway migration module, containing schema and development seed SQL under `src/main/resources/db`, plus a standalone Spring Boot startup entry used only for database version management.
 - `novartc-common/`: shared constants, utilities, exceptions, and reusable infrastructure code.
 - `novartc-generator/`: local code generation utilities, with `CodeGenerator` as the main entry point.
 - `docker/` and `k8s/`: local dependency setup and deployment manifests.
@@ -13,6 +14,7 @@ Primary application entry: `novartc-server/src/main/java/io/github/xiaotang/nova
 
 ## Build, Test, and Development Commands
 - `mvn clean compile`: compile all modules.
+- `mvn -pl novartc-flyway -am spring-boot:run`: execute Flyway migrations only, then exit.
 - `mvn -pl novartc-server -am compile`: compile the backend module and required dependencies.
 - `mvn test`: run unit tests across modules.
 - `mvn -pl novartc-server -am spring-boot:run`: start the backend locally.

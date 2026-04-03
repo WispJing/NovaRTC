@@ -103,7 +103,7 @@ spring:
     init:
       mode: never
   flyway:
-    enabled: true
+    enabled: false
     encoding: UTF-8
     baseline-on-migrate: false
     locations: >
