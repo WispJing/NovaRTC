@@ -178,7 +178,7 @@ public class ChatServiceImpl implements ChatService {
     public ChatHistoryPageVO history(String chatId, Long beforeChatSeq, Integer limit) {
         String currentUserId = UserContextHolder.getUserId();
         if (StringUtils.isBlank(chatId)) {
-            throw new ApplicationException("chatId is blank!");
+            throw new ApplicationException("会话标识不能为空");
         }
 
         int pageSize = normalizeLimit(limit);
@@ -218,7 +218,7 @@ public class ChatServiceImpl implements ChatService {
     public void markRead(String chatId) {
         String currentUserId = UserContextHolder.getUserId();
         if (StringUtils.isBlank(chatId)) {
-            throw new ApplicationException("chatId is blank!");
+            throw new ApplicationException("会话标识不能为空");
         }
 
         validateChatAccess(chatId, currentUserId);
@@ -248,7 +248,7 @@ public class ChatServiceImpl implements ChatService {
             return 20;
         }
         if (limit < 1 || limit > 100) {
-            throw new ApplicationException("limit must be between 1 and 100");
+            throw new ApplicationException("分页条数必须在 1 到 100 之间");
         }
         return limit;
     }
@@ -274,7 +274,7 @@ public class ChatServiceImpl implements ChatService {
                         .last("limit 1")
         );
         if (groupChat == null) {
-            throw new ApplicationException("chat not found");
+            throw new ApplicationException("未找到对应会话");
         }
 
         long memberCount = imGroupMemberService.count(
@@ -284,7 +284,7 @@ public class ChatServiceImpl implements ChatService {
                         .eq(ImGroupMember::getIsDeleted, false)
         );
         if (memberCount <= 0) {
-            throw new ApplicationException("no permission to access this chat");
+            throw new ApplicationException("无权访问该会话");
         }
         return null;
     }

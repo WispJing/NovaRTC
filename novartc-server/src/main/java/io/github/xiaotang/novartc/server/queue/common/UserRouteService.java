@@ -43,7 +43,7 @@ public class UserRouteService {
         redisTemplate.opsForSet().add(instancesKey, instanceId);
         // 设置实例Key，并设置过期时间
         redisTemplate.opsForValue().set(instanceKey, "online", EXPIRE_SECONDS, TimeUnit.SECONDS);
-        ChatAccessLog.log.info("User {} registered instance {}", userId, instanceId);
+        ChatAccessLog.log.info("用户路由注册完成: userId={}, instanceId={}", userId, instanceId);
     }
 
     /**
@@ -56,7 +56,7 @@ public class UserRouteService {
         redisTemplate.opsForSet().remove(instancesKey, instanceId);
         // 删除实例Key
         redisTemplate.delete(instanceKey);
-        ChatAccessLog.log.info("User {} unregistered instance {}", userId, instanceId);
+        ChatAccessLog.log.info("用户路由已注销: userId={}, instanceId={}", userId, instanceId);
     }
 
     /**
@@ -66,9 +66,9 @@ public class UserRouteService {
         String instanceKey = getInstanceKey(userId, instanceId);
         Boolean exists = redisTemplate.expire(instanceKey, EXPIRE_SECONDS, TimeUnit.SECONDS);
         if (exists) {
-            ChatAccessLog.log.debug("Renewed instance {} for user {}", instanceId, userId);
+            ChatAccessLog.log.debug("用户路由续期完成: userId={}, instanceId={}", userId, instanceId);
         } else {
-            ChatAccessLog.log.warn("Attempt to renew non-existing instance {} for user {}", instanceId, userId);
+            ChatAccessLog.log.warn("用户路由续期失败，实例不存在: userId={}, instanceId={}", userId, instanceId);
         }
     }
 
@@ -91,7 +91,7 @@ public class UserRouteService {
             } else {
                 // 惰性删除：实例Key已过期，从Set中移除
                 redisTemplate.opsForSet().remove(instancesKey, instanceId);
-                ChatAccessLog.log.info("Removed expired instance {} for user {}", instanceId, userId);
+                ChatAccessLog.log.info("已清理过期用户路由实例: userId={}, instanceId={}", userId, instanceId);
             }
         }
         return activeInstances;

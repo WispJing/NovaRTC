@@ -40,7 +40,7 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
 
             // 未认证用户直接关闭
             if (channel.attr(NettyAttributes.USER_ID).get() == null) {
-                ChatAccessLog.log.warn("unauthorized connection {}", channel.remoteAddress());
+                ChatAccessLog.log.warn("未认证连接已拒绝: remoteAddress={}", channel.remoteAddress());
                 channel.close();
                 return;
             }
@@ -83,16 +83,16 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
         // 绑定用户 Channel
         userChannelManager.bind(userId, token, channel);
 
-        ChatAccessLog.log.info("user login success {}", imUser.getUserNum());
+        ChatAccessLog.log.info("用户鉴权通过: userNum={}", imUser.getUserNum());
 
-        sendAuthResult(channel, true, "user login success");
+        sendAuthResult(channel, true, "认证通过");
         // 认证成功后移除 AuthHandler
         ctx.pipeline().remove(this);
     }
 
     private void handleAuthFailed(Channel channel, String userId) {
-        ChatAccessLog.log.warn("auth failed {}", userId);
-        sendAuthResult(channel, false, "auth failed");
+        ChatAccessLog.log.warn("用户鉴权失败: userId={}", userId);
+        sendAuthResult(channel, false, "认证失败");
         channel.close();
     }
 

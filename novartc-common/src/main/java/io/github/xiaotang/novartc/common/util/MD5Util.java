@@ -54,7 +54,7 @@ public class MD5Util {
             return md5(bytes);
         } catch (Exception e) {
             // 记录日志或抛出运行时异常
-            throw new RuntimeException("MD5 encryption failed", e);
+            throw new RuntimeException("MD5 加密失败", e);
         }
     }
 
@@ -73,7 +73,7 @@ public class MD5Util {
             byte[] digest = md.digest(bytes);
             return bytesToHex(digest);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 algorithm not available", e);
+            throw new RuntimeException("MD5 算法不可用", e);
         }
     }
 
@@ -97,7 +97,7 @@ public class MD5Util {
             byte[] digest = md.digest();
             return bytesToHex(digest);
         } catch (IOException | NoSuchAlgorithmException e) {
-            throw new RuntimeException("Failed to calculate file MD5", e);
+            throw new RuntimeException("文件 MD5 计算失败", e);
         }
     }
 

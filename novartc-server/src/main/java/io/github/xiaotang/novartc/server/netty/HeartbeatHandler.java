@@ -101,10 +101,10 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                 channel.attr(NettyAttributes.HEARTBEAT_COUNT).set(count);
 
                 if (count >= 2) {
-                    ChatAccessLog.log.warn("心跳超时关闭连接 {}", channel.id());
+                    ChatAccessLog.log.warn("心跳检测超时，连接即将关闭: channelId={}", channel.id());
                     channel.close();
                 } else {
-                    ChatAccessLog.log.info("检测到读空闲，发送Ping {}", channel.id());
+                    ChatAccessLog.log.info("检测到读空闲，已发送心跳探测: channelId={}", channel.id());
                     sendPing(channel);
                 }
             }

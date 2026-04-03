@@ -90,7 +90,7 @@ public class MessagePersistenceServiceImpl implements MessagePersistenceService 
                 ? message.getGroupChatInfo().getChatId()
                 : message.getSingleChatInfo().getChatId();
         if (StringUtils.isBlank(chatId)) {
-            throw new ApplicationException("ChatId is blank!");
+            throw new ApplicationException("会话标识不能为空");
         }
         return chatId;
     }

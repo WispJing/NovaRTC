@@ -88,12 +88,12 @@ public class AdminAuthService {
 
     public String checkAndRefresh(String token) {
         if (!JwtUtil.validate(token)) {
-            throw new RuntimeException("token非法");
+            throw new RuntimeException("令牌无效");
         }
         String tokenKey = LoginConstant.ADMIN_TOKEN_PREFIX + token;
         String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
         if (StringUtils.isBlank(userId)) {
-            throw new RuntimeException("token已过期");
+            throw new RuntimeException("令牌已过期");
         }
         redisTemplate.expire(tokenKey, LoginConstant.ADMIN_TOKEN_TTL, TimeUnit.SECONDS);
         return userId;

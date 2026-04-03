@@ -45,20 +45,20 @@ public class LogInterceptor implements HandlerInterceptor {
         String fullPath = queryString != null ? uri + "?" + queryString : uri;
         int status = response.getStatus();
         String clientIp = getClientIp(request);
-        String exceptionInfo = ex != null ? ex.toString() : "none";
+        String exceptionInfo = ex != null ? ex.toString() : "无";
 
         boolean shouldLogResponse = status >= 400 || ex != null || duration >= SLOW_REQUEST_THRESHOLD_MS;
         String responseBody = shouldLogResponse
                 ? serializeResponseBody(request.getAttribute(RESPONSE_BODY_ATTR))
-                : "skipped";
+                : "未记录";
 
-        logger.info("请求完成: method={}, path={}, status={}, duration={}ms, clientIp={}, responseBody={}, exception={}",
+        logger.info("请求完成: 请求方式={}, 请求路径={}, 响应状态={}, 耗时={}ms, 客户端IP={}, 响应体={}, 异常信息={}",
                 method, fullPath, status, duration, clientIp, responseBody, exceptionInfo);
     }
 
     private String serializeResponseBody(Object responseBody) {
         if (responseBody == null) {
-            return "none";
+            return "无";
         }
 
         try {
@@ -75,7 +75,7 @@ public class LogInterceptor implements HandlerInterceptor {
     private String truncate(String text) {
         return text.length() <= MAX_RESPONSE_LOG_LENGTH
                 ? text
-                : text.substring(0, MAX_RESPONSE_LOG_LENGTH) + "...(truncated)";
+                : text.substring(0, MAX_RESPONSE_LOG_LENGTH) + "...（已截断）";
     }
 
     /**

@@ -62,7 +62,7 @@ public class RiskControlCacheService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         ownerUserIds.forEach(this::refreshBlacklistCache);
 
-        logger.info("Risk caches warmed up: userControls={}, groupMutes={}, blacklists={}", userControls.size(), groupMutes.size(), blacklists.size());
+        logger.info("风控缓存预热完成: userControls={}, groupMutes={}, blacklists={}", userControls.size(), groupMutes.size(), blacklists.size());
     }
 
     public void refreshUserControlCache(String userId) {

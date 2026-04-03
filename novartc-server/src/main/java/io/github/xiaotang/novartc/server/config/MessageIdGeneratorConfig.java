@@ -33,12 +33,12 @@ public class MessageIdGeneratorConfig {
         Long configuredWorkerId = imConfigProperties.getWorkerId();
         Long configuredDatacenterId = imConfigProperties.getDatacenterId();
         if (configuredWorkerId != null && configuredDatacenterId != null) {
-            log.info("Using configured snowflake node id, datacenterId={}, workerId={}", configuredDatacenterId, configuredWorkerId);
+            log.info("使用配置中的雪花节点参数: datacenterId={}, workerId={}", configuredDatacenterId, configuredWorkerId);
             return new MessageIdUtil(configuredWorkerId, configuredDatacenterId);
         }
 
         SnowflakeNodeId nodeId = resolveNodeId(instanceIdProvider.getInstanceId());
-        log.info("Using derived snowflake node id from instanceId={}, datacenterId={}, workerId={}",
+        log.info("根据实例标识推导雪花节点参数: instanceId={}, datacenterId={}, workerId={}",
                 instanceIdProvider.getInstanceId(), nodeId.datacenterId(), nodeId.workerId());
         return new MessageIdUtil(nodeId.workerId(), nodeId.datacenterId());
     }
@@ -59,10 +59,10 @@ public class MessageIdGeneratorConfig {
         long hashedNodeId = Math.floorMod(instanceId == null ? 0 : instanceId.hashCode(), MAX_NODE_ID + 1);
         if (extractedOrdinal > MAX_NODE_ID) {
             log.warn(
-                    "Extracted ordinal {} from instanceId={} exceeds max snowflake node id {}, fallback to hashed node id={}",
+                    "实例标识解析出的序号超出雪花节点上限，改用哈希节点参数: extractedOrdinal={}, instanceId={}, maxNodeId={}, hashedNodeId={}",
                     extractedOrdinal, instanceId, MAX_NODE_ID, hashedNodeId);
         } else {
-            log.warn("Could not extract pod ordinal from instanceId={}, fallback to hashed node id={}", instanceId, hashedNodeId);
+            log.warn("无法从实例标识解析有序编号，改用哈希节点参数: instanceId={}, hashedNodeId={}", instanceId, hashedNodeId);
         }
         return hashedNodeId;
     }

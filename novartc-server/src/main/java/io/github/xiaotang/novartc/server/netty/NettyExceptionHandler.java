@@ -25,11 +25,11 @@ public class NettyExceptionHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (cause instanceof IOException) {
-            ChatErrorLog.log.debug("客户端断开 {}", ctx.channel().remoteAddress());
+            ChatErrorLog.log.debug("客户端连接已断开: remoteAddress={}", ctx.channel().remoteAddress());
         } else if (cause instanceof TimeoutException) {
-            ChatErrorLog.log.warn("连接超时 {}", ctx.channel().remoteAddress());
+            ChatErrorLog.log.warn("连接读写超时: remoteAddress={}", ctx.channel().remoteAddress());
         } else {
-            ChatErrorLog.log.error("Netty异常", cause);
+            ChatErrorLog.log.error("Netty 通信异常", cause);
         }
         userChannelManager.remove(ctx.channel());
         ctx.close();

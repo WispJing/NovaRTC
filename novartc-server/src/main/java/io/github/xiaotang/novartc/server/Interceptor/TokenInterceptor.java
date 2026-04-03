@@ -40,7 +40,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         try {
             userId = loginService.checkAndRefresh(token);
         } catch (RuntimeException e) {
-            logger.warn("token 校验失败: {}", e.getMessage(), e);
+            logger.warn("访问令牌校验失败: {}", e.getMessage(), e);
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
 

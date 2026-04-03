@@ -96,7 +96,7 @@ public class LoginService {
     public String checkAndRefresh(String token) {
         // 1. JWT 校验
         if (!JwtUtil.validate(token)) {
-            throw new RuntimeException("token非法");
+            throw new RuntimeException("令牌无效");
         }
 
         // 2. 从 Redis Hash 中获取 userId
@@ -104,7 +104,7 @@ public class LoginService {
         String userId = (String) redisTemplate.opsForHash().get(tokenKey, LoginConstant.TOKEN_INFO_USER_ID);
 
         if (userId == null) {
-            throw new RuntimeException("token已过期");
+            throw new RuntimeException("令牌已过期");
         }
 
         // 3. 刷新整个 Hash 的 TTL

@@ -63,7 +63,7 @@ public class RocketMQConsumerConfig {
         // chatConsumer.subscribe(imConfigProperties.getChatTopic(), instanceId);
         chatConsumer.subscribe(imConfigProperties.getChatTopic(), "*");
         // logger.info("RocketMQ chat consumer subscribed to topic: {}, tag: {}", imConfigProperties.getChatTopic(), instanceId);
-        logger.info("RocketMQ chat consumer subscribed to topic: {}, group: {}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup());
+        logger.info("RocketMQ 会话消息消费者订阅完成: topic={}, group={}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup());
 
         chatConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
@@ -77,7 +77,7 @@ public class RocketMQConsumerConfig {
                         localSessionDispatcher.sendToUser(userId, msgBody);
                     }
                 } catch (Exception e) {
-                    logger.error("Consume chat message error", e);
+                    logger.error("RocketMQ 会话消息消费失败", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
             }
@@ -85,7 +85,7 @@ public class RocketMQConsumerConfig {
         });
 
         chatConsumer.start();
-        logger.info("RocketMQ chat consumer started");
+        logger.info("RocketMQ 会话消息消费者已启动");
         return chatConsumer;
     }
 
@@ -96,7 +96,7 @@ public class RocketMQConsumerConfig {
         presenceConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         presenceConsumer.setMessageModel(MessageModel.BROADCASTING);
         presenceConsumer.subscribe(imConfigProperties.getPresenceTopic(), "*");
-        logger.info("RocketMQ presence consumer subscribed to topic: {}, group: {}", imConfigProperties.getPresenceTopic(), imConfigProperties.getPresenceConsumerGroup());
+        logger.info("RocketMQ 在线状态消费者订阅完成: topic={}, group={}", imConfigProperties.getPresenceTopic(), imConfigProperties.getPresenceConsumerGroup());
 
         presenceConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
@@ -117,7 +117,7 @@ public class RocketMQConsumerConfig {
                         localSessionDispatcher.sendToUsers(targetUserIds, msgBody);
                     }
                 } catch (Exception e) {
-                    logger.error("Consume presence event error", e);
+                    logger.error("RocketMQ 在线状态事件消费失败", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
             }
@@ -125,7 +125,7 @@ public class RocketMQConsumerConfig {
         });
 
         presenceConsumer.start();
-        logger.info("RocketMQ presence consumer started");
+        logger.info("RocketMQ 在线状态消费者已启动");
         return presenceConsumer;
     }
 
@@ -136,7 +136,7 @@ public class RocketMQConsumerConfig {
         tokenKickConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         tokenKickConsumer.setMessageModel(MessageModel.BROADCASTING);
         tokenKickConsumer.subscribe(imConfigProperties.getTokenKickTopic(), "*");
-        logger.info("RocketMQ token kick consumer subscribed to topic: {}, group: {}", imConfigProperties.getTokenKickTopic(), imConfigProperties.getTokenKickConsumerGroup());
+        logger.info("RocketMQ 令牌踢下线消费者订阅完成: topic={}, group={}", imConfigProperties.getTokenKickTopic(), imConfigProperties.getTokenKickConsumerGroup());
 
         tokenKickConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {
@@ -146,10 +146,10 @@ public class RocketMQConsumerConfig {
                         continue;
                     }
                     TokenKickMessage kickMessage = JacksonUtil.toObject(new String(msg.getBody(), StandardCharsets.UTF_8), TokenKickMessage.class);
-                    logger.info("Received token kick message for userId: {}", kickMessage.getUserId());
+                    logger.info("收到令牌踢下线事件: userId={}", kickMessage.getUserId());
                     localSessionDispatcher.closeByToken(kickMessage.getToken());
                 } catch (Exception e) {
-                    logger.error("Consume token kick event error", e);
+                    logger.error("RocketMQ 令牌踢下线事件消费失败", e);
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
             }
@@ -157,7 +157,7 @@ public class RocketMQConsumerConfig {
         });
 
         tokenKickConsumer.start();
-        logger.info("RocketMQ token kick consumer started");
+        logger.info("RocketMQ 令牌踢下线消费者已启动");
         return tokenKickConsumer;
     }
 
@@ -165,15 +165,15 @@ public class RocketMQConsumerConfig {
     public void destroy() {
         if (chatConsumer != null) {
             chatConsumer.shutdown();
-            logger.info("RocketMQ chat consumer shutdown");
+            logger.info("RocketMQ 会话消息消费者已关闭");
         }
         if (presenceConsumer != null) {
             presenceConsumer.shutdown();
-            logger.info("RocketMQ presence consumer shutdown");
+            logger.info("RocketMQ 在线状态消费者已关闭");
         }
         if (tokenKickConsumer != null) {
             tokenKickConsumer.shutdown();
-            logger.info("RocketMQ token kick consumer shutdown");
+            logger.info("RocketMQ 令牌踢下线消费者已关闭");
         }
     }
 }

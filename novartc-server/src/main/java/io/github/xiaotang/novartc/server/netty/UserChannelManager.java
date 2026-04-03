@@ -35,7 +35,7 @@ public class UserChannelManager {
         if (wasOffline) {
             dispatchPresence(userId, ChatMessage.PresenceStatus.ONLINE, "在线");
         }
-        ChatAccessLog.log.info("User {} bound with token {}, channel: {}", userId, token, channel.id());
+        ChatAccessLog.log.info("用户连接绑定完成: userId={}, token={}, channelId={}", userId, token, channel.id());
     }
 
     public void remove(Channel channel) {
@@ -53,7 +53,7 @@ public class UserChannelManager {
         if (channel.isActive()) {
             channel.close();
         }
-        ChatAccessLog.log.info("Channel {} removed", channel.id());
+        ChatAccessLog.log.info("连接已移除: channelId={}", channel.id());
     }
 
     public boolean isOnline(String userId) {

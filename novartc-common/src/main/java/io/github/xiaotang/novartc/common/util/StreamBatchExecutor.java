@@ -133,16 +133,16 @@ public class StreamBatchExecutor implements AutoCloseable {
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
             } catch (CompletionException e) {
                 // 如果是快速失败模式，直接抛出原始异常
-                throw new RuntimeException("Batch processing failed at page " + page, e.getCause());
+                throw new RuntimeException("批处理执行失败，失败页码: " + page, e.getCause());
             }
 
-            System.out.println("batch page finished: " + page);
+            System.out.println("批处理页面执行完成: page=" + page);
             page++;
         }
 
         // 如果失败模式为 CONTINUE 且有失败记录，可以打印日志或通过其他方式通知调用者
         if (!failures.isEmpty()) {
-            System.err.println("Some batches failed: " + failures.size() + " failures.");
+            System.err.println("存在批处理失败记录: failures=" + failures.size());
             // 可以将 failures 存入某个上下文或通过回调处理
         }
 
@@ -233,12 +233,12 @@ public class StreamBatchExecutor implements AutoCloseable {
                     TimeUnit.MILLISECONDS.sleep(retryPolicy.getDelayMillis());
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException("Retry interrupted", ie);
+                    throw new RuntimeException("批处理重试被中断", ie);
                 }
             }
         }
         // 所有重试均失败，抛出异常
-        throw new RuntimeException("Batch processing failed after " + attempts + " attempts", lastError);
+        throw new RuntimeException("批处理在重试 " + attempts + " 次后仍失败", lastError);
     }
 
     /**

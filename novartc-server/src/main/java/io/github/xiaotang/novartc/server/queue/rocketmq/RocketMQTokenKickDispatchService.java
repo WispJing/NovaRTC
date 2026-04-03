@@ -38,9 +38,9 @@ public class RocketMQTokenKickDispatchService implements TokenKickDispatchServic
                             .setHeader(RocketMQHeader.SOURCE_INSTANCE_ID, instanceIdProvider.getInstanceId())
                             .build()
             );
-            logger.info("RocketMQ token kick event send result: {}", JacksonUtil.toJson(sendResult));
+            logger.info("RocketMQ 令牌踢下线事件投递结果: {}", JacksonUtil.toJson(sendResult));
         } catch (Exception e) {
-            logger.error("Send token kick event to RocketMQ failed", e);
+            logger.error("RocketMQ 令牌踢下线事件投递失败", e);
         }
     }
 }

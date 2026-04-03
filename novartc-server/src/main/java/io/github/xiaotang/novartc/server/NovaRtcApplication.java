@@ -53,7 +53,7 @@ public class NovaRtcApplication implements CommandLineRunner {
         novaRtcServer.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             novaRtcServer.shutdown();
-            ChatAppLog.log.info("NovaRTC IM server is stopping");
+            ChatAppLog.log.info("NovaRTC IM 服务正在停止");
         }));
     }
 }

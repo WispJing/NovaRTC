@@ -21,7 +21,7 @@ public class WebSocketMsgHandler {
     }
 
     public static void sendAuthState(ChannelHandlerContext ctx, boolean isSuccess) {
-        sendMessage(ctx, ChatMessage.MessageType.SYSTEM, "Authentication " + (isSuccess ? "successful" : "failed"),
+        sendMessage(ctx, ChatMessage.MessageType.SYSTEM, isSuccess ? "认证成功" : "认证失败",
                 null, null, null, null, null, null);
     }
 
@@ -86,7 +86,7 @@ public class WebSocketMsgHandler {
             byte[] byteArray = msgBodyBuilder.build().toByteArray();
             ctx.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(byteArray)));
         } catch (Exception e) {
-            logger.error("Failed to send message", e);
+            logger.error("WebSocket 消息发送失败", e);
         }
     }
 

@@ -43,9 +43,9 @@ public class RocketMQPresenceDispatchService implements PresenceDispatchService 
                             .setHeader(RocketMQHeader.TARGET_USER_ID, String.join(",", targetUserIds))
                             .build()
             );
-            logger.info("RocketMQ presence event send result: {}", JacksonUtil.toJson(sendResult));
+            logger.info("RocketMQ 在线状态事件投递结果: {}", JacksonUtil.toJson(sendResult));
         } catch (Exception e) {
-            logger.error("Send presence event to RocketMQ failed", e);
+            logger.error("RocketMQ 在线状态事件投递失败", e);
         }
     }
 }

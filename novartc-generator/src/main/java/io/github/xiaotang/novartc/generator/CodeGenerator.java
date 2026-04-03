@@ -94,6 +94,6 @@ public class CodeGenerator {
             }
             current = current.getParent();
         }
-        throw new IllegalStateException("Cannot locate NovaRTC project root from current working directory.");
+        throw new IllegalStateException("无法根据当前工作目录定位 NovaRTC 项目根目录");
     }
 }

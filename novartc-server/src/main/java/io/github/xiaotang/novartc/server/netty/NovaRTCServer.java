@@ -50,9 +50,9 @@ public class NovaRTCServer extends BaseServer {
         try {
             cf = b.bind(imConfigProperties.getPort()).sync();
             InetSocketAddress addr = (InetSocketAddress) cf.channel().localAddress();
-            ChatAppLog.log.info("NovaRTC IM server is running, port is: {}", addr.getPort());
+            ChatAppLog.log.info("NovaRTC IM 服务启动完成: port={}", addr.getPort());
         } catch (InterruptedException e) {
-            ChatErrorLog.log.error("NovaRTC IM server start fail,", e);
+            ChatErrorLog.log.error("NovaRTC IM 服务启动失败", e);
         }
     }
 }

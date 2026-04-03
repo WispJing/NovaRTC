@@ -64,7 +64,7 @@ public class JacksonUtil {
         try {
             return getJackson().writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Object to JSON error", e);
+            throw new RuntimeException("对象序列化为 JSON 失败", e);
         }
     }
 
@@ -75,7 +75,7 @@ public class JacksonUtil {
         try {
             return getJackson().readValue(json, clazz);
         } catch (IOException e) {
-            throw new RuntimeException("JSON to Object error", e);
+            throw new RuntimeException("JSON 反序列化失败", e);
         }
     }
 
@@ -86,7 +86,7 @@ public class JacksonUtil {
         try {
             return getJackson().readValue(json, typeReference);
         } catch (IOException e) {
-            throw new RuntimeException("JSON to Object error", e);
+            throw new RuntimeException("JSON 反序列化失败", e);
         }
     }
 

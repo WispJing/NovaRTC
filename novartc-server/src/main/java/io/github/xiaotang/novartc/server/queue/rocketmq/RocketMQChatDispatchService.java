@@ -66,9 +66,9 @@ public class RocketMQChatDispatchService implements ChatDispatchService {
                                 .build(),
                         message.getSender().getUserId()
                 );
-                logger.info("RocketMQ chat message send result: {}", JacksonUtil.toJson(sendResult));
+                logger.info("RocketMQ 会话消息投递结果: {}", JacksonUtil.toJson(sendResult));
             } catch (Exception e) {
-                logger.error("Send chat message to RocketMQ failed", e);
+                logger.error("RocketMQ 会话消息投递失败", e);
             }
         }
 

@@ -21,7 +21,7 @@ public class ChatSeqService {
      */
     public long nextSeq(String chatId) {
         if (StringUtils.isBlank(chatId)) {
-            throw new ApplicationException("ChatId is blank!");
+            throw new ApplicationException("会话标识不能为空");
         }
         String key = imConfigProperties.getChatSeqKeyPreFix() + chatId;
         // 原子自增
