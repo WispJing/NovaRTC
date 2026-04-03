@@ -8,9 +8,13 @@
 
   <!-- ================= 全局变量定义 ================= -->
   <Properties>
-    <!-- 日志根目录 -->
-    <Property name="LOG_HOME">./logs</Property>
-    <Property name="LOG_IM_HOME">./logs/IM</Property>
+    <!--
+      日志根目录：
+      1. 优先使用环境变量 NOVARTC_LOG_HOME
+      2. 本地默认落到项目根 ../logs
+    -->
+    <Property name="LOG_HOME">${env:NOVARTC_LOG_HOME:-../logs}</Property>
+    <Property name="LOG_IM_HOME">${LOG_HOME}/IM</Property>
     <Property name="pid">${pid}</Property>
   </Properties>
 
@@ -45,7 +49,7 @@
 
       <!-- 最多保留 30 个历史文件 -->
       <DefaultRolloverStrategy max="30">
-        <Delete basePath="logs">
+        <Delete basePath="${LOG_HOME}">
           <IfFileName glob="*.log"/>
           <IfLastModified age="7d"/>
         </Delete>
@@ -67,7 +71,7 @@
       </Policies>
 
       <DefaultRolloverStrategy max="30">
-        <Delete basePath="logs">
+        <Delete basePath="${LOG_HOME}">
           <IfFileName glob="*.log"/>
           <IfLastModified age="7d"/>
         </Delete>
