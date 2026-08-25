@@ -1,5 +1,6 @@
 package io.github.xiaotang.novartc.server.netty;
 
+import io.github.xiaotang.novartc.server.config.ChatAccessLog;
 import io.netty.channel.Channel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -78,7 +79,16 @@ public class LocalSessionDispatcher {
         }
         channels.stream()
                 .filter(Channel::isActive)
-                .forEach(channel -> channel.writeAndFlush(msg));
+                .forEach(channel -> {
+                    // 背压保护：写缓冲拥塞说明客户端消费过慢，直接断开防止缓冲无限堆积
+                    if (!channel.isWritable()) {
+                        ChatAccessLog.log.warn("通道写缓冲拥塞，关闭慢速客户端保护服务端: userId={}, channelId={}",
+                                userId, channel.id());
+                        channel.close();
+                        return;
+                    }
+                    channel.writeAndFlush(msg);
+                });
     }
 
     public boolean isLocalChannel(String userId) {

@@ -24,6 +24,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserRelationCacheService {
+    /**
+     * 条带锁，防止缓存击穿：并发未命中时同一条带内只允许一次重建。
+     */
+    private static final Object[] REBUILD_LOCKS = new Object[64];
+
+    static {
+        for (int i = 0; i < REBUILD_LOCKS.length; i++) {
+            REBUILD_LOCKS[i] = new Object();
+        }
+    }
+
     private final StringRedisTemplate redisTemplate;
     private final IMConfigProperties imConfigProperties;
     private final ImFriendMapper imFriendMapper;
@@ -32,7 +43,7 @@ public class UserRelationCacheService {
     /**
      * 异步重建指定用户的关系缓存。
      */
-    @Async
+    @Async("cacheRebuildExecutor")
     public void rebuildUserRelationsCacheAsync(String userId) {
         rebuildUserRelationsCache(userId);
     }
@@ -40,7 +51,7 @@ public class UserRelationCacheService {
     /**
      * 异步批量重建多个用户的关系缓存。
      */
-    @Async
+    @Async("cacheRebuildExecutor")
     public void rebuildUserRelationsCachesAsync(Collection<String> userIds) {
         if (userIds == null) {
             return;
@@ -54,7 +65,7 @@ public class UserRelationCacheService {
     /**
      * 异步重建指定群的成员缓存。
      */
-    @Async
+    @Async("cacheRebuildExecutor")
     public void rebuildGroupMembersCacheAsync(String groupId) {
         rebuildGroupMembersCache(groupId);
     }
@@ -62,7 +73,7 @@ public class UserRelationCacheService {
     /**
      * 异步批量重建多个群的成员缓存。
      */
-    @Async
+    @Async("cacheRebuildExecutor")
     public void rebuildGroupMembersCachesAsync(Collection<String> groupIds) {
         if (groupIds == null) {
             return;
@@ -174,7 +185,14 @@ public class UserRelationCacheService {
         if (!cached.isEmpty() || Boolean.TRUE.equals(redisTemplate.hasKey(buildLoadedKey(key)))) {
             return cached;
         }
-        return reloader.get();
+        // 缓存未命中：条带锁内双检后重建，防止并发击穿导致重复查库
+        synchronized (REBUILD_LOCKS[Math.floorMod(key.hashCode(), REBUILD_LOCKS.length)]) {
+            cached = readSet(key);
+            if (!cached.isEmpty() || Boolean.TRUE.equals(redisTemplate.hasKey(buildLoadedKey(key)))) {
+                return cached;
+            }
+            return reloader.get();
+        }
     }
 
     private Set<String> readSet(String key) {
@@ -188,12 +206,12 @@ public class UserRelationCacheService {
     }
 
     private void replaceSet(String key, Collection<String> values) {
+        // 先写数据、后打 loaded 标记，保证读到标记时数据必然已就绪
         redisTemplate.delete(key);
-        redisTemplate.opsForValue().set(buildLoadedKey(key), "1");
-        if (values == null || values.isEmpty()) {
-            return;
+        if (values != null && !values.isEmpty()) {
+            redisTemplate.opsForSet().add(key, values.stream().filter(StringUtils::isNotBlank).distinct().toArray(String[]::new));
         }
-        redisTemplate.opsForSet().add(key, values.stream().filter(StringUtils::isNotBlank).distinct().toArray(String[]::new));
+        redisTemplate.opsForValue().set(buildLoadedKey(key), "1");
     }
 
     private String buildUserFriendKey(String userId) {

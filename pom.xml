@@ -308,6 +308,13 @@
     <pluginManagement>
       <plugins>
 
+        <!-- 测试插件：升级 surefire 以支持 JUnit 5，默认 2.12.4 会静默跳过所有测试 -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.2.5</version>
+        </plugin>
+
         <!-- 编译插件 -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

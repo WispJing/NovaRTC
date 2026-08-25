@@ -5,6 +5,7 @@ import io.github.xiaotang.novartc.server.config.ChatErrorLog;
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -37,6 +38,8 @@ public class NovaRTCServer extends BaseServer {
                 .childOption(ChannelOption.SO_SNDBUF, 1024 * 1024)
                 .childOption(ChannelOption.SO_RCVBUF, 1024 * 1024)
                 .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30000)
+                // 写缓冲水位线：超过高水位后 isWritable 返回 false，配合背压检查保护服务端内存
+                .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(320 * 1024, 640 * 1024))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
