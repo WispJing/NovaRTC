@@ -122,7 +122,7 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
             }
         }
 
-        userRelationCacheService.rebuildUserRelationsCachesAsync(userIds);
-        userRelationCacheService.rebuildGroupMembersCachesAsync(groupIds);
+        userRelationCacheService.rebuildUserRelationsCachesAfterCommit(userIds);
+        userRelationCacheService.rebuildGroupMembersCachesAfterCommit(groupIds);
     }
 }

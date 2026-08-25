@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -39,6 +43,12 @@ public class UserRelationCacheService {
     private final IMConfigProperties imConfigProperties;
     private final ImFriendMapper imFriendMapper;
     private final ImGroupMemberMapper imGroupMemberMapper;
+
+    /**
+     * 缓存重建线程池，事务提交后的重建任务显式提交到该线程池，避免 @Async 自调用失效。
+     */
+    @Qualifier("cacheRebuildExecutor")
+    private final ThreadPoolTaskExecutor cacheRebuildExecutor;
 
     /**
      * 异步重建指定用户的关系缓存。
@@ -116,6 +126,57 @@ public class UserRelationCacheService {
     }
 
     /**
+     * 在事务提交后异步重建多个用户的关系缓存；无活动事务时立即异步重建。
+     *
+     * <p>好友关系写入（事务内）与缓存重建并发时，重建可能读到未提交数据，
+     * 导致缓存永久滞后、新好友互发消息被拦截，关系变更场景必须使用本方法。</p>
+     */
+    public void rebuildUserRelationsCachesAfterCommit(Collection<String> userIds) {
+        List<String> targets = normalizeIds(userIds);
+        if (targets.isEmpty()) {
+            return;
+        }
+        runAfterCommit(() -> targets.forEach(this::rebuildUserRelationsCache));
+    }
+
+    /**
+     * 在事务提交后异步重建多个群的成员缓存；无活动事务时立即异步重建。
+     */
+    public void rebuildGroupMembersCachesAfterCommit(Collection<String> groupIds) {
+        List<String> targets = normalizeIds(groupIds);
+        if (targets.isEmpty()) {
+            return;
+        }
+        runAfterCommit(() -> targets.forEach(this::rebuildGroupMembersCache));
+    }
+
+    /**
+     * 事务提交后提交重建任务到缓存重建线程池；无活动事务时立即提交。
+     */
+    private void runAfterCommit(Runnable task) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    cacheRebuildExecutor.execute(task);
+                }
+            });
+        } else {
+            cacheRebuildExecutor.execute(task);
+        }
+    }
+
+    private List<String> normalizeIds(Collection<String> values) {
+        if (values == null) {
+            return List.of();
+        }
+        return values.stream()
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+    }
+
+    /**
      * 同步重建指定群的成员缓存。
      */
     public void rebuildGroupMembersCache(String groupId) {
@@ -144,7 +205,19 @@ public class UserRelationCacheService {
         if (StringUtils.equals(userId, targetUserId)) {
             return true;
         }
-        return getFriendUserIds(userId).contains(targetUserId);
+        if (getFriendUserIds(userId).contains(targetUserId)) {
+            return true;
+        }
+        // 缓存可能滞后（如关系变更事务提交时机竞争），以数据库为准兜底，命中后触发自愈重建
+        Long friendCount = imFriendMapper.selectCount(new LambdaQueryWrapper<ImFriend>()
+                .eq(ImFriend::getIsDeleted, false)
+                .eq(ImFriend::getUserId, userId)
+                .eq(ImFriend::getFriendId, targetUserId));
+        if (friendCount == null || friendCount == 0) {
+            return false;
+        }
+        cacheRebuildExecutor.execute(() -> rebuildUserRelationsCache(userId));
+        return true;
     }
 
     /**

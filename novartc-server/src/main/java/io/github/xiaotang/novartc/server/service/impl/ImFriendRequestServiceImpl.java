@@ -142,7 +142,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         if (targetStatus == FriendRequestStatus.ACCEPTED) {
             createFriendRelation(entity);
             imSingleChatService.createOrGet(entity.getRequesterId(), entity.getReceiverId());
-            userRelationCacheService.rebuildUserRelationsCachesAsync(List.of(entity.getRequesterId(), entity.getReceiverId()));
+            userRelationCacheService.rebuildUserRelationsCachesAfterCommit(List.of(entity.getRequesterId(), entity.getReceiverId()));
         }
 
         ImFriendRequest latest = getById(entity.getId());

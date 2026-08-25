@@ -275,7 +275,7 @@ public class AdminConsoleService {
             createFriendRelation(entity.getRequesterId(), entity.getReceiverId(), entity.getId());
             createFriendRelation(entity.getReceiverId(), entity.getRequesterId(), entity.getId());
             imSingleChatService.createOrGet(entity.getRequesterId(), entity.getReceiverId());
-            userRelationCacheService.rebuildUserRelationsCachesAsync(List.of(entity.getRequesterId(), entity.getReceiverId()));
+            userRelationCacheService.rebuildUserRelationsCachesAfterCommit(List.of(entity.getRequesterId(), entity.getReceiverId()));
         }
         ImFriendRequest latest = imFriendRequestService.getById(requestId);
         friendRequestNotificationService.notifyUpdated(latest);
