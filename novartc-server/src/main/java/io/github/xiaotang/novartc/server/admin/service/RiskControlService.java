@@ -5,6 +5,7 @@ import io.github.xiaotang.novartc.common.constant.LoginConstant;
 import io.github.xiaotang.novartc.common.constant.RiskConstant;
 import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.admin.dto.AdminRiskAlertHandleRequest;
 import io.github.xiaotang.novartc.server.admin.dto.AdminRiskBlacklistRequest;
 import io.github.xiaotang.novartc.server.admin.dto.AdminRiskGroupMuteRequest;
@@ -36,7 +37,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,7 +66,7 @@ public class RiskControlService {
         String scope = StringUtils.defaultIfBlank(request.getScope(), LoginConstant.LOGIN_SCOPE_IM);
         closeUserControls(request.getUserId(), RiskConstant.USER_CONTROL_LOGIN_BAN, scope);
         RiskUserControl entity = new RiskUserControl();
-        entity.setId(uuid32());
+        entity.setId(StringUtil.uuid32());
         entity.setUserId(request.getUserId());
         entity.setControlType(RiskConstant.USER_CONTROL_LOGIN_BAN);
         entity.setScope(scope);
@@ -87,7 +87,7 @@ public class RiskControlService {
         validateUser(request.getUserId());
         closeUserControls(request.getUserId(), RiskConstant.USER_CONTROL_SEND_MUTE, LoginConstant.LOGIN_SCOPE_ALL);
         RiskUserControl entity = new RiskUserControl();
-        entity.setId(uuid32());
+        entity.setId(StringUtil.uuid32());
         entity.setUserId(request.getUserId());
         entity.setControlType(RiskConstant.USER_CONTROL_SEND_MUTE);
         entity.setScope(LoginConstant.LOGIN_SCOPE_ALL);
@@ -126,7 +126,7 @@ public class RiskControlService {
         validateGroup(request.getGroupId());
         closeGroupMutes(request.getGroupId(), null, RiskConstant.GROUP_MUTE_SCOPE_ALL);
         RiskGroupMute entity = new RiskGroupMute();
-        entity.setId(uuid32());
+        entity.setId(StringUtil.uuid32());
         entity.setGroupId(request.getGroupId());
         entity.setMuteScope(RiskConstant.GROUP_MUTE_SCOPE_ALL);
         entity.setReason(request.getReason());
@@ -145,7 +145,7 @@ public class RiskControlService {
         validateUser(request.getUserId());
         closeGroupMutes(request.getGroupId(), request.getUserId(), RiskConstant.GROUP_MUTE_SCOPE_USER);
         RiskGroupMute entity = new RiskGroupMute();
-        entity.setId(uuid32());
+        entity.setId(StringUtil.uuid32());
         entity.setGroupId(request.getGroupId());
         entity.setUserId(request.getUserId());
         entity.setMuteScope(RiskConstant.GROUP_MUTE_SCOPE_USER);
@@ -203,7 +203,7 @@ public class RiskControlService {
             return toBlacklistVO(existing, imUserService.selectByUserId(existing.getOwnerUserId()), imUserService.selectByUserId(existing.getBlockedUserId()));
         }
         RiskBlacklist entity = new RiskBlacklist();
-        entity.setId(uuid32());
+        entity.setId(StringUtil.uuid32());
         entity.setOwnerUserId(request.getOwnerUserId());
         entity.setBlockedUserId(request.getBlockedUserId());
         entity.setSource(RiskConstant.BLACKLIST_SOURCE_MANUAL);
@@ -302,7 +302,7 @@ public class RiskControlService {
 
     private void createLoginAlert(ImUser user, String userNum, String username, String clientType, String ip, String userAgent, String alertType, String alertLevel, String detail) {
         RiskLoginAlert entity = new RiskLoginAlert();
-        entity.setId(uuid32());
+        entity.setId(StringUtil.uuid32());
         entity.setUserId(user == null ? null : user.getId());
         entity.setUserNum(user == null ? userNum : user.getUserNum());
         entity.setUsername(user == null ? username : user.getUsername());
@@ -474,10 +474,6 @@ public class RiskControlService {
         }
         ImUser operator = imUserService.selectByUserId(operatorUserId);
         return operator == null ? null : operator.getUsername();
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }
 

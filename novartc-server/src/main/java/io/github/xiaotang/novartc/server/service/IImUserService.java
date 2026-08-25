@@ -18,4 +18,9 @@ public interface IImUserService extends IService<ImUser> {
      * 按用户编号查询用户信息。
      */
     ImUser selectByUserNum(String userNum);
+
+    /**
+     * 按邮箱查询用户信息。
+     */
+    ImUser selectByEmail(String email);
 }

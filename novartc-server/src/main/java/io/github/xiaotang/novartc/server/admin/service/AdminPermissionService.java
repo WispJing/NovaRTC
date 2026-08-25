@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.admin.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.admin.vo.AdminMenuVO;
 import io.github.xiaotang.novartc.server.entity.mysql.*;
 import io.github.xiaotang.novartc.server.service.*;
@@ -89,7 +90,7 @@ public class AdminPermissionService {
         }
         List<AdminUserMenu> items = menuIds.stream().distinct().map(menuId -> {
             AdminUserMenu entity = new AdminUserMenu();
-            entity.setId(uuid32());
+            entity.setId(StringUtil.uuid32());
             entity.setUserId(userId);
             entity.setMenuId(menuId);
             entity.setIsDeleted(false);
@@ -167,9 +168,5 @@ public class AdminPermissionService {
         vo.setIcon(menu.getIcon());
         vo.setSortNo(menu.getSortNo());
         return vo;
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }

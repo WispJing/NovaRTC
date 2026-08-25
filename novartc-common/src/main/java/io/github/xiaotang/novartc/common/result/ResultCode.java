@@ -14,7 +14,9 @@ public enum ResultCode {
     UNAUTHORIZED(401, "未登录"),
     LOGIN_FAIL(402, "未登录"),
     FORBIDDEN(403, "无权限"),
-    SERVER_ERROR(500, "服务器异常");
+    SERVER_ERROR(500, "服务器异常"),
+    REGISTER_USER_NUM_EXISTS(409, "用户编号已存在"),
+    REGISTER_EMAIL_EXISTS(409, "邮箱已被注册");
 
     private final int code;
     private final String msg;

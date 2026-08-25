@@ -40,4 +40,17 @@ public class ImUserServiceImpl extends ServiceImpl<ImUserMapper, ImUser> impleme
                 .eq(ImUser::getIsDeleted, false)
                 .eq(ImUser::getUserNum, userNum));
     }
+
+    /**
+     * 按邮箱查询有效用户。
+     */
+    @Override
+    public ImUser selectByEmail(String email) {
+        if (StringUtils.isBlank(email)) {
+            return null;
+        }
+        return getOne(new LambdaQueryWrapper<ImUser>()
+                .eq(ImUser::getIsDeleted, false)
+                .eq(ImUser::getEmail, email));
+    }
 }

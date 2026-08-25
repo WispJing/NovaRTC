@@ -3,20 +3,23 @@ package io.github.xiaotang.novartc.server.controller;
 import io.github.xiaotang.novartc.common.util.UserAgentUtil;
 import io.github.xiaotang.novartc.server.dto.IMUserDTO;
 import io.github.xiaotang.novartc.server.dto.LoginResponse;
+import io.github.xiaotang.novartc.server.dto.RegisterDTO;
 import io.github.xiaotang.novartc.server.service.LoginService;
+import io.github.xiaotang.novartc.server.service.RegisterService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * IM 登录控制器，提供客户端登录和登出接口。
+ * IM 登录控制器，提供客户端登录、登出和注册接口。
  */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class LoginController {
     private final LoginService loginService;
+    private final RegisterService registerService;
 
     /**
      * IM 账号登录。
@@ -43,6 +46,14 @@ public class LoginController {
     @PostMapping("/logout")
     public void logout(@RequestBody LoginResponse loginResponse) {
         loginService.logout(loginResponse.getToken());
+    }
+
+    /**
+     * IM 账号注册，用户编号与邮箱唯一。
+     */
+    @PostMapping("/register")
+    public void register(@RequestBody RegisterDTO registerDTO) {
+        registerService.register(registerDTO);
     }
 
     private String resolveIp(HttpServletRequest request) {

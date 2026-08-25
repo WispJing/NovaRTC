@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.mapper.ImSingleChatMapper;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 单聊会话服务实现，负责单聊会话查询、复用与创建。
@@ -80,8 +80,8 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
 
         var ordered = normalizeUserPair(currentUserId, targetUserId);
         ImSingleChat chat = new ImSingleChat();
-        chat.setId(uuid32());
-        chat.setChatId(uuid32());
+        chat.setId(StringUtil.uuid32());
+        chat.setChatId(StringUtil.uuid32());
         chat.setUser1Id(ordered[0]);
         chat.setUser2Id(ordered[1]);
         chat.setIsDeleted(false);
@@ -97,9 +97,5 @@ public class ImSingleChatServiceImpl extends ServiceImpl<ImSingleChatMapper, ImS
 
     private ApplicationException ex(ExceptionEnum exceptionEnum) {
         return new ApplicationException(exceptionEnum.getValue(), exceptionEnum.getContent());
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }

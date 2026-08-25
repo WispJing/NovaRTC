@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryVO;
@@ -31,7 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -346,7 +346,7 @@ public class ChatServiceImpl implements ChatService {
 
     private IMReadStatus createReadStatus(String currentUserId, String messageId) {
         IMReadStatus readStatus = new IMReadStatus();
-        String id = uuid32();
+        String id = StringUtil.uuid32();
         readStatus.setId(id);
         readStatus.setRead_status_id(id);
         readStatus.setMessage_id(messageId);
@@ -373,9 +373,5 @@ public class ChatServiceImpl implements ChatService {
             case "AUDIO" -> "[语音]";
             default -> "[消息]";
         };
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }

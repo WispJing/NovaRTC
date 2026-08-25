@@ -7,6 +7,7 @@ import io.github.xiaotang.novartc.common.exception.ApplicationException;
 import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.admin.vo.*;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryVO;
@@ -290,7 +291,7 @@ public class AdminConsoleService {
             return;
         }
         ImFriend friend = new ImFriend();
-        friend.setId(uuid32());
+        friend.setId(StringUtil.uuid32());
         friend.setUserId(userId);
         friend.setFriendId(friendId);
         friend.setSourceRequestId(requestId);
@@ -570,9 +571,5 @@ public class AdminConsoleService {
         if (imUserService.selectByUserId(targetUserId) == null) {
             throw new BusinessException(ResultCode.PARAM_ERROR);
         }
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.xiaotang.novartc.common.enums.ExceptionEnum;
 import io.github.xiaotang.novartc.common.enums.FriendRequestStatus;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.dto.FriendRequestCreateRequest;
 import io.github.xiaotang.novartc.server.dto.FriendRequestHandleRequest;
 import io.github.xiaotang.novartc.server.dto.FriendRequestVO;
@@ -25,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 好友申请服务实现，负责好友申请的查询、流转和好友关系落库。
@@ -91,7 +91,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         }
 
         if (StringUtils.isBlank(entity.getId())) {
-            entity.setId(uuid32());
+            entity.setId(StringUtil.uuid32());
         }
         entity.setRequesterId(currentUserId);
         entity.setReceiverId(targetUser.getId());
@@ -179,7 +179,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
         }
 
         ImFriend friend = new ImFriend();
-        friend.setId(uuid32());
+        friend.setId(StringUtil.uuid32());
         friend.setUserId(userId);
         friend.setFriendId(friendId);
         friend.setSourceRequestId(sourceRequestId);
@@ -241,9 +241,5 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
 
     private ApplicationException ex(ExceptionEnum exceptionEnum) {
         return new ApplicationException(exceptionEnum.getValue(), exceptionEnum.getContent());
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }

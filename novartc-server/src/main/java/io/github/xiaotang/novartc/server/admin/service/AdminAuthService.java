@@ -6,6 +6,7 @@ import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JwtUtil;
 import io.github.xiaotang.novartc.common.util.MD5Util;
+import io.github.xiaotang.novartc.common.util.StringUtil;
 import io.github.xiaotang.novartc.server.admin.dto.AdminLoginRequest;
 import io.github.xiaotang.novartc.server.admin.vo.AdminLoginVO;
 import io.github.xiaotang.novartc.server.entity.mysql.AdminLoginLog;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -190,7 +190,7 @@ public class AdminAuthService {
                               String failReason,
                               HttpServletRequest request) {
         AdminLoginLog log = new AdminLoginLog();
-        log.setId(uuid32());
+        log.setId(StringUtil.uuid32());
         log.setUserId(user == null ? null : user.getId());
         log.setUserNum(user == null ? userNum : user.getUserNum());
         log.setUsername(user == null ? username : user.getUsername());
@@ -224,9 +224,5 @@ public class AdminAuthService {
         if (imUserService.selectByUserId(userId) == null) {
             throw new BusinessException(ResultCode.PARAM_ERROR);
         }
-    }
-
-    private String uuid32() {
-        return UUID.randomUUID().toString().replace("-", "");
     }
 }
