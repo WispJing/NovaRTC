@@ -34,6 +34,8 @@
     <jackson.version>2.15.4</jackson.version>
     <lang3.version>3.20.0</lang3.version>
     <beanutils.version>1.11.0</beanutils.version>
+    <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
+    <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -331,6 +333,13 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>3.2.0</version>
+        </plugin>
+
+        <!-- protobuf 代码生成插件，构建期自动下载 protoc 编译 proto 文件 -->
+        <plugin>
+          <groupId>org.xolstice.maven.plugins</groupId>
+          <artifactId>protobuf-maven-plugin</artifactId>
+          <version>${protobuf-maven-plugin.version}</version>
         </plugin>
 
       </plugins>
