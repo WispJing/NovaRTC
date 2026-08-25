@@ -56,6 +56,14 @@ public class UserAuthHandler extends SimpleChannelInboundHandler<ChatMessage.Msg
                                    ChatMessage.MsgBody msgBody,
                                    ChannelHandlerContext ctx) {
 
+        // 连接上限保护：超限时拒绝认证，客户端重连后可落到其他副本
+        if (userChannelManager.isConnectionLimitReached()) {
+            ChatAccessLog.log.warn("IM 连接数达到上限，拒绝新连接: remoteAddress={}", channel.remoteAddress());
+            sendAuthResult(channel, false, "服务器繁忙，请稍后再试");
+            channel.close();
+            return;
+        }
+
         ChatMessage.Auth auth = msgBody.getAuthMessage();
 
         String userId = auth.getUserId();

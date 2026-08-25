@@ -30,4 +30,8 @@ public class IMConfigProperties {
     private String groupMembersCacheKeyPreFix;
     private Long workerId;
     private Long datacenterId;
+    /**
+     * 单实例最大 IM 连接数，0 表示不限制
+     */
+    private Long maxConnections;
 }

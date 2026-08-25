@@ -1,6 +1,7 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
+import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.PresenceDispatchService;
 import io.github.xiaotang.novartc.server.service.PresenceAudienceResolver;
@@ -31,6 +32,16 @@ public class UserChannelManager {
      */
     @Qualifier("imPresenceExecutor")
     private final Executor imPresenceExecutor;
+    private final IMConfigProperties imConfigProperties;
+
+    /**
+     * 判断单实例连接数是否已达上限（配置为 0 或空表示不限制）。
+     */
+    public boolean isConnectionLimitReached() {
+        Long maxConnections = imConfigProperties.getMaxConnections();
+        return maxConnections != null && maxConnections > 0
+                && localSessionDispatcher.getConnectionCount() >= maxConnections;
+    }
 
     public void bind(String userId, String token, Channel channel) {
         if (StringUtils.isBlank(userId) || StringUtils.isBlank(token)) {

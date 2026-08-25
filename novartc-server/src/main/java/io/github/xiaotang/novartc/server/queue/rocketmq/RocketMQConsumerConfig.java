@@ -60,10 +60,9 @@ public class RocketMQConsumerConfig {
 
         // 动态订阅：Tag 为当前实例 ID
         String instanceId = instanceIdProvider.getInstanceId();
-        // chatConsumer.subscribe(imConfigProperties.getChatTopic(), instanceId);
-        chatConsumer.subscribe(imConfigProperties.getChatTopic(), "*");
-        // logger.info("RocketMQ chat consumer subscribed to topic: {}, tag: {}", imConfigProperties.getChatTopic(), instanceId);
-        logger.info("RocketMQ 会话消息消费者订阅完成: topic={}, group={}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup());
+        // 精确路由：只订阅本实例标签与兜底标签，Broker 侧过滤，避免全量广播
+        chatConsumer.subscribe(imConfigProperties.getChatTopic(), instanceId + " || " + RocketMQHeader.FALLBACK_TAG);
+        logger.info("RocketMQ 会话消息消费者订阅完成: topic={}, group={}, tags={} || {}", imConfigProperties.getChatTopic(), imConfigProperties.getChatConsumerGroup(), instanceId, RocketMQHeader.FALLBACK_TAG);
 
         chatConsumer.registerMessageListener((MessageListenerConcurrently) (msgList, context) -> {
             for (MessageExt msg : msgList) {

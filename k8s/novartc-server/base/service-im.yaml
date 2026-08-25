@@ -1,3 +1,6 @@
+# IM 长连接入口。有意保持 sessionAffinity: None（默认轮询）：
+# 消息投递依赖 Redis 路由表精确寻址，连接落到任意副本均可达，无需会话保持；
+# 连接倾斜由应用侧 im.maxConnections 上限 + 客户端重连转移保护。
 apiVersion: v1
 kind: Service
 metadata:

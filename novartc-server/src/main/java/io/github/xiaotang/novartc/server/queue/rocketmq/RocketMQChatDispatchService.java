@@ -19,15 +19,18 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created on 2026/3/10 13:50
- *
- * @author tangj
- * @description
+ * RocketMQ 会话消息分发服务（多实例模式）。
+ * <p>
+ * 按目标用户所在实例精确路由：以实例 ID 作为消息 Tag，Broker 侧完成过滤，
+ * 各实例只拉取发给自己的消息，避免全量广播放大；路由表未命中的用户
+ * 走 {@link RocketMQHeader#FALLBACK_TAG} 兜底，所有实例接收后按本地连接过滤投递。
  */
 @Service
 @ConditionalOnProperty(prefix = "rocketmq", name = "enabled", havingValue = "true")
@@ -47,64 +50,68 @@ public class RocketMQChatDispatchService implements ChatDispatchService {
             return;
         }
 
-        Set<String> mqToUsers = new HashSet<>();
+        // 本实例在线用户直接投递，其余用户按所在实例分组经 MQ 精确路由
+        Set<String> remoteUserIds = new HashSet<>();
         for (String userId : targetUserIds) {
             if (localSessionDispatcher.isLocalChannel(userId)) {
                 localSessionDispatcher.sendToUser(userId, message);
-                continue;
-            }
-            mqToUsers.add(userId);
-        }
-        if (!CollectionUtils.isEmpty(mqToUsers)) {
-            try {
-                SendResult sendResult = rocketMQTemplate.syncSendOrderly(
-                        iMConfigProperties.getChatTopic(),
-                        MessageBuilder
-                                .withPayload(message.toByteArray())
-                                .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())
-                                .setHeader(RocketMQHeader.TARGET_USER_ID, String.join(",", mqToUsers))
-                                .build(),
-                        message.getSender().getUserId()
-                );
-                logger.info("RocketMQ 会话消息投递结果: {}", JacksonUtil.toJson(sendResult));
-            } catch (Exception e) {
-                logger.error("RocketMQ 会话消息投递失败", e);
-            }
-        }
-
-        // 按实例分组：实例ID -> 该实例上的用户ID列表
-        /*Map<String, Set<String>> instanceToUsers = new HashMap<>();
-        for (String userId : targetUserIds) {
-            Set<String> instances = userRouteService.getUserInstances(userId);
-            if (instances == null || instances.isEmpty()) {
-                continue;
-            }
-            for (String inst : instances) {
-                instanceToUsers.computeIfAbsent(inst, k -> new HashSet<>()).add(userId);
-            }
-        }*/
-
-        // 对本实例的用户直接本地发送，其他实例通过RocketMQ发送
-        /*String localInstance = instanceIdProvider.getInstanceId();
-        for (Map.Entry<String, Set<String>> entry : instanceToUsers.entrySet()) {
-            String targetInstance = entry.getKey();
-            Set<String> users = entry.getValue();
-            if (targetInstance.equals(localInstance)) {
-                // 本地发送
-                users.forEach(userId -> userChannelManager.sendToUser(userId, message));
             } else {
-                // 发送到RocketMQ
-                rocketMQTemplate.syncSendOrderly(
-                        iMConfigProperties.getChatTopic() + ":" + targetInstance,
-                        MessageBuilder
-                                .withPayload(message.toByteArray())
-                                .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())
-                                .setHeader(RocketMQHeader.TARGET_USER_ID, String.join(",", users))
-                                .build(),
-                        message.getSender().getUserId()
-                );
+                remoteUserIds.add(userId);
             }
-        }*/
+        }
+        if (remoteUserIds.isEmpty()) {
+            return;
+        }
+
+        groupTargetsByInstance(remoteUserIds)
+                .forEach((tag, userIds) -> sendToInstance(tag, message, userIds));
+    }
+
+    /**
+     * 按目标实例对用户分组。
+     * <p>
+     * 路由表为空（或只剩本地实例的过期路由）的用户归入 {@link RocketMQHeader#FALLBACK_TAG} 组，
+     * 由各实例消费后按本地连接过滤，保证消息必达。
+     *
+     * @param userIds 非本实例在线的目标用户集合
+     * @return 实例 ID（或 fallback 标签）到用户集合的映射
+     */
+    Map<String, Set<String>> groupTargetsByInstance(Set<String> userIds) {
+        String localInstance = instanceIdProvider.getInstanceId();
+        Map<String, Set<String>> instanceToUsers = new HashMap<>();
+        for (String userId : userIds) {
+            Set<String> instances = userRouteService.getUserInstances(userId);
+            Set<String> remoteInstances = instances == null ? Set.of()
+                    : instances.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .filter(instanceId -> !StringUtils.equals(instanceId, localInstance))
+                    .collect(Collectors.toSet());
+            if (remoteInstances.isEmpty()) {
+                instanceToUsers.computeIfAbsent(RocketMQHeader.FALLBACK_TAG, key -> new HashSet<>()).add(userId);
+                continue;
+            }
+            for (String instanceId : remoteInstances) {
+                instanceToUsers.computeIfAbsent(instanceId, key -> new HashSet<>()).add(userId);
+            }
+        }
+        return instanceToUsers;
+    }
+
+    private void sendToInstance(String tag, ChatMessage.MsgBody message, Set<String> userIds) {
+        try {
+            SendResult sendResult = rocketMQTemplate.syncSendOrderly(
+                    iMConfigProperties.getChatTopic() + ":" + tag,
+                    MessageBuilder
+                            .withPayload(message.toByteArray())
+                            .setHeader(RocketMQHeader.MSG_ID, message.getMessageId())
+                            .setHeader(RocketMQHeader.TARGET_USER_ID, String.join(",", userIds))
+                            .build(),
+                    message.getSender().getUserId()
+            );
+            logger.info("RocketMQ 会话消息投递结果: tag={}, users={}, {}", tag, userIds, JacksonUtil.toJson(sendResult));
+        } catch (Exception e) {
+            logger.error("RocketMQ 会话消息投递失败: tag={}, users={}", tag, userIds, e);
+        }
     }
 
     // 解析消息的目标用户ID列表

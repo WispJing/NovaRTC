@@ -1,7 +1,9 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatAccessLog;
+import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -9,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -19,12 +22,24 @@ public class LocalSessionDispatcher {
     private final Map<String, Set<Channel>> userChannels = new ConcurrentHashMap<>();
     private final Map<String, Set<String>> groupMembers = new ConcurrentHashMap<>();
     private final Map<String, Channel> tokenChannels = new ConcurrentHashMap<>();
+    /**
+     * 当前已认证连接数，用于连接上限保护与监控指标
+     */
+    private final AtomicInteger connectionCount = new AtomicInteger(0);
 
     public void bindChannel(String userId, String token, Channel channel) {
         channel.attr(NettyAttributes.USER_ID).set(userId);
         channel.attr(NettyAttributes.TOKEN).set(token);
         userChannels.computeIfAbsent(userId, key -> ConcurrentHashMap.newKeySet()).add(channel);
         tokenChannels.put(token, channel);
+        connectionCount.incrementAndGet();
+    }
+
+    /**
+     * 获取当前已认证连接数。
+     */
+    public int getConnectionCount() {
+        return connectionCount.get();
     }
 
     public SessionBinding removeChannel(Channel channel) {
@@ -33,8 +48,8 @@ public class LocalSessionDispatcher {
         }
         String userId = channel.attr(NettyAttributes.USER_ID).get();
         String token = channel.attr(NettyAttributes.TOKEN).get();
-        if (token != null) {
-            tokenChannels.remove(token);
+        if (token != null && tokenChannels.remove(token) != null) {
+            connectionCount.decrementAndGet();
         }
         boolean userOffline = false;
         if (userId != null) {
@@ -104,6 +119,29 @@ public class LocalSessionDispatcher {
                 .flatMap(Set::stream)
                 .filter(Channel::isActive)
                 .forEach(channel -> channel.writeAndFlush(msg));
+    }
+
+    /**
+     * 获取当前所有有连接的用戶 ID 快照，用于优雅关停时摘除路由。
+     */
+    public Set<String> getConnectedUserIds() {
+        return Set.copyOf(userChannels.keySet());
+    }
+
+    /**
+     * 向所有在线连接下发系统通知并在写完后关闭，用于优雅迁移。
+     */
+    public void closeAllWithNotice(String notice) {
+        ChatMessage.MsgBody noticeMessage = ChatMessage.MsgBody.newBuilder()
+                .setMessageType(ChatMessage.MessageType.SYSTEM)
+                .setTimestamp(System.currentTimeMillis())
+                .setTextContent(ChatMessage.TextContent.newBuilder().setText(notice).build())
+                .build();
+        userChannels.values().stream()
+                .flatMap(Set::stream)
+                .filter(Channel::isActive)
+                .forEach(channel -> channel.writeAndFlush(noticeMessage)
+                        .addListener(ChannelFutureListener.CLOSE));
     }
 
     public void sendToUsers(Set<String> userIds, Object msg) {

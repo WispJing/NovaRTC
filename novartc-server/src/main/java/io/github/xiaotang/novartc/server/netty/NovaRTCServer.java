@@ -58,4 +58,14 @@ public class NovaRTCServer extends BaseServer {
             ChatErrorLog.log.error("NovaRTC IM 服务启动失败", e);
         }
     }
+
+    /**
+     * 停止接受新连接（关闭监听端口），存量连接不受影响，用于优雅排空。
+     */
+    public void stopAccepting() {
+        if (cf != null && cf.channel().isActive()) {
+            cf.channel().close();
+            ChatAppLog.log.info("NovaRTC IM 已停止接受新连接: port={}", imConfigProperties.getPort());
+        }
+    }
 }

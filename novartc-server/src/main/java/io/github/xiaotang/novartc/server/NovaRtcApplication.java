@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.github.xiaotang.novartc.server.admin.service.RiskControlCacheService;
-import io.github.xiaotang.novartc.server.config.ChatAppLog;
 import io.github.xiaotang.novartc.server.netty.NovaRTCServer;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -51,9 +50,6 @@ public class NovaRtcApplication implements CommandLineRunner {
         riskControlCacheService.warmupAllCaches();
         novaRtcServer.init();
         novaRtcServer.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            novaRtcServer.shutdown();
-            ChatAppLog.log.info("NovaRTC IM 服务正在停止");
-        }));
+        // 关停由 ImGracefulShutdownService 统一编排（排空→通知→断开→关闭），不再注册 JVM shutdownHook
     }
 }

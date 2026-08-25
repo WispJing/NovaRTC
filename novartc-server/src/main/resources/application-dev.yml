@@ -125,6 +125,8 @@ rocketmq:
 im:
   host: localhost
   port: 9688
+  # 单实例最大 IM 连接数，0 表示不限制
+  maxConnections: 0
   chatTopic: 'im-chat-topic'
   chatConsumerGroup: 'im-chat-consumer-group'
   presenceTopic: 'im-presence-topic'
