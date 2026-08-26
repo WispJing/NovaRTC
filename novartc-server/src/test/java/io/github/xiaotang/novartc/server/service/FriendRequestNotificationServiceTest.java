@@ -17,6 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+/**
+ * 好友请求通知服务测试，验证通知消息中的时间字段统一使用
+ * UTC Instant 转换的毫秒时间戳下发。
+ */
 @ExtendWith(MockitoExtension.class)
 class FriendRequestNotificationServiceTest {
 
@@ -29,6 +33,10 @@ class FriendRequestNotificationServiceTest {
     @InjectMocks
     private FriendRequestNotificationService friendRequestNotificationService;
 
+    /**
+     * 好友请求被接受后向双方下发通知，消息体中的 createdAt/handledAt
+     * 应为对应 Instant 的 UTC 毫秒时间戳，无时区漂移。
+     */
     @Test
     void shouldEmitHandledAtAndCreatedAtAsEpochMillisFromInstant() {
         ImFriendRequest request = new ImFriendRequest();

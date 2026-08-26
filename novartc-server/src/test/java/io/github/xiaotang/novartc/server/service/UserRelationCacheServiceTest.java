@@ -56,6 +56,10 @@ class UserRelationCacheServiceTest {
                 redisTemplate, imConfigProperties, imFriendMapper, imGroupMemberMapper, cacheRebuildExecutor);
     }
 
+    /**
+     * 缓存命中：好友关系已存在于 Redis 缓存中，直接返回 true，
+     * 不查数据库兜底，也不触发缓存自愈重建。
+     */
     @Test
     void isFriendShouldHitCacheWithoutDbQuery() {
         when(imConfigProperties.getUserFriendCacheKeyPreFix()).thenReturn(FRIEND_KEY_PREFIX);
@@ -67,6 +71,10 @@ class UserRelationCacheServiceTest {
         verify(cacheRebuildExecutor, never()).execute(any());
     }
 
+    /**
+     * 缓存滞后自愈：缓存已加载（存在 loaded 标记）但缺少该好友时，
+     * 以数据库查询结果为准返回 true，并异步触发一次缓存重建。
+     */
     @Test
     void isFriendShouldFallbackToDbAndTriggerSelfHealingWhenCacheStale() {
         when(imConfigProperties.getUserFriendCacheKeyPreFix()).thenReturn(FRIEND_KEY_PREFIX);
@@ -79,6 +87,9 @@ class UserRelationCacheServiceTest {
         verify(cacheRebuildExecutor, times(1)).execute(any());
     }
 
+    /**
+     * 缓存与数据库均无好友关系：返回 false，且不触发缓存自愈。
+     */
     @Test
     void isFriendShouldReturnFalseWhenDbHasNoRelation() {
         when(imConfigProperties.getUserFriendCacheKeyPreFix()).thenReturn(FRIEND_KEY_PREFIX);

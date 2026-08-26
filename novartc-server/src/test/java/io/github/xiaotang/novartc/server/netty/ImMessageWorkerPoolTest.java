@@ -13,10 +13,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * IM 消息工作线程池测试，验证按路由键分桶的并发模型：
+ * 同键任务严格串行有序，不同键任务并行互不阻塞。
+ */
 class ImMessageWorkerPoolTest {
 
     private ImMessageWorkerPool pool;
 
+    /**
+     * 每个用例结束后关闭线程池，避免线程泄漏影响其他测试。
+     */
     @AfterEach
     void tearDown() {
         if (pool != null) {
@@ -24,6 +31,10 @@ class ImMessageWorkerPoolTest {
         }
     }
 
+    /**
+     * 同一路由键的 1000 个任务必须严格按提交顺序执行，
+     * 保证同一用户的消息处理顺序不乱。
+     */
     @Test
     void sameKeyTasksExecuteInOrder() throws InterruptedException {
         pool = new ImMessageWorkerPool();
@@ -46,6 +57,10 @@ class ImMessageWorkerPoolTest {
         }
     }
 
+    /**
+     * 不同路由键（落在不同分桶）的任务互不阻塞：
+     * 慢任务执行期间，快任务应及时完成，且两者运行在不同线程上。
+     */
     @Test
     void differentKeysDoNotBlockEachOther() throws InterruptedException {
         pool = new ImMessageWorkerPool();
@@ -83,6 +98,9 @@ class ImMessageWorkerPoolTest {
         assertTrue(slowDone.await(5, TimeUnit.SECONDS));
     }
 
+    /**
+     * 辅助方法：找到一个与给定键落在不同分桶的路由键。
+     */
     private String findKeyInDifferentBucket(String baseKey) {
         for (int i = 0; ; i++) {
             String candidate = "candidate-" + i;

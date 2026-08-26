@@ -19,6 +19,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * 用户注册服务测试，覆盖参数合法性校验、用户编号/邮箱重复校验，
+ * 以及正常注册时的入库字段（MD5 密码、默认标记、主键长度）。
+ */
 @ExtendWith(MockitoExtension.class)
 class RegisterServiceTest {
 
@@ -28,6 +32,9 @@ class RegisterServiceTest {
     @InjectMocks
     private RegisterService registerService;
 
+    /**
+     * 构造一份合法的注册请求参数，供各用例在此基础上制造非法或重复场景。
+     */
     private RegisterDTO buildValidDto() {
         RegisterDTO dto = new RegisterDTO();
         dto.setUserNum("u1001");
@@ -37,6 +44,10 @@ class RegisterServiceTest {
         return dto;
     }
 
+    /**
+     * 非法参数（空白用户编号、过短密码、非法邮箱）均应抛出业务异常，
+     * 且任何非法场景下都不允许执行入库。
+     */
     @Test
     void shouldRejectInvalidParams() {
         RegisterDTO emptyUserNum = buildValidDto();
@@ -54,6 +65,9 @@ class RegisterServiceTest {
         verify(imUserService, never()).save(org.mockito.ArgumentMatchers.any(ImUser.class));
     }
 
+    /**
+     * 用户编号已被占用时拒绝注册，提示「用户编号已存在」且不入库。
+     */
     @Test
     void shouldRejectDuplicatedUserNum() {
         RegisterDTO dto = buildValidDto();
@@ -64,6 +78,9 @@ class RegisterServiceTest {
         verify(imUserService, never()).save(org.mockito.ArgumentMatchers.any(ImUser.class));
     }
 
+    /**
+     * 邮箱已被注册时拒绝注册，提示「邮箱已被注册」且不入库。
+     */
     @Test
     void shouldRejectDuplicatedEmail() {
         RegisterDTO dto = buildValidDto();
@@ -75,6 +92,10 @@ class RegisterServiceTest {
         verify(imUserService, never()).save(org.mockito.ArgumentMatchers.any(ImUser.class));
     }
 
+    /**
+     * 正常注册：校验入库实体各字段正确，密码以 MD5 加密存储，
+     * 默认非管理员、未删除，主键为 32 位字符串。
+     */
     @Test
     void shouldSaveUserWithMd5Password() {
         RegisterDTO dto = buildValidDto();

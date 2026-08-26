@@ -23,6 +23,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * 风控服务时间处理测试，验证告警处理时间以 UTC 的 {@link Instant} 写入，
+ * 不依赖机器默认时区。
+ */
 @ExtendWith(MockitoExtension.class)
 class RiskControlUtcTest {
 
@@ -48,6 +52,10 @@ class RiskControlUtcTest {
     @InjectMocks
     private RiskControlService riskControlService;
 
+    /**
+     * 处理登录告警后，handledAt 应被赋值为不晚于当前时刻的 UTC Instant，
+     * 并随实体更新入库。
+     */
     @Test
     void shouldStoreHandledAtAsInstant() {
         RiskLoginAlert entity = new RiskLoginAlert();

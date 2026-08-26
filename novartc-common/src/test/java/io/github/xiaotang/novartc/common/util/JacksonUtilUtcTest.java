@@ -11,8 +11,15 @@ import java.util.TimeZone;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * JacksonUtil 序列化测试，验证时间类型统一按 UTC 序列化，
+ * 不受机器默认时区影响。
+ */
 class JacksonUtilUtcTest {
 
+    /**
+     * 即使默认时区被改为 Asia/Shanghai，旧的 Date 类型仍按 UTC（+00:00）输出。
+     */
     @Test
     void shouldSerializeLegacyDateTypesInUtcEvenWhenDefaultTimeZoneIsNotUtc() {
         TimeZone original = TimeZone.getDefault();
@@ -27,6 +34,9 @@ class JacksonUtilUtcTest {
         }
     }
 
+    /**
+     * Instant 序列化后再反序列化，值与原时间完全一致，无时区漂移。
+     */
     @Test
     void shouldRoundTripInstantWithoutTimeZoneDrift() {
         Instant expected = Instant.parse("2026-04-03T12:34:56Z");
