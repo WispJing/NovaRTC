@@ -8,7 +8,15 @@ import lombok.Data;
 @Data
 public class FileUploadResponse {
     /**
-     * 存储文件名（不含日期目录）
+     * 文件信息记录ID
+     */
+    private String fileId;
+    /**
+     * 业务类型：avatar/image/video/audio/file
+     */
+    private String bizType;
+    /**
+     * 存储文件名（不含业务与日期目录）
      */
     private String fileName;
     /**

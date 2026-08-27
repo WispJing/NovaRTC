@@ -66,7 +66,7 @@ public class CodeGenerator {
                 })
                 .strategyConfig(builder -> {
                     // "im_user", "im_friend", "im_friend_request", "im_group_chat", "im_group_member", "im_single_chat"
-                    builder.addInclude("admin_login_log", "im_friend_request", "risk_group_mute", "risk_login_alert", "risk_user_control")
+                    builder.addInclude("admin_login_log", "im_friend_request", "risk_group_mute", "risk_login_alert", "risk_user_control", "im_file")
                             .entityBuilder()
                             .superClass("io.github.xiaotang.novartc.server.entity.mysql.BaseEntity")
                             .addSuperEntityColumns("id", "is_deleted", "created_at", "updated_at")

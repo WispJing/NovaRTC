@@ -20,9 +20,12 @@ public class FileController {
 
     /**
      * 文件上传，返回可公开访问的文件地址。
+     *
+     * @param bizType 业务类型：avatar/image/video/audio/file
      */
     @PostMapping("/upload")
-    public FileUploadResponse upload(@RequestParam("file") MultipartFile file) {
-        return fileStorageService.store(file);
+    public FileUploadResponse upload(@RequestParam("file") MultipartFile file,
+                                     @RequestParam("bizType") String bizType) {
+        return fileStorageService.store(file, bizType);
     }
 }

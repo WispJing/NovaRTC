@@ -1,10 +1,13 @@
 package io.github.xiaotang.novartc.server.service.impl;
 
+import io.github.xiaotang.novartc.common.enums.FileBizType;
 import io.github.xiaotang.novartc.common.exception.BusinessException;
 import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.server.config.MinioProperties;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.FileUploadResponse;
+import io.github.xiaotang.novartc.server.entity.mysql.ImFile;
+import io.github.xiaotang.novartc.server.mapper.ImFileMapper;
 import io.github.xiaotang.novartc.server.service.FileStorageService;
 import io.github.xiaotang.novartc.server.util.MinioUtil;
 import jakarta.annotation.PostConstruct;
@@ -36,6 +39,7 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
 
     private final MinioProperties minioProperties;
     private final MinioUtil minioUtil;
+    private final ImFileMapper imFileMapper;
 
     /**
      * 启动时确保存储桶存在并开启公共读；失败仅记录日志，不阻塞应用启动，
@@ -55,13 +59,18 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public FileUploadResponse store(MultipartFile file) {
+    public FileUploadResponse store(MultipartFile file, String bizType) {
+        FileBizType type = FileBizType.fromCode(bizType);
+        if (type == null) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.code(), "不支持的业务类型: " + bizType);
+        }
         validate(file);
         String extension = resolveExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
-        // 日期目录使用 UTC，文件名不含用户输入，避免路径穿越
-        String objectName = LocalDate.now(ZoneOffset.UTC)
-                .format(DateTimeFormatter.BASIC_ISO_DATE) + "/" + fileName;
+        // 按业务类型分目录，日期目录使用 UTC，文件名不含用户输入，避免路径穿越
+        String objectName = type.code() + "/"
+                + LocalDate.now(ZoneOffset.UTC).format(DateTimeFormatter.BASIC_ISO_DATE)
+                + "/" + fileName;
 
         String bucket = minioProperties.getBucket();
         long partSize = minioProperties.getMaxFileSize() * BYTES_PER_MB;
@@ -71,16 +80,40 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
             logger.error("读取上传文件流失败: {}", file.getOriginalFilename(), e);
             throw new BusinessException(ResultCode.SERVER_ERROR.code(), "文件上传失败，请重试");
         }
-        logger.info("文件上传成功: 用户={}, 原始文件={}, 对象={}/{}",
-                UserContextHolder.getUserId(), file.getOriginalFilename(), bucket, objectName);
+        logger.info("文件上传成功: 用户={}, 业务类型={}, 原始文件={}, 对象={}/{}",
+                UserContextHolder.getUserId(), type.code(), file.getOriginalFilename(), bucket, objectName);
+
+        String url = buildUrl(bucket, objectName);
+        String fileId = registerFile(type, file, extension, objectName, url);
 
         FileUploadResponse response = new FileUploadResponse();
+        response.setFileId(fileId);
+        response.setBizType(type.code());
         response.setFileName(fileName);
         response.setOriginalName(file.getOriginalFilename());
-        response.setUrl(buildUrl(bucket, objectName));
+        response.setUrl(url);
         response.setSize(file.getSize());
         response.setContentType(file.getContentType());
         return response;
+    }
+
+    /**
+     * 登记文件信息到 im_file 表，返回记录ID
+     */
+    private String registerFile(FileBizType type, MultipartFile file, String extension,
+                                String objectName, String url) {
+        ImFile imFile = new ImFile();
+        imFile.setId(UUID.randomUUID().toString().replace("-", ""));
+        imFile.setBizType(type.code());
+        imFile.setFileName(file.getOriginalFilename());
+        imFile.setObjectKey(objectName);
+        imFile.setUrl(url);
+        imFile.setSize(file.getSize());
+        imFile.setContentType(file.getContentType());
+        imFile.setExtension(extension);
+        imFile.setUploaderId(UserContextHolder.getUserId());
+        imFileMapper.insert(imFile);
+        return imFile.getId();
     }
 
     /**
