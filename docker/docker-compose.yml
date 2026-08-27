@@ -169,6 +169,24 @@ services:
       - namesrv
     restart: unless-stopped
 
+  # MinIO 对象存储
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "6000:9000"    # S3 API，宿主机使用 6000
+      - "6001:9001"    # 管理控制台，宿主机使用 6001
+    networks:
+      - novartc-net
+    environment:
+      - MINIO_ROOT_USER=novartc
+      - MINIO_ROOT_PASSWORD=novartc123456
+      - TZ=UTC
+    volumes:
+      - ./minio/data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
 volumes:
   dashboard-logs:
   dashboard-data:

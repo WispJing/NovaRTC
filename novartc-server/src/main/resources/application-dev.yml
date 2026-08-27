@@ -9,6 +9,10 @@ server:
 spring:
   application:
     name: NovaRTC
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
   jackson:
     time-zone: UTC
     date-format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX
@@ -139,6 +143,15 @@ im:
   userFriendCacheKeyPreFix: 'im:relation:user:friends:'
   userGroupCacheKeyPreFix: 'im:relation:user:groups:'
   groupMembersCacheKeyPreFix: 'im:relation:group:members:'
+
+minio:
+  endpoint: http://localhost:6000
+  access-key: novartc
+  secret-key: novartc123456
+  bucket: novartc
+  url-prefix:
+  max-file-size: 20
+  allowed-extensions: jpg,jpeg,png,gif,webp,bmp,mp4,mp3,pdf,doc,docx,xls,xlsx,zip
 
 logging:
   level:

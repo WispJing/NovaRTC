@@ -59,3 +59,5 @@ build/
 !/docker/dashboard/logs/.gitkeep
 /docker/elasticsearch/data/*
 !/docker/elasticsearch/data/.gitkeep
+/docker/minio/data/*
+!/docker/minio/data/.gitkeep
