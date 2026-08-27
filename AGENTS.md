@@ -14,13 +14,20 @@ Primary application entry: `novartc-server/src/main/java/io/github/xiaotang/nova
 
 ## Build, Test, and Development Commands
 - `mvn clean compile`: compile all modules.
-- `mvn -pl novartc-flyway -am spring-boot:run`: execute Flyway migrations only, then exit.
+- `cd novartc-flyway && mvn spring-boot:run`: execute Flyway migrations only, then exit. Run from inside the module; `-pl ... -am` fails because parent modules have no main class.
 - `mvn -pl novartc-server -am compile`: compile the backend module and required dependencies.
 - `mvn test`: run unit tests across modules.
 - `mvn -pl novartc-server -am spring-boot:run`: start the backend locally.
-- `mvn -pl novartc-generator -am exec:java`: run generator tasks only after confirming plugin/config setup.
+- `mvn -pl novartc-generator compile exec:java -Dexec.mainClass=io.github.xiaotang.novartc.generator.CodeGenerator`: run the code generator (see Database Schema Changes).
 
 Use Java 21. `JAVA_HOME` must point to a JDK, not a JRE.
+
+## Database Schema Changes
+All MySQL schema changes must go through Flyway migrations plus generator regeneration; hand-altering tables or hand-writing entity/mapper code for new tables is not allowed.
+
+- Schema edits only as new versioned scripts under `novartc-flyway/src/main/resources/db/migration/` (`VX.Y.Z__name.sql`); never edit an already-applied migration.
+- Apply migrations from inside the `novartc-flyway` module: `mvn spring-boot:run`.
+- After creating or changing a table, narrow `addInclude` in `CodeGenerator` to the target table, run the generator command above, then keep the table in the `addInclude` list so it records every generated table.
 
 ## Coding Style & Naming Conventions
 - Use 4-space indentation and UTF-8 source files.
