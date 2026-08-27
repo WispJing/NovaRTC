@@ -16,6 +16,7 @@
     <module>novartc-flyway</module>
     <module>novartc-server</module>
     <module>novartc-generator</module>
+    <module>novartc-job</module>
   </modules>
 
   <properties>
@@ -92,6 +93,12 @@
       <dependency>
         <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-generator</artifactId>
+        <version>3.5.16</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-jsqlparser</artifactId>
         <version>3.5.16</version>
       </dependency>
 

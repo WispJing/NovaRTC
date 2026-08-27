@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NovaRTC 定时任务调度平台</title>
+    <link rel="stylesheet" href="/css/job.css"/>
+</head>
+<body>
+
+<header class="page-header">
+    <div>
+        <h1>NovaRTC 定时任务调度平台</h1>
+        <span class="sub">任务触发通过 RocketMQ 通知 NovaRTC 服务执行</span>
+    </div>
+    <button class="btn btn-primary" onclick="openJobForm()">新增任务</button>
+</header>
+
+<div class="page-body">
+    <div class="toolbar">
+        <input type="text" id="keyword" placeholder="按任务名称搜索" onkeydown="if (event.key === 'Enter') reloadList()"/>
+        <button class="btn" onclick="reloadList()">查询</button>
+        <button class="btn" onclick="refreshList()">刷新</button>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>任务名称</th>
+                <th>调用目标</th>
+                <th>参数</th>
+                <th>执行方式</th>
+                <th>允许并发</th>
+                <th>状态</th>
+                <th>下次执行时间</th>
+                <th style="width: 240px;">操作</th>
+            </tr>
+            </thead>
+            <tbody id="jobTableBody">
+            <tr>
+                <td colspan="8" class="empty-row">加载中...</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination" id="jobPagination"></div>
+    </div>
+</div>
+
+<!-- 新增/编辑任务模态框 -->
+<div class="modal-mask" id="jobFormModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span id="jobFormTitle">新增任务</span>
+            <button class="modal-close" onclick="closeJobForm()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <label class="required">任务名称</label>
+                <input type="text" id="fJobName" maxlength="128" placeholder="例如：每日报表统计"/>
+
+                <label class="required">执行类</label>
+                <input type="text" id="fInvokeClass" maxlength="255"
+                       placeholder="NovaRTC 服务侧 Spring Bean 全限定类名"/>
+                <div class="form-tip">必须以 io.github.xiaotang.novartc 开头，例如 io.github.xiaotang.novartc.server.task.JobInvokeDemoHandler</div>
+
+                <label class="required">执行方法</label>
+                <input type="text" id="fInvokeMethod" maxlength="128" placeholder="方法名，例如 demoWithParams"/>
+
+                <label>执行参数</label>
+                <textarea id="fInvokeParams" placeholder='JSON 数组，按方法形参顺序，例如 ["参数1", 2]；无参留空'></textarea>
+
+                <label class="required">执行方式</label>
+                <select id="fScheduleType" onchange="onScheduleTypeChange()">
+                    <option value="CRON">CRON 表达式</option>
+                    <option value="FIXED_RATE">固定频率</option>
+                </select>
+
+                <label class="required" id="cronLabel">CRON 表达式</label>
+                <input type="text" id="fCronExpression" maxlength="64" placeholder="Quartz 格式（UTC 时区），例如 0 0/5 * * * ?"/>
+                <div class="form-tip">6~7 位 Quartz CRON：秒 分 时 日 月 周 [年]，按 UTC 时区执行</div>
+
+                <label class="required" id="fixedRateLabel" style="display:none;">间隔秒数</label>
+                <input type="number" id="fFixedRateSeconds" min="1" placeholder="不小于 1" style="display:none;"/>
+
+                <label>允许并发</label>
+                <div class="checkbox-line">
+                    <input type="checkbox" id="fConcurrentAllowed"/>
+                    <span>勾选后上一次未执行完也允许再次触发，否则排队等待</span>
+                </div>
+
+                <label>状态</label>
+                <div class="checkbox-line">
+                    <input type="checkbox" id="fStatus" checked/>
+                    <span>启用（保存后立即按配置调度）</span>
+                </div>
+
+                <label>备注</label>
+                <input type="text" id="fRemark" maxlength="255" placeholder="选填"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="closeJobForm()">取消</button>
+            <button class="btn btn-primary" onclick="submitJobForm()">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 调度日志模态框 -->
+<div class="modal-mask" id="logModal">
+    <div class="modal wide">
+        <div class="modal-header">
+            <span id="logModalTitle">调度日志</span>
+            <button class="modal-close" onclick="closeLogModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <table>
+                <thead>
+                <tr>
+                    <th>触发时间</th>
+                    <th>触发方式</th>
+                    <th>发送状态</th>
+                    <th>执行状态</th>
+                    <th>耗时(ms)</th>
+                    <th>执行实例</th>
+                    <th>失败原因</th>
+                </tr>
+                </thead>
+                <tbody id="logTableBody">
+                <tr>
+                    <td colspan="7" class="empty-row">加载中...</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination" id="logPagination"></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/job.js"></script>
+</body>
+</html>

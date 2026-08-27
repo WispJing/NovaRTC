@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  novartc-job 定时任务调度平台 Log4j2 配置
+  monitorInterval="60" -> 每 60 秒检测配置文件是否变更，支持热加载
+-->
+<Configuration status="WARN" monitorInterval="60">
+
+  <!-- ================= 全局变量定义 ================= -->
+  <Properties>
+    <!-- 日志根目录：与 novartc-server 保持同一目录约定，平台日志写入 job 子目录 -->
+    <Property name="NOVARTC_LOG_HOME">D:/NovaRTC-Platform/NovaRTC/logs</Property>
+    <Property name="LOG_HOME">${NOVARTC_LOG_HOME}/job</Property>
+    <Property name="pid">${pid}</Property>
+  </Properties>
+
+  <!-- ================= Appender 定义区域 ================= -->
+  <Appenders>
+
+    <!-- ========= 控制台输出 ========= -->
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <PatternLayout
+          pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}{UTC} %highlight{%5level} %style{%pid}{magenta} --- [%thread] %style{%logger{36}}{cyan} - %msg%n"/>
+    </Console>
+
+    <!-- ========= 应用日志 ========= -->
+    <RollingFile name="FILE"
+                 fileName="${LOG_HOME}/app.log"
+                 filePattern="${LOG_HOME}/app.%d{yyyy-MM-dd}.%i.log"
+                 append="false">
+      <PatternLayout
+          pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}{UTC} %5level %pid --- [%thread] %logger{36} - %msg%n"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="100MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30">
+        <Delete basePath="${LOG_HOME}">
+          <IfFileName glob="*.log"/>
+          <IfLastModified age="7d"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+
+    <!-- ========= ERROR 专用日志 ========= -->
+    <RollingFile name="ERROR_FILE"
+                 fileName="${LOG_HOME}/error.log"
+                 filePattern="${LOG_HOME}/error.%d{yyyy-MM-dd}.%i.log"
+                 append="false">
+      <PatternLayout
+          pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}{UTC} %5level %pid --- [%thread] %logger{36} - %msg%n%ex"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        <SizeBasedTriggeringPolicy size="50MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30">
+        <Delete basePath="${LOG_HOME}">
+          <IfFileName glob="*.log"/>
+          <IfLastModified age="7d"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+      <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+    </RollingFile>
+
+  </Appenders>
+
+  <!-- ================= Logger 定义区域 ================= -->
+  <Loggers>
+
+    <!-- Root Logger -->
+    <Root level="INFO">
+      <AppenderRef ref="CONSOLE"/>
+      <AppenderRef ref="FILE"/>
+      <AppenderRef ref="ERROR_FILE"/>
+    </Root>
+
+  </Loggers>
+
+</Configuration>

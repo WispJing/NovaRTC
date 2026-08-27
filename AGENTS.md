@@ -7,6 +7,7 @@ This repository is a Maven multi-module Java 21 project.
 - `novartc-flyway/`: Flyway migration module, containing schema and development seed SQL under `src/main/resources/db`, plus a standalone Spring Boot startup entry used only for database version management.
 - `novartc-common/`: shared constants, utilities, exceptions, and reusable infrastructure code.
 - `novartc-generator/`: local code generation utilities, with `CodeGenerator` as the main entry point.
+- `novartc-job/`: 定时任务调度平台（Spring Boot + Thymeleaf + Quartz 内存调度），任务定义存 `job_info` 表，触发时经 RocketMQ `novartc-job-topic` 通知 `novartc-server` 反射执行，结果经 `novartc-job-result-topic` 回传更新 `job_log`；内存调度，需单实例部署。
 - `docker/` and `k8s/`: local dependency setup and deployment manifests.
 - `backup/`: reference SQL/assets; do not treat as active runtime code.
 
@@ -18,7 +19,8 @@ Primary application entry: `novartc-server/src/main/java/io/github/xiaotang/nova
 - `mvn -pl novartc-server -am compile`: compile the backend module and required dependencies.
 - `mvn test`: run unit tests across modules.
 - `mvn -pl novartc-server -am spring-boot:run`: start the backend locally.
-- `mvn -pl novartc-generator compile exec:java -Dexec.mainClass=io.github.xiaotang.novartc.generator.CodeGenerator`: run the code generator (see Database Schema Changes).
+- `mvn -pl novartc-job -am spring-boot:run`: start the scheduled-task platform on port 7010 (single instance only).
+- `mvn -pl novartc-generator compile exec:java -Dexec.mainClass=io.github.xiaotang.novartc.generator.CodeGenerator`: run the code generator (see Database Schema Changes); output targets `novartc-server` by default, use `-Dgen.module=<module> -Dgen.parent=<parent package>` to generate into another module (e.g. `novartc-job`).
 
 Use Java 21. `JAVA_HOME` must point to a JDK, not a JRE.
 

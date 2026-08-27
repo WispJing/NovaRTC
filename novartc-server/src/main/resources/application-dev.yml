@@ -161,6 +161,12 @@ file-cleanup:
   lock-key: novartc:lock:file-orphan-cleanup
   lock-lease-minutes: 30
 
+job:
+  topic: 'novartc-job-topic'
+  resultTopic: 'novartc-job-result-topic'
+  consumerGroup: 'novartc-job-consumer-group'
+  allowedPackagePrefix: 'io.github.xiaotang.novartc'
+
 logging:
   level:
     root: INFO

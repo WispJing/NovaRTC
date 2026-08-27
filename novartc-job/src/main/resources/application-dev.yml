@@ -1,0 +1,67 @@
+server:
+  port: 7010
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+spring:
+  application:
+    name: NovaRTC-Job
+  jackson:
+    time-zone: UTC
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+    serialization:
+      write-dates-as-timestamps: false
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://localhost:3307/novartc?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Druid 连接池配置
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      keep-alive: true
+  # Quartz 内存调度：任务定义以 job_info 表为唯一事实源，启动时全量注册
+  quartz:
+    job-store-type: memory
+    scheduler-name: novartcJobScheduler
+    properties:
+      org:
+        quartz:
+          threadPool:
+            threadCount: 10
+
+mybatis-plus:
+  mapper-locations: classpath*:/mappers/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+rocketmq:
+  enabled: true
+  name-server: localhost:9876
+  producer:
+    group: novartc-job-producer-group
+
+job:
+  topic: 'novartc-job-topic'
+  result-topic: 'novartc-job-result-topic'
+  result-consumer-group: 'novartc-job-result-consumer-group'
+
+logging:
+  level:
+    root: INFO
+    io.github.xiaotang: INFO
+    io.github.xiaotang.novartc.job.mapper: DEBUG
