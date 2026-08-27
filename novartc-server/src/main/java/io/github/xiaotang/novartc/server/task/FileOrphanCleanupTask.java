@@ -3,6 +3,7 @@ package io.github.xiaotang.novartc.server.task;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
+import io.github.xiaotang.novartc.common.job.JobHandler;
 import io.github.xiaotang.novartc.server.config.FileCleanupProperties;
 import io.github.xiaotang.novartc.server.config.MinioProperties;
 import io.github.xiaotang.novartc.server.entity.mysql.ImFile;
@@ -13,7 +14,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -49,9 +49,12 @@ public class FileOrphanCleanupTask {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     /**
-     * 定时入口，按配置周期执行，时区固定 UTC。
+     * 调度平台执行入口，由 {@code @JobHandler} 声明任务元信息，
+     * 调度周期沿用 {@code file-cleanup.cron} 配置（UTC 时区）。
      */
-    @Scheduled(cron = "${file-cleanup.cron}", zone = "UTC")
+    @JobHandler(jobName = "孤儿文件记录清理",
+            cron = "${file-cleanup.cron}",
+            remark = "扫描文件信息表，逻辑删除 MinIO 中确认不存在的记录")
     public void execute() {
         if (!Boolean.TRUE.equals(cleanupProperties.getEnabled())) {
             logger.debug("孤儿文件清理任务未启用，跳过执行");

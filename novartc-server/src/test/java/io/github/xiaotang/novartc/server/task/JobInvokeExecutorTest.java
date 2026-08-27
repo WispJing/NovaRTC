@@ -36,7 +36,7 @@ class JobInvokeExecutorTest {
         rocketMQTemplate = mock(RocketMQTemplate.class);
         InstanceIdProvider instanceIdProvider = mock(InstanceIdProvider.class);
         when(instanceIdProvider.getInstanceId()).thenReturn("unit-test-instance");
-        when(applicationContext.getBean(JobInvokeDemoHandler.class)).thenReturn(new JobInvokeDemoHandler());
+        when(applicationContext.getBean(JobInvokeTestHandler.class)).thenReturn(new JobInvokeTestHandler());
         when(rocketMQTemplate.syncSend(anyString(), any(Object.class))).thenReturn(new SendResult());
         executor = new JobInvokeExecutor(applicationContext, rocketMQTemplate, new JobMqProperties(), instanceIdProvider);
     }
@@ -46,7 +46,7 @@ class JobInvokeExecutorTest {
      */
     @Test
     void invokeWithoutParams() throws Exception {
-        JobInvokeMessage message = buildMessage(JobInvokeDemoHandler.class.getName(), "demo", null);
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "demo", null);
         Object result = executor.invoke(message);
         assertNotNull(result);
         assertTrue(result.toString().contains("成功"));
@@ -57,7 +57,7 @@ class JobInvokeExecutorTest {
      */
     @Test
     void invokeWithParamsConvertsTypes() throws Exception {
-        JobInvokeMessage message = buildMessage(JobInvokeDemoHandler.class.getName(),
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(),
                 "demoWithParams", "[\"单元测试\", 3]");
         Object result = executor.invoke(message);
         assertTrue(result.toString().contains("name=单元测试"));
@@ -78,7 +78,7 @@ class JobInvokeExecutorTest {
      */
     @Test
     void invokeThrowsWhenMethodMissing() {
-        JobInvokeMessage message = buildMessage(JobInvokeDemoHandler.class.getName(), "notExist", null);
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "notExist", null);
         assertThrows(NoSuchMethodException.class, () -> executor.invoke(message));
     }
 
@@ -87,7 +87,7 @@ class JobInvokeExecutorTest {
      */
     @Test
     void handleSendsResultMessage() {
-        JobInvokeMessage message = buildMessage(JobInvokeDemoHandler.class.getName(), "demo", null);
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "demo", null);
         message.setLogId("log-001");
 
         executor.handle(message);
@@ -105,7 +105,7 @@ class JobInvokeExecutorTest {
      */
     @Test
     void handleSendsFailureResult() {
-        JobInvokeMessage message = buildMessage(JobInvokeDemoHandler.class.getName(), "notExist", null);
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "notExist", null);
         message.setLogId("log-002");
 
         executor.handle(message);

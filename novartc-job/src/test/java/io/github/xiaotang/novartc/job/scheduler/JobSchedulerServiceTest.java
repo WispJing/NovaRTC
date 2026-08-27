@@ -139,8 +139,8 @@ class JobSchedulerServiceTest {
         JobInfo job = new JobInfo();
         job.setId(id);
         job.setJobName("单元测试任务-" + id);
-        job.setInvokeClass("io.github.xiaotang.novartc.server.task.JobInvokeDemoHandler");
-        job.setInvokeMethod("demo");
+        job.setInvokeClass("io.github.xiaotang.novartc.server.task.FileOrphanCleanupTask");
+        job.setInvokeMethod("execute");
         job.setScheduleType(scheduleType);
         job.setCronExpression(cronExpression);
         job.setFixedRateSeconds(fixedRateSeconds);

@@ -139,6 +139,9 @@ services:
     environment:
       - NAMESRV_ADDR=namesrv:9876
       - TZ=UTC
+      # 镜像内 JDK 8u372 在 cgroup v2 环境下初始化 OperatingSystemMXBean 会 NPE，
+      # 导致 StoreUtil 静态初始化失败、新消费组无法拉取位点；关闭容器感知规避
+      - JAVA_OPT_EXT=-XX:-UseContainerSupport
     depends_on:
       - namesrv
     volumes:
