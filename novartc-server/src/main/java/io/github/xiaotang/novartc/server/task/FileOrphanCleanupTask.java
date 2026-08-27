@@ -49,11 +49,10 @@ public class FileOrphanCleanupTask {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     /**
-     * 调度平台执行入口，由 {@code @JobHandler} 声明任务元信息，
-     * 调度周期沿用 {@code file-cleanup.cron} 配置（UTC 时区）。
+     * 调度平台执行入口，由 {@code @JobHandler} 声明任务名称与备注，
+     * 调度周期由调度平台侧配置管理。
      */
     @JobHandler(jobName = "孤儿文件记录清理",
-            cron = "${file-cleanup.cron}",
             remark = "扫描文件信息表，逻辑删除 MinIO 中确认不存在的记录")
     public void execute() {
         if (!Boolean.TRUE.equals(cleanupProperties.getEnabled())) {

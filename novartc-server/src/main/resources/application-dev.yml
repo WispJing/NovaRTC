@@ -155,7 +155,6 @@ minio:
 
 file-cleanup:
   enabled: true
-  cron: '0 30 3 * * ?'
   grace-period-hours: 24
   batch-size: 200
   lock-key: novartc:lock:file-orphan-cleanup

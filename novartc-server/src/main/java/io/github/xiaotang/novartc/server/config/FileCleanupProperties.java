@@ -16,10 +16,6 @@ public class FileCleanupProperties {
      */
     private Boolean enabled = true;
     /**
-     * 清理周期，Spring cron 表达式（执行时区见任务的 zone 设置）
-     */
-    private String cron = "0 30 3 * * ?";
-    /**
      * 宽限期（小时）：只清理上传时间早于该时长的记录，避免误删刚上传的文件
      */
     private Long gracePeriodHours = 24L;
