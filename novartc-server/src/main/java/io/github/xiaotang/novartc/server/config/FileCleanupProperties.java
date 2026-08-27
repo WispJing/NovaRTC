@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * 孤儿文件记录定时清理配置。
+ * 失效文件记录定时清理配置。
  */
 @Data
 @Component
@@ -26,7 +26,7 @@ public class FileCleanupProperties {
     /**
      * 分布式锁键名，多实例部署时保证同一时刻仅一个实例执行清理
      */
-    private String lockKey = "novartc:lock:file-orphan-cleanup";
+    private String lockKey = "novartc:lock:invalid-file-record-cleanup";
     /**
      * 分布式锁持有时长上限（分钟），应大于单轮清理最长耗时，防止实例宕机后死锁
      */

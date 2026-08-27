@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 孤儿文件记录定时清理任务：扫描文件信息表，将 MinIO 中确认不存在的记录逻辑删除。
+ * 失效文件记录定时清理任务：扫描文件信息表，将 MinIO 中确认不存在的记录逻辑删除。
  * <p>
  * 并发控制：Redisson 分布式锁保证多实例部署时同一时刻仅一个实例执行；
  * 进程内标记防止本实例上一轮未结束时重复进入（Redisson 锁可重入，
@@ -34,8 +34,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @RequiredArgsConstructor
-public class FileOrphanCleanupTask {
-    private static final Logger logger = LoggerFactory.getLogger(FileOrphanCleanupTask.class);
+public class InvalidFileRecordCleanupTask {
+    private static final Logger logger = LoggerFactory.getLogger(InvalidFileRecordCleanupTask.class);
 
     private final FileCleanupProperties cleanupProperties;
     private final MinioProperties minioProperties;
@@ -52,24 +52,24 @@ public class FileOrphanCleanupTask {
      * 调度平台执行入口，由 {@code @JobHandler} 声明任务名称与备注，
      * 调度周期由调度平台侧配置管理。
      */
-    @JobHandler(jobName = "孤儿文件记录清理",
+    @JobHandler(jobName = "失效文件记录清理",
             remark = "扫描文件信息表，逻辑删除 MinIO 中确认不存在的记录")
     public void execute() {
         if (!Boolean.TRUE.equals(cleanupProperties.getEnabled())) {
-            logger.debug("孤儿文件清理任务未启用，跳过执行");
+            logger.debug("失效文件记录清理任务未启用，跳过执行");
             return;
         }
-        cleanupOrphanFiles();
+        cleanupInvalidRecords();
     }
 
     /**
-     * 核心清理逻辑：获取分布式锁后分批扫描文件记录，清理 MinIO 中确认不存在的孤儿记录。
+     * 核心清理逻辑：获取分布式锁后分批扫描文件记录，清理 MinIO 中确认不存在的失效记录。
      *
-     * @return 本轮清理的孤儿记录数
+     * @return 本轮清理的失效记录数
      */
-    public int cleanupOrphanFiles() {
+    public int cleanupInvalidRecords() {
         if (!running.compareAndSet(false, true)) {
-            logger.info("上一轮孤儿文件清理尚未结束，跳过本次执行");
+            logger.info("上一轮失效文件记录清理尚未结束，跳过本次执行");
             return 0;
         }
         RLock lock = redissonClient.getLock(cleanupProperties.getLockKey());
@@ -79,11 +79,11 @@ public class FileOrphanCleanupTask {
             locked = lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.warn("获取孤儿文件清理分布式锁被中断，跳过本次执行");
+            logger.warn("获取失效文件记录清理分布式锁被中断，跳过本次执行");
             return 0;
         }
         if (!locked) {
-            logger.info("其他实例持有孤儿文件清理锁，跳过本次执行");
+            logger.info("其他实例持有失效文件记录清理锁，跳过本次执行");
             return 0;
         }
         try {
@@ -97,7 +97,7 @@ public class FileOrphanCleanupTask {
     }
 
     /**
-     * 分批扫描并清理孤儿记录。
+     * 分批扫描并清理失效记录。
      */
     private int doCleanup() {
         int scanned = 0;
@@ -126,7 +126,7 @@ public class FileOrphanCleanupTask {
                 if (!exists) {
                     imFileMapper.deleteById(file.getId());
                     cleaned++;
-                    logger.info("清理孤儿文件记录: id={}, objectKey={}", file.getId(), file.getObjectKey());
+                    logger.info("清理失效文件记录: id={}, objectKey={}", file.getId(), file.getObjectKey());
                 }
             }
             lastId = batch.get(batch.size() - 1).getId();
@@ -134,7 +134,7 @@ public class FileOrphanCleanupTask {
                 break;
             }
         }
-        logger.info("孤儿文件清理完成: 扫描={}条, 清理孤儿记录={}条", scanned, cleaned);
+        logger.info("失效文件记录清理完成: 扫描={}条, 清理失效记录={}条", scanned, cleaned);
         return cleaned;
     }
 

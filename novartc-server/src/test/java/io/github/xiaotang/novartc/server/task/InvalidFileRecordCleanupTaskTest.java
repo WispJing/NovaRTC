@@ -29,10 +29,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * 孤儿文件记录清理任务单元测试，不启动 Spring 上下文。
+ * 失效文件记录清理任务单元测试，不启动 Spring 上下文。
  */
 @ExtendWith(MockitoExtension.class)
-class FileOrphanCleanupTaskTest {
+class InvalidFileRecordCleanupTaskTest {
 
     @Mock
     private ImFileMapper imFileMapper;
@@ -50,7 +50,7 @@ class FileOrphanCleanupTaskTest {
 
     private MinioProperties minioProperties;
 
-    private FileOrphanCleanupTask cleanupTask;
+    private InvalidFileRecordCleanupTask cleanupTask;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +59,7 @@ class FileOrphanCleanupTaskTest {
         cleanupProperties.setBatchSize(200);
         minioProperties = new MinioProperties();
         minioProperties.setBucket("novartc");
-        cleanupTask = new FileOrphanCleanupTask(
+        cleanupTask = new InvalidFileRecordCleanupTask(
                 cleanupProperties, minioProperties, imFileMapper, minioUtil, redissonClient);
     }
 
@@ -79,17 +79,17 @@ class FileOrphanCleanupTaskTest {
     }
 
     @Test
-    void cleanupShouldDeleteOnlyOrphanRecords() throws InterruptedException {
+    void cleanupShouldDeleteOnlyInvalidRecords() throws InterruptedException {
         mockLockAcquired();
         ImFile existing = buildFile("aaa", "avatar/20260826/a.png");
-        ImFile orphan = buildFile("bbb", "file/20260826/b.png");
+        ImFile invalidRecord = buildFile("bbb", "file/20260826/b.png");
         when(imFileMapper.selectList(any()))
-                .thenReturn(List.of(existing, orphan))
+                .thenReturn(List.of(existing, invalidRecord))
                 .thenReturn(Collections.emptyList());
         when(minioUtil.objectExists("novartc", "avatar/20260826/a.png")).thenReturn(true);
         when(minioUtil.objectExists("novartc", "file/20260826/b.png")).thenReturn(false);
 
-        int cleaned = cleanupTask.cleanupOrphanFiles();
+        int cleaned = cleanupTask.cleanupInvalidRecords();
 
         assertThat(cleaned).isEqualTo(1);
         verify(imFileMapper, never()).deleteById("aaa");
@@ -106,7 +106,7 @@ class FileOrphanCleanupTaskTest {
                 .thenReturn(Collections.emptyList());
         when(minioUtil.objectExists("novartc", "avatar/20260826/a.png")).thenReturn(true);
 
-        int cleaned = cleanupTask.cleanupOrphanFiles();
+        int cleaned = cleanupTask.cleanupInvalidRecords();
 
         assertThat(cleaned).isZero();
         verify(imFileMapper, never()).deleteById(anyString());
@@ -116,13 +116,13 @@ class FileOrphanCleanupTaskTest {
     void cleanupShouldAbortWhenMinioStateUncertain() throws InterruptedException {
         mockLockAcquired();
         ImFile uncertain = buildFile("aaa", "avatar/20260826/a.png");
-        ImFile orphan = buildFile("bbb", "file/20260826/b.png");
-        when(imFileMapper.selectList(any())).thenReturn(List.of(uncertain, orphan));
+        ImFile invalidRecord = buildFile("bbb", "file/20260826/b.png");
+        when(imFileMapper.selectList(any())).thenReturn(List.of(uncertain, invalidRecord));
         when(minioUtil.objectExists("novartc", "avatar/20260826/a.png"))
                 .thenThrow(new ApplicationException("判断对象存在失败: novartc/avatar/20260826/a.png",
                         new RuntimeException("连接超时"), ResultCode.SERVER_ERROR.code()));
 
-        int cleaned = cleanupTask.cleanupOrphanFiles();
+        int cleaned = cleanupTask.cleanupInvalidRecords();
 
         // 无法确认状态时中止本轮，任何记录都不删除，锁仍要释放
         assertThat(cleaned).isZero();
@@ -136,7 +136,7 @@ class FileOrphanCleanupTaskTest {
         when(lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES))
                 .thenReturn(false);
 
-        int cleaned = cleanupTask.cleanupOrphanFiles();
+        int cleaned = cleanupTask.cleanupInvalidRecords();
 
         assertThat(cleaned).isZero();
         verify(imFileMapper, never()).selectList(any());

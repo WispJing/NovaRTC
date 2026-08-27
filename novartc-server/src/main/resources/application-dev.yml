@@ -157,7 +157,7 @@ file-cleanup:
   enabled: true
   grace-period-hours: 24
   batch-size: 200
-  lock-key: novartc:lock:file-orphan-cleanup
+  lock-key: novartc:lock:invalid-file-record-cleanup
   lock-lease-minutes: 30
 
 job:
