@@ -309,6 +309,13 @@
         <artifactId>minio</artifactId>
         <version>8.5.17</version>
       </dependency>
+
+      <!-- PageHelper 分页（核心包，避免 starter 与 MyBatis-Plus 自动配置冲突） -->
+      <dependency>
+        <groupId>com.github.pagehelper</groupId>
+        <artifactId>pagehelper</artifactId>
+        <version>6.1.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

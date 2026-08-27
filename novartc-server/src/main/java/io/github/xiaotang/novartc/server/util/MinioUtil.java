@@ -11,12 +11,14 @@ import io.minio.RemoveObjectArgs;
 import io.minio.SetBucketPolicyArgs;
 import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
+import io.minio.errors.ErrorResponseException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 
 /**
  * MinIO 对象存储工具类，封装 MinioClient 常用操作。
@@ -129,6 +131,30 @@ public class MinioUtil {
                     StatObjectArgs.builder().bucket(bucketName).object(objectName).build());
         } catch (Exception e) {
             throw wrap("获取对象元数据失败", bucketName + "/" + objectName, e);
+        }
+    }
+
+    /**
+     * 判断对象是否存在。仅在 MinIO 明确应答对象不存在（NoSuchKey）时返回
+     * {@code false}；网络错误、MinIO 不可用等无法确认的情况包装为异常抛出，
+     * 由调用方决定跳过，避免误判。
+     */
+    public boolean objectExists(String bucketName, String objectName) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder().bucket(bucketName).object(objectName).build());
+            return true;
+        } catch (ErrorResponseException e) {
+            // HTTP 404 且桶本身存在，可确认对象不存在；
+            // 桶不存在等无法确认对象状态的情况抛出，由调用方决定跳过
+            if (e.response() != null
+                    && e.response().code() == HttpURLConnection.HTTP_NOT_FOUND
+                    && bucketExists(bucketName)) {
+                return false;
+            }
+            throw wrap("判断对象存在失败", bucketName + "/" + objectName, e);
+        } catch (Exception e) {
+            throw wrap("判断对象存在失败", bucketName + "/" + objectName, e);
         }
     }
 
