@@ -21,6 +21,7 @@ enum MessageType {
   AUTH = 9;
   PRESENCE = 10;
   FRIEND_REQUEST = 11;
+  RECALL = 12;
 }
 
 enum PresenceStatus {
@@ -61,6 +62,31 @@ message TextContent {
 message TextAndImageContent {
   TextContent text_content = 1;
   ImageContent image_content = 2;
+}
+
+message FileContent {
+  string file_url = 1;
+  string file_name = 2;
+  int64 file_size = 3;
+  string content_type = 4;
+}
+
+message VideoContent {
+  string video_url = 1;
+  string file_name = 2;
+  int64 file_size = 3;
+}
+
+message AudioContent {
+  string audio_url = 1;
+  string file_name = 2;
+  int64 file_size = 3;
+  int64 duration_seconds = 4;
+}
+
+message RecallContent {
+  string recall_message_id = 1;
+  string operator_id = 2;
 }
 
 message Presence {
@@ -105,6 +131,10 @@ message MsgBody {
     Auth auth_message = 13;
     Presence presence_message = 14;
     FriendRequestEvent friend_request_event = 15;
+    FileContent file_content = 16;
+    VideoContent video_content = 17;
+    AudioContent audio_content = 18;
+    RecallContent recall_content = 19;
   }
 }
 

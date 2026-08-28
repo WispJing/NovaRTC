@@ -4,6 +4,7 @@ import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryRequest;
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.dto.ChatReadRequest;
+import io.github.xiaotang.novartc.server.dto.ChatRecallRequest;
 import io.github.xiaotang.novartc.server.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,5 +45,13 @@ public class ChatController {
     @PostMapping("/read")
     public void markRead(@RequestBody ChatReadRequest request) {
         chatService.markRead(request.getChatId());
+    }
+
+    /**
+     * 撤回当前用户 2 分钟内发送的消息。
+     */
+    @PostMapping("/recall")
+    public void recall(@RequestBody ChatRecallRequest request) {
+        chatService.recall(request.getChatId(), request.getMessageId());
     }
 }

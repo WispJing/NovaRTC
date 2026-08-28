@@ -52,4 +52,6 @@ public class IMMessage {
     private Instant clientTime;
     @Field("chat_type")
     private Integer chatType;
+    @Field("recalled")
+    private Boolean recalled;
 }

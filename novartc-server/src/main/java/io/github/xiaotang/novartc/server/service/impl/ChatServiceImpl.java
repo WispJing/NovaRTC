@@ -2,31 +2,42 @@ package io.github.xiaotang.novartc.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.xiaotang.novartc.common.exception.ApplicationException;
+import io.github.xiaotang.novartc.common.exception.BusinessException;
+import io.github.xiaotang.novartc.common.result.ResultCode;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.common.util.StringUtil;
+import io.github.xiaotang.novartc.server.config.MinioProperties;
 import io.github.xiaotang.novartc.server.config.UserContextHolder;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryPageVO;
 import io.github.xiaotang.novartc.server.dto.ChatHistoryVO;
 import io.github.xiaotang.novartc.server.dto.ChatInfoVO;
 import io.github.xiaotang.novartc.server.entity.mongodb.IMMessage;
 import io.github.xiaotang.novartc.server.entity.mongodb.IMReadStatus;
+import io.github.xiaotang.novartc.server.entity.mysql.ImFile;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImGroupMember;
 import io.github.xiaotang.novartc.server.entity.mysql.ImSingleChat;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMMessageRepository;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMReadStatusRepository;
+import io.github.xiaotang.novartc.server.mapper.ImFileMapper;
+import io.github.xiaotang.novartc.server.proto.ChatMessage;
+import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
 import io.github.xiaotang.novartc.server.queue.common.UserRouteService;
 import io.github.xiaotang.novartc.server.service.ChatService;
 import io.github.xiaotang.novartc.server.service.IImGroupChatService;
 import io.github.xiaotang.novartc.server.service.IImGroupMemberService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
+import io.github.xiaotang.novartc.server.util.MinioUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,6 +52,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ChatServiceImpl implements ChatService {
+    private static final Logger logger = LoggerFactory.getLogger(ChatServiceImpl.class);
+
+    /**
+     * 撤回时限（分钟）
+     */
+    private static final long RECALL_WINDOW_MINUTES = 2;
+
     private final IImUserService imUserService;
     private final IImSingleChatService imSingleChatService;
     private final IImGroupChatService imGroupChatService;
@@ -48,6 +66,10 @@ public class ChatServiceImpl implements ChatService {
     private final IMMessageRepository imMessageRepository;
     private final IMReadStatusRepository imReadStatusRepository;
     private final UserRouteService userRouteService;
+    private final ChatDispatchService chatDispatchService;
+    private final ImFileMapper imFileMapper;
+    private final MinioUtil minioUtil;
+    private final MinioProperties minioProperties;
 
     /**
      * 查询当前用户的会话列表，并附带最后一条消息与未读数。
@@ -239,6 +261,122 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
+    /**
+     * 撤回当前用户 2 分钟内发送的消息：校验后删除关联文件、标记撤回并通知对端。
+     */
+    @Override
+    public void recall(String chatId, String messageId) {
+        String currentUserId = UserContextHolder.getUserId();
+        if (StringUtils.isBlank(chatId) || StringUtils.isBlank(messageId)) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.code(), "会话和消息标识不能为空");
+        }
+
+        IMMessage message = imMessageRepository.findByMessageId(messageId);
+        if (message == null || !StringUtils.equals(message.getChatId(), chatId)) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.code(), "消息不存在");
+        }
+        if (!StringUtils.equals(message.getSenderId(), currentUserId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN.code(), "只能撤回自己的消息");
+        }
+        if (Boolean.TRUE.equals(message.getRecalled())) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.code(), "消息已被撤回");
+        }
+        Instant serverTime = message.getServerTime() != null ? message.getServerTime() : Instant.EPOCH;
+        if (Instant.now().isAfter(serverTime.plus(RECALL_WINDOW_MINUTES, ChronoUnit.MINUTES))) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.code(), "已超过撤回时限");
+        }
+
+        removeRecalledMessageFile(message);
+
+        message.setRecalled(Boolean.TRUE);
+        imMessageRepository.save(message);
+
+        dispatchRecallNotice(message, currentUserId);
+        logger.info("消息撤回成功: 用户={}, 会话={}, 消息={}", currentUserId, chatId, messageId);
+    }
+
+    /**
+     * 删除被撤回消息关联的存储文件（MinIO 对象与 im_file 记录）。
+     * 文件删除失败仅记录日志，不阻断撤回本身。
+     */
+    private void removeRecalledMessageFile(IMMessage message) {
+        String fileUrl = resolveMessageFileUrl(message);
+        if (StringUtils.isBlank(fileUrl)) {
+            return;
+        }
+        ImFile imFile = imFileMapper.selectOne(
+                new LambdaQueryWrapper<ImFile>()
+                        .eq(ImFile::getUrl, fileUrl)
+                        .last("limit 1")
+        );
+        if (imFile == null) {
+            return;
+        }
+        try {
+            minioUtil.removeObject(minioProperties.getBucket(), imFile.getObjectKey());
+        } catch (RuntimeException e) {
+            logger.error("撤回消息删除文件失败: 消息={}, 对象={}", message.getMessageId(), imFile.getObjectKey(), e);
+            return;
+        }
+        imFileMapper.deleteById(imFile.getId());
+        logger.info("撤回消息已删除关联文件: 消息={}, 对象={}", message.getMessageId(), imFile.getObjectKey());
+    }
+
+    /**
+     * 从消息内容 JSON 中提取关联文件地址（图片/文件/视频/语音任一），无则返回 null。
+     */
+    private String resolveMessageFileUrl(IMMessage message) {
+        if (StringUtils.isBlank(message.getContentJson())) {
+            return null;
+        }
+        Map<String, Object> content;
+        try {
+            content = JacksonUtil.toObject(message.getContentJson(), Map.class);
+        } catch (RuntimeException e) {
+            logger.warn("解析消息内容失败，跳过文件删除: 消息={}", message.getMessageId(), e);
+            return null;
+        }
+        if (content == null) {
+            return null;
+        }
+        for (String key : List.of("imageUrl", "fileUrl", "videoUrl", "audioUrl")) {
+            Object value = content.get(key);
+            if (value instanceof String url && StringUtils.isNotBlank(url)) {
+                return url;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 向对端或群成员推送撤回通知帧，发送方自身由 REST 响应更新本地状态。
+     */
+    private void dispatchRecallNotice(IMMessage message, String operatorId) {
+        ChatMessage.MsgBody.Builder builder = ChatMessage.MsgBody.newBuilder()
+                .setMessageId(StringUtil.uuid32())
+                .setMessageType(ChatMessage.MessageType.RECALL)
+                .setTimestamp(Instant.now().toEpochMilli())
+                .setIsGroup(Boolean.TRUE.equals(message.getIsGroup()))
+                .setSender(ChatMessage.User.newBuilder().setUserId(operatorId).build())
+                .setRecallContent(ChatMessage.RecallContent.newBuilder()
+                        .setRecallMessageId(message.getMessageId())
+                        .setOperatorId(operatorId)
+                        .build());
+        if (Boolean.TRUE.equals(message.getIsGroup())) {
+            builder.setGroupChatInfo(ChatMessage.GroupChatInfo.newBuilder()
+                    .setChatId(StringUtils.defaultString(message.getChatId()))
+                    .setGroupId(StringUtils.defaultString(message.getGroupId()))
+                    .build());
+        } else {
+            builder.setSingleChatInfo(ChatMessage.SingleChatInfo.newBuilder()
+                    .setChatId(StringUtils.defaultString(message.getChatId()))
+                    .setUser1Id(operatorId)
+                    .setUser2Id(StringUtils.defaultString(message.getTargetUserId()))
+                    .build());
+        }
+        chatDispatchService.dispatch(builder.build());
+    }
+
     private boolean isUserOnline(String userId) {
         return !userRouteService.getUserInstances(userId).isEmpty();
     }
@@ -305,6 +443,7 @@ public class ChatServiceImpl implements ChatService {
         vo.setSenderAvatarUrl(message.getSenderAvatarUrl());
         vo.setMessageType(message.getMessageType());
         vo.setMessageText(message.getMessageText());
+        vo.setRecalled(Boolean.TRUE.equals(message.getRecalled()));
         vo.setServerTime(message.getServerTime());
         vo.setClientTime(message.getClientTime());
         if (StringUtils.isNotBlank(message.getContentJson())) {
@@ -326,7 +465,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         IMMessage latest = messages.getFirst();
-        vo.setLastMessageType(latest.getMessageType());
+        vo.setLastMessageType(Boolean.TRUE.equals(latest.getRecalled()) ? "RECALL" : latest.getMessageType());
         vo.setLastMessageTime(latest.getServerTime() != null ? latest.getServerTime() : latest.getClientTime());
         vo.setLastMessage(resolveLastMessage(latest));
         if (vo.getUnreadCount() == null) {
@@ -362,6 +501,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     private String resolveLastMessage(IMMessage latest) {
+        if (Boolean.TRUE.equals(latest.getRecalled())) {
+            return "[消息已撤回]";
+        }
         if (StringUtils.isNotBlank(latest.getMessageText())) {
             return latest.getMessageText();
         }

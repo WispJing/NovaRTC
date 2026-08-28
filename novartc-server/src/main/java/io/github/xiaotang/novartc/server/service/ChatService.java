@@ -23,4 +23,9 @@ public interface ChatService {
      * 将指定会话中的未读消息标记为已读。
      */
     void markRead(String chatId);
+
+    /**
+     * 撤回当前用户在指定会话中 2 分钟内发送的消息，删除关联文件并通知对端。
+     */
+    void recall(String chatId, String messageId);
 }

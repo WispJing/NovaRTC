@@ -126,6 +126,23 @@ public class MessagePersistenceServiceImpl implements MessagePersistenceService 
                 content.put("imageUrl", message.getTextAndImageContent().getImageContent().getImageUrl());
                 content.put("imageDescription", message.getTextAndImageContent().getImageContent().getImageDescription());
             }
+            case FILE_CONTENT -> {
+                content.put("fileUrl", message.getFileContent().getFileUrl());
+                content.put("fileName", message.getFileContent().getFileName());
+                content.put("fileSize", message.getFileContent().getFileSize());
+                content.put("contentType", message.getFileContent().getContentType());
+            }
+            case VIDEO_CONTENT -> {
+                content.put("videoUrl", message.getVideoContent().getVideoUrl());
+                content.put("fileName", message.getVideoContent().getFileName());
+                content.put("fileSize", message.getVideoContent().getFileSize());
+            }
+            case AUDIO_CONTENT -> {
+                content.put("audioUrl", message.getAudioContent().getAudioUrl());
+                content.put("fileName", message.getAudioContent().getFileName());
+                content.put("fileSize", message.getAudioContent().getFileSize());
+                content.put("durationSeconds", message.getAudioContent().getDurationSeconds());
+            }
             default -> {
             }
         }

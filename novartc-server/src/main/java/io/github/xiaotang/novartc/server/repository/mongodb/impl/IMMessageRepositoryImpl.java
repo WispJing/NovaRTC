@@ -46,4 +46,9 @@ public class IMMessageRepositoryImpl extends BaseMongoDaoIMpl<IMMessage> impleme
                 .filter(messageId -> messageId != null && !messageId.isBlank())
                 .toList();
     }
+
+    @Override
+    public IMMessage findByMessageId(String messageId) {
+        return findOne(Query.query(Criteria.where("message_id").is(messageId)));
+    }
 }

@@ -28,6 +28,10 @@ public class MessageLogConverter {
             case TEXT_CONTENT -> builder.content(msg.getTextContent().getText());
             case IMAGE_CONTENT -> builder.content(msg.getImageContent().getImageUrl());
             case TEXT_AND_IMAGE_CONTENT -> builder.content(msg.getTextAndImageContent().getTextContent().getText());
+            case FILE_CONTENT -> builder.content(msg.getFileContent().getFileUrl());
+            case VIDEO_CONTENT -> builder.content(msg.getVideoContent().getVideoUrl());
+            case AUDIO_CONTENT -> builder.content(msg.getAudioContent().getAudioUrl());
+            case RECALL_CONTENT -> builder.content(msg.getRecallContent().getRecallMessageId());
             case FRIEND_REQUEST_EVENT -> builder.content(msg.getFriendRequestEvent().getRequestId() + ":" + msg.getFriendRequestEvent().getStatus().name());
             case PONG_RESPONSE, PONG_PING, AUTH_MESSAGE, PRESENCE_MESSAGE -> builder.content(msg.getContentCase().name());
             default -> builder.content("unknown");

@@ -14,4 +14,6 @@ public interface IMMessageRepository extends BaseMongoDao<IMMessage> {
     List<IMMessage> findHistory(String chatId, Long beforeChatSeq, int limit);
 
     List<String> findOtherUserMessageIds(String chatId, String currentUserId);
+
+    IMMessage findByMessageId(String messageId);
 }
