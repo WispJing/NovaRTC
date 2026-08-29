@@ -197,6 +197,19 @@ public class JobManageService {
         if (request.getConcurrentAllowed() == null) {
             request.setConcurrentAllowed((byte) 0);
         }
+        if (request.getTimeoutSeconds() == null) {
+            request.setTimeoutSeconds(JobConstants.DEFAULT_TIMEOUT_SECONDS);
+        }
+        if (request.getTimeoutSeconds() < 1
+                || request.getTimeoutSeconds() > JobConstants.MAX_TIMEOUT_SECONDS) {
+            throw new IllegalArgumentException("执行超时时间必须在 1-86400 秒之间");
+        }
+        if (request.getTimeoutRerun() == null) {
+            request.setTimeoutRerun((byte) 0);
+        }
+        if (request.getTimeoutRerun() != 0 && request.getTimeoutRerun() != 1) {
+            throw new IllegalArgumentException("超时是否重跑仅支持 0 或 1");
+        }
         if (request.getStatus() == null) {
             request.setStatus(JobConstants.STATUS_ENABLED);
         }
@@ -212,6 +225,8 @@ public class JobManageService {
                 ? StringUtils.trim(request.getCronExpression()) : null);
         job.setFixedRateSeconds(JobConstants.SCHEDULE_TYPE_FIXED_RATE.equals(request.getScheduleType())
                 ? request.getFixedRateSeconds() : null);
+        job.setTimeoutSeconds(request.getTimeoutSeconds());
+        job.setTimeoutRerun(request.getTimeoutRerun());
         job.setConcurrentAllowed(request.getConcurrentAllowed());
         job.setStatus(request.getStatus());
         job.setRemark(request.getRemark());
@@ -227,6 +242,8 @@ public class JobManageService {
         vo.setScheduleType(job.getScheduleType());
         vo.setCronExpression(job.getCronExpression());
         vo.setFixedRateSeconds(job.getFixedRateSeconds());
+        vo.setTimeoutSeconds(job.getTimeoutSeconds());
+        vo.setTimeoutRerun(job.getTimeoutRerun());
         vo.setConcurrentAllowed(job.getConcurrentAllowed());
         vo.setStatus(job.getStatus());
         vo.setRemark(job.getRemark());

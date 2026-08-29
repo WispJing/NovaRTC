@@ -62,6 +62,8 @@ public class JobTriggerService {
         message.setInvokeParams(jobInfo.getInvokeParams());
         message.setTriggerType(triggerType);
         message.setTriggerTime(triggerTime.toString());
+        message.setTimeoutSeconds(jobInfo.getTimeoutSeconds());
+        message.setTimeoutRerun(jobInfo.getTimeoutRerun());
 
         try {
             SendResult sendResult = jobNotifyProducerService.send(message);

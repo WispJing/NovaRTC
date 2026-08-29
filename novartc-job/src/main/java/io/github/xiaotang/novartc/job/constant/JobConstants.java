@@ -46,6 +46,16 @@ public final class JobConstants {
     public static final Byte CONCURRENT_ALLOWED = (byte) 1;
 
     /**
+     * 默认执行超时时间（秒）
+     */
+    public static final int DEFAULT_TIMEOUT_SECONDS = 60;
+
+    /**
+     * 最大执行超时时间（秒）
+     */
+    public static final int MAX_TIMEOUT_SECONDS = 86400;
+
+    /**
      * 消息发送状态：成功
      */
     public static final Byte SEND_SUCCESS = (byte) 1;

@@ -14,7 +14,7 @@ import lombok.ToString;
  * </p>
  *
  * @author xiaotang
- * @since 2026-08-27
+ * @since 2026-08-28
  */
 @Getter
 @Setter
@@ -63,6 +63,18 @@ public class JobInfo extends BaseEntity {
      */
     @TableField("fixed_rate_seconds")
     private Integer fixedRateSeconds;
+
+    /**
+     * 执行超时时间（秒）
+     */
+    @TableField("timeout_seconds")
+    private Integer timeoutSeconds;
+
+    /**
+     * 超时是否重跑 0-否 1-是
+     */
+    @TableField("timeout_rerun")
+    private Byte timeoutRerun;
 
     /**
      * 是否允许并发执行 0-否 1-是

@@ -56,6 +56,16 @@ public class JobSaveRequest {
     private Integer fixedRateSeconds;
 
     /**
+     * 执行超时时间（秒），范围 1-86400
+     */
+    private Integer timeoutSeconds;
+
+    /**
+     * 超时是否重跑 0-否 1-是
+     */
+    private Byte timeoutRerun;
+
+    /**
      * 是否允许并发执行 0-否 1-是
      */
     private Byte concurrentAllowed;

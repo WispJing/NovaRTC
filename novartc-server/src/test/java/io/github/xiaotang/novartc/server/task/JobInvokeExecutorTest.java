@@ -9,8 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationContext;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,6 +119,74 @@ class JobInvokeExecutorTest {
         assertTrue(payload.contains("errorMsg"));
     }
 
+    /**
+     * 过期且未配置重跑时跳过执行并回传失败。
+     */
+    @Test
+    void handleSkipsExpiredMessageWhenRerunDisabled() {
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "demo", null);
+        message.setLogId("log-expired");
+        message.setTriggerTime(Instant.now().minusSeconds(61).toString());
+        message.setTimeoutSeconds(60);
+        message.setTimeoutRerun((byte) 0);
+
+        executor.handle(message);
+
+        ArgumentCaptor<Object> payloadCaptor = ArgumentCaptor.forClass(Object.class);
+        verify(rocketMQTemplate).syncSend(eq("novartc-job-result-topic"), payloadCaptor.capture());
+        String payload = payloadCaptor.getValue().toString();
+        assertTrue(payload.contains("\"success\":false"));
+        assertTrue(payload.contains("任务消息已过期且未配置重跑"));
+    }
+
+    /**
+     * 过期但配置重跑时直接补跑当前消息一次。
+     */
+    @Test
+    void handleRunsExpiredMessageWhenRerunEnabled() {
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "demo", null);
+        message.setLogId("log-rerun");
+        message.setTriggerTime(Instant.now().minusSeconds(61).toString());
+        message.setTimeoutSeconds(60);
+        message.setTimeoutRerun((byte) 1);
+
+        executor.handle(message);
+
+        ArgumentCaptor<Object> payloadCaptor = ArgumentCaptor.forClass(Object.class);
+        verify(rocketMQTemplate).syncSend(eq("novartc-job-result-topic"), payloadCaptor.capture());
+        assertTrue(payloadCaptor.getValue().toString().contains("\"success\":true"));
+    }
+
+    /**
+     * 旧消息未携带超时时间时默认使用 60 秒。
+     */
+    @Test
+    void oldMessageUsesDefaultTimeout() {
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "demo", null);
+        message.setTriggerTime(Instant.now().minusSeconds(30).toString());
+        message.setTimeoutSeconds(null);
+
+        assertFalse(executor.isExpired(message));
+    }
+
+    /**
+     * 非法触发时间不执行目标方法并回传失败。
+     */
+    @Test
+    void handleRejectsInvalidTriggerTime() {
+        JobInvokeMessage message = buildMessage(JobInvokeTestHandler.class.getName(), "demo", null);
+        message.setLogId("log-invalid-time");
+        message.setTriggerTime("invalid");
+
+        executor.handle(message);
+
+        ArgumentCaptor<Object> payloadCaptor = ArgumentCaptor.forClass(Object.class);
+        verify(rocketMQTemplate).syncSend(eq("novartc-job-result-topic"), payloadCaptor.capture());
+        String payload = payloadCaptor.getValue().toString();
+        assertTrue(payload.contains("\"success\":false"));
+        assertTrue(payload.contains("任务触发时间格式不合法"));
+    }
+
     private JobInvokeMessage buildMessage(String invokeClass, String invokeMethod, String invokeParams) {
         JobInvokeMessage message = new JobInvokeMessage();
         message.setLogId("log-test");
@@ -126,6 +196,9 @@ class JobInvokeExecutorTest {
         message.setInvokeMethod(invokeMethod);
         message.setInvokeParams(invokeParams);
         message.setTriggerType("MANUAL");
+        message.setTriggerTime(Instant.now().toString());
+        message.setTimeoutSeconds(60);
+        message.setTimeoutRerun((byte) 0);
         return message;
     }
 }

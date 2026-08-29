@@ -48,6 +48,16 @@ public class JobInvokeExecutor {
         boolean success = false;
         String errorMsg = null;
         try {
+            boolean expired = isExpired(message);
+            if (expired && !Byte.valueOf((byte) 1).equals(message.getTimeoutRerun())) {
+                throw new IllegalStateException("任务消息已过期且未配置重跑");
+            }
+            if (expired) {
+                logger.warn("定时任务消息已过期，按配置补跑一次: logId={}, jobId={}, triggerTime={}, timeoutSeconds={}",
+                        message.getLogId(), message.getJobId(), message.getTriggerTime(),
+                        effectiveTimeoutSeconds(message));
+            }
+
             Object result = invoke(message);
             success = true;
             logger.info("定时任务执行成功: logId={}, jobId={}, target={}#{}, 结果={}",
@@ -64,6 +74,36 @@ public class JobInvokeExecutor {
         } finally {
             sendResult(message, success, errorMsg, startMillis, System.currentTimeMillis());
         }
+    }
+
+    /**
+     * 判断消息是否超过任务配置的执行窗口。
+     */
+    boolean isExpired(JobInvokeMessage message) {
+        if (StringUtils.isBlank(message.getTriggerTime())) {
+            throw new IllegalArgumentException("任务触发时间不能为空");
+        }
+        Instant triggerTime;
+        try {
+            triggerTime = Instant.parse(message.getTriggerTime());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("任务触发时间格式不合法: " + message.getTriggerTime(), e);
+        }
+        return Instant.now().isAfter(triggerTime.plusSeconds(effectiveTimeoutSeconds(message)));
+    }
+
+    /**
+     * 兼容未携带超时配置的旧消息。
+     */
+    private int effectiveTimeoutSeconds(JobInvokeMessage message) {
+        Integer timeoutSeconds = message.getTimeoutSeconds();
+        if (timeoutSeconds == null) {
+            return 60;
+        }
+        if (timeoutSeconds < 1 || timeoutSeconds > 86400) {
+            throw new IllegalArgumentException("任务执行超时时间必须在 1-86400 秒之间");
+        }
+        return timeoutSeconds;
     }
 
     /**

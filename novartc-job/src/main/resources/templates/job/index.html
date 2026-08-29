@@ -31,6 +31,7 @@
                 <th>调用目标</th>
                 <th>参数</th>
                 <th>执行方式</th>
+                <th>超时策略</th>
                 <th>允许并发</th>
                 <th>状态</th>
                 <th>下次执行时间</th>
@@ -39,7 +40,7 @@
             </thead>
             <tbody id="jobTableBody">
             <tr>
-                <td colspan="8" class="empty-row">加载中...</td>
+                <td colspan="9" class="empty-row">加载中...</td>
             </tr>
             </tbody>
         </table>
@@ -82,6 +83,16 @@
 
                 <label class="required" id="fixedRateLabel" style="display:none;">间隔秒数</label>
                 <input type="number" id="fFixedRateSeconds" min="1" placeholder="不小于 1" style="display:none;"/>
+
+                <label class="required">执行超时时间</label>
+                <input type="number" id="fTimeoutSeconds" min="1" max="86400" value="60" placeholder="1-86400 秒"/>
+                <div class="form-tip">消息超过该时间才被消费时，将按下方配置决定是否补跑</div>
+
+                <label>超时是否重跑</label>
+                <div class="checkbox-line">
+                    <input type="checkbox" id="fTimeoutRerun"/>
+                    <span>勾选后，执行实例恢复时补跑一次过期消息</span>
+                </div>
 
                 <label>允许并发</label>
                 <div class="checkbox-line">

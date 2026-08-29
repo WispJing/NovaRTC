@@ -110,7 +110,7 @@ function scheduleText(job) {
 function renderJobTable(jobs) {
     const tbody = document.getElementById('jobTableBody');
     if (!jobs || jobs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="empty-row">暂无任务</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-row">暂无任务</td></tr>';
         return;
     }
     tbody.innerHTML = jobs.map((job) => {
@@ -121,6 +121,8 @@ function renderJobTable(jobs) {
             ? '<span class="tag tag-warning">允许</span>'
             : '<span class="tag tag-info">禁止</span>';
         const toggleText = job.status === 1 ? '停用' : '启用';
+        const timeoutText = (job.timeoutSeconds || 60) + ' 秒 / '
+            + (job.timeoutRerun === 1 ? '补跑' : '不补跑');
         return '<tr>'
             + '<td>' + escapeHtml(job.jobName) + '</td>'
             + '<td><span class="cell-ellipsis" title="' + escapeHtml(job.invokeClass) + '">'
@@ -128,6 +130,7 @@ function renderJobTable(jobs) {
             + '<td><span class="cell-ellipsis" title="' + escapeHtml(job.invokeParams) + '">'
             + escapeHtml(job.invokeParams || '-') + '</span></td>'
             + '<td>' + escapeHtml(scheduleText(job)) + '</td>'
+            + '<td>' + escapeHtml(timeoutText) + '</td>'
             + '<td>' + concurrentTag + '</td>'
             + '<td>' + statusTag + '</td>'
             + '<td>' + formatTime(job.nextFireTime) + '</td>'
@@ -162,6 +165,8 @@ function openJobForm(jobId) {
     document.getElementById('fScheduleType').value = 'CRON';
     document.getElementById('fCronExpression').value = '';
     document.getElementById('fFixedRateSeconds').value = '';
+    document.getElementById('fTimeoutSeconds').value = '60';
+    document.getElementById('fTimeoutRerun').checked = false;
     document.getElementById('fConcurrentAllowed').checked = false;
     document.getElementById('fStatus').checked = true;
     document.getElementById('fRemark').value = '';
@@ -176,6 +181,8 @@ function openJobForm(jobId) {
             document.getElementById('fScheduleType').value = job.scheduleType || 'CRON';
             document.getElementById('fCronExpression').value = job.cronExpression || '';
             document.getElementById('fFixedRateSeconds').value = job.fixedRateSeconds || '';
+            document.getElementById('fTimeoutSeconds').value = job.timeoutSeconds || 60;
+            document.getElementById('fTimeoutRerun').checked = job.timeoutRerun === 1;
             document.getElementById('fConcurrentAllowed').checked = job.concurrentAllowed === 1;
             document.getElementById('fStatus').checked = job.status === 1;
             document.getElementById('fRemark').value = job.remark || '';
@@ -200,6 +207,8 @@ async function submitJobForm() {
         cronExpression: scheduleType === 'CRON' ? document.getElementById('fCronExpression').value.trim() : null,
         fixedRateSeconds: scheduleType === 'FIXED_RATE'
             ? Number(document.getElementById('fFixedRateSeconds').value) : null,
+        timeoutSeconds: Number(document.getElementById('fTimeoutSeconds').value),
+        timeoutRerun: document.getElementById('fTimeoutRerun').checked ? 1 : 0,
         concurrentAllowed: document.getElementById('fConcurrentAllowed').checked ? 1 : 0,
         status: document.getElementById('fStatus').checked ? 1 : 0,
         remark: document.getElementById('fRemark').value.trim() || null

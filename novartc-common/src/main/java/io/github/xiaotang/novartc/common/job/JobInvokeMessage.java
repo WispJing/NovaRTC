@@ -53,4 +53,14 @@ public class JobInvokeMessage implements Serializable {
      * 触发时间（UTC ISO-8601）
      */
     private String triggerTime;
+
+    /**
+     * 执行超时时间（秒）
+     */
+    private Integer timeoutSeconds;
+
+    /**
+     * 超时是否重跑 0-否 1-是
+     */
+    private Byte timeoutRerun;
 }
