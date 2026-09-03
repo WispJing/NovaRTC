@@ -59,6 +59,8 @@ job:
   topic: 'novartc-job-topic'
   result-topic: 'novartc-job-result-topic'
   result-consumer-group: 'novartc-job-result-consumer-group'
+  allowed-services:
+    - novartc-server
 
 logging:
   level:

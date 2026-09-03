@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * 定时任务 RocketMQ 消息配置。
  *
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "job")
 public class JobMqProperties {
+    /** 可被调度的服务白名单，新增服务必须显式加入。 */
+    private List<String> allowedServices = List.of("novartc-server");
 
     /**
      * 任务执行通知 topic（调度平台 -> NovaRTC 服务）

@@ -60,11 +60,31 @@ body {
     border-radius: 6px;
     padding: 16px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    overflow-x: auto;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+}
+
+/*
+ * 任务列表包含调用目标、服务路由及操作等信息。保留可读的列宽，窄屏时让卡片
+ * 横向滚动，而不是压缩单元格导致表头和内容错位。
+ */
+.job-table {
+    min-width: 1280px;
+}
+
+.job-table th:nth-child(2),
+.job-table td:nth-child(2),
+.job-table th:nth-child(7),
+.job-table td:nth-child(7),
+.job-table th:nth-child(8),
+.job-table td:nth-child(8),
+.job-table th:nth-child(9),
+.job-table td:nth-child(9) {
+    white-space: nowrap;
 }
 
 th, td {
@@ -309,7 +329,9 @@ tbody tr:hover {
 }
 
 .form-tip {
-    grid-column: 2;
+    /* 独占一行，避免与下一项的标签落在同一网格行。 */
+    grid-column: 1 / -1;
+    padding-left: 112px;
     font-size: 12px;
     color: #909399;
     margin-top: -8px;

@@ -6,6 +6,8 @@ import io.github.xiaotang.novartc.job.config.JobMqProperties;
 import io.github.xiaotang.novartc.job.constant.JobConstants;
 import io.github.xiaotang.novartc.job.entity.mysql.JobLog;
 import io.github.xiaotang.novartc.job.service.IJobLogService;
+import io.github.xiaotang.novartc.job.service.IJobInfoService;
+import io.github.xiaotang.novartc.job.entity.mysql.JobInfo;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -42,6 +44,8 @@ public class JobResultConsumerConfig {
     private JobMqProperties jobMqProperties;
     @Autowired
     private IJobLogService jobLogService;
+    @Autowired
+    private IJobInfoService jobInfoService;
 
     private DefaultMQPushConsumer resultConsumer;
 
@@ -81,6 +85,17 @@ public class JobResultConsumerConfig {
         JobLog jobLog = jobLogService.getById(result.getLogId());
         if (jobLog == null) {
             logger.warn("收到任务结果回传，但调度日志不存在: logId={}, jobId={}", result.getLogId(), result.getJobId());
+            return;
+        }
+        JobInfo jobInfo = jobInfoService.getById(jobLog.getJobId());
+        if (jobInfo != null && !StringUtils.equals(jobInfo.getTargetService(), result.getTargetService())) {
+            jobLog.setExecuteStatus(JobConstants.EXECUTE_FAIL);
+            jobLog.setExecuteErrorMsg("执行结果目标服务不一致: expected=" + jobInfo.getTargetService()
+                    + ", actual=" + result.getTargetService());
+            jobLog.setFinishTime(Instant.now());
+            jobLogService.updateById(jobLog);
+            logger.error("任务结果服务标识不一致: logId={}, expected={}, actual={}", result.getLogId(),
+                    jobInfo.getTargetService(), result.getTargetService());
             return;
         }
         jobLog.setExecuteStatus(Boolean.TRUE.equals(result.getSuccess())

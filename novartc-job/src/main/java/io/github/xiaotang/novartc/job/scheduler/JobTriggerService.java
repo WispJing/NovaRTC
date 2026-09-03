@@ -54,6 +54,7 @@ public class JobTriggerService {
         jobLogService.save(jobLog);
 
         JobInvokeMessage message = new JobInvokeMessage();
+        message.setTargetService(jobInfo.getTargetService());
         message.setLogId(jobLog.getId());
         message.setJobId(jobInfo.getId());
         message.setJobName(jobInfo.getJobName());

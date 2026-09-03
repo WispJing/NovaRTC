@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 定时任务调度平台的任务声明注解，标注在 Spring Bean 的公共无参方法上。
+ * 定时任务调度平台的任务声明注解，标注在 Spring Bean 的公共方法上。
  * <p>
- * 注解仅携带任务名称与备注，后续由扫描器将标注的方法注册写入 job_info，
- * 交由调度平台统一调度执行；调度方式、并发策略等由调度平台侧配置管理。
+ * Starter 仅注册标注的方法，拒绝任意类名/方法名反射调用；调度方式、参数和并发策略
+ * 仍由调度平台侧配置管理。
  *
  * @author xiaotang
  */

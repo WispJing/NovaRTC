@@ -110,7 +110,7 @@ function scheduleText(job) {
 function renderJobTable(jobs) {
     const tbody = document.getElementById('jobTableBody');
     if (!jobs || jobs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="empty-row">暂无任务</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="empty-row">暂无任务</td></tr>';
         return;
     }
     tbody.innerHTML = jobs.map((job) => {
@@ -125,6 +125,7 @@ function renderJobTable(jobs) {
             + (job.timeoutRerun === 1 ? '补跑' : '不补跑');
         return '<tr>'
             + '<td>' + escapeHtml(job.jobName) + '</td>'
+            + '<td>' + escapeHtml(job.targetService || 'novartc-server') + '</td>'
             + '<td><span class="cell-ellipsis" title="' + escapeHtml(job.invokeClass) + '">'
             + escapeHtml(job.invokeClass.split('.').pop()) + '#' + escapeHtml(job.invokeMethod) + '</span></td>'
             + '<td><span class="cell-ellipsis" title="' + escapeHtml(job.invokeParams) + '">'
@@ -159,6 +160,7 @@ function openJobForm(jobId) {
     editingJobId = jobId || null;
     document.getElementById('jobFormTitle').textContent = jobId ? '编辑任务' : '新增任务';
     document.getElementById('fJobName').value = '';
+    loadTargetServices('novartc-server');
     document.getElementById('fInvokeClass').value = '';
     document.getElementById('fInvokeMethod').value = '';
     document.getElementById('fInvokeParams').value = '';
@@ -175,6 +177,7 @@ function openJobForm(jobId) {
     if (jobId) {
         request('/api/jobs/' + jobId).then((job) => {
             document.getElementById('fJobName').value = job.jobName || '';
+            loadTargetServices(job.targetService || 'novartc-server');
             document.getElementById('fInvokeClass').value = job.invokeClass || '';
             document.getElementById('fInvokeMethod').value = job.invokeMethod || '';
             document.getElementById('fInvokeParams').value = job.invokeParams || '';
@@ -192,6 +195,16 @@ function openJobForm(jobId) {
     document.getElementById('jobFormModal').classList.add('show');
 }
 
+async function loadTargetServices(selected) {
+    try {
+        const services = await request('/api/jobs/target-services');
+        const select = document.getElementById('fTargetService');
+        select.innerHTML = services.map((service) => '<option value="' + escapeHtml(service) + '">'
+            + escapeHtml(service) + '</option>').join('');
+        select.value = selected;
+    } catch (e) { showToast(e.message, false); }
+}
+
 function closeJobForm() {
     document.getElementById('jobFormModal').classList.remove('show');
 }
@@ -200,6 +213,7 @@ async function submitJobForm() {
     const scheduleType = document.getElementById('fScheduleType').value;
     const payload = {
         jobName: document.getElementById('fJobName').value.trim(),
+        targetService: document.getElementById('fTargetService').value,
         invokeClass: document.getElementById('fInvokeClass').value.trim(),
         invokeMethod: document.getElementById('fInvokeMethod').value.trim(),
         invokeParams: document.getElementById('fInvokeParams').value.trim() || null,

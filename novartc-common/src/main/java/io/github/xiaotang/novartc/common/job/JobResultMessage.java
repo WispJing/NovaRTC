@@ -14,6 +14,9 @@ import java.io.Serializable;
 @Data
 public class JobResultMessage implements Serializable {
 
+    /** 实际执行服务，用于校验路由与审计。 */
+    private String targetService;
+
     /**
      * 调度日志ID（job_log 主键）
      */

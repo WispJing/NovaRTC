@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 定时任务管理接口。
  *
@@ -29,6 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobApiController {
 
     private final JobManageService jobManageService;
+
+    @GetMapping("/target-services")
+    public Result<List<String>> targetServices() {
+        return Result.success(jobManageService.allowedTargetServices());
+    }
 
     /**
      * 分页查询任务列表。

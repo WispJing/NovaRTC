@@ -24,10 +24,11 @@
     </div>
 
     <div class="card">
-        <table>
+        <table class="job-table">
             <thead>
             <tr>
                 <th>任务名称</th>
+                <th>目标服务</th>
                 <th>调用目标</th>
                 <th>参数</th>
                 <th>执行方式</th>
@@ -40,7 +41,7 @@
             </thead>
             <tbody id="jobTableBody">
             <tr>
-                <td colspan="9" class="empty-row">加载中...</td>
+                <td colspan="10" class="empty-row">加载中...</td>
             </tr>
             </tbody>
         </table>
@@ -59,6 +60,10 @@
             <div class="form-grid">
                 <label class="required">任务名称</label>
                 <input type="text" id="fJobName" maxlength="128" placeholder="例如：每日报表统计"/>
+
+                <label class="required">目标服务</label>
+                <select id="fTargetService"><option value="novartc-server">novartc-server</option></select>
+                <div class="form-tip">仅可选择调度中心允许列表中的服务；新增服务请先配置白名单</div>
 
                 <label class="required">执行类</label>
                 <input type="text" id="fInvokeClass" maxlength="255"

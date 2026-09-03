@@ -13,6 +13,7 @@
 
   <modules>
     <module>novartc-common</module>
+    <module>novartc-job-starter</module>
     <module>novartc-flyway</module>
     <module>novartc-server</module>
     <module>novartc-generator</module>

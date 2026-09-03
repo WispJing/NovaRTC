@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.messaging.support.MessageBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,8 +29,11 @@ public class JobNotifyProducerService {
      * 同步发送任务执行通知消息。
      */
     public SendResult send(JobInvokeMessage message) {
+        if (StringUtils.isBlank(message.getTargetService())) {
+            throw new IllegalArgumentException("目标服务不能为空，拒绝发送任务消息");
+        }
         return rocketMQTemplate.syncSend(
-                jobMqProperties.getTopic(),
+                jobMqProperties.getTopic() + ":" + message.getTargetService(),
                 MessageBuilder.withPayload(JacksonUtil.toJson(message))
                         .setHeader(JobConstants.MQ_HEADER_LOG_ID, message.getLogId())
                         .build(),

@@ -12,6 +12,8 @@ import java.time.Instant;
 @Data
 public class JobInfoVO {
 
+    private String targetService;
+
     private String id;
 
     /**

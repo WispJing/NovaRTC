@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import io.github.xiaotang.novartc.job.constant.JobConstants;
+import io.github.xiaotang.novartc.job.config.JobMqProperties;
 import io.github.xiaotang.novartc.job.dto.JobInfoVO;
 import io.github.xiaotang.novartc.job.dto.JobSaveRequest;
 import io.github.xiaotang.novartc.job.entity.mysql.JobInfo;
@@ -38,6 +39,7 @@ public class JobManageService {
     private final IJobLogService jobLogService;
     private final JobSchedulerService jobSchedulerService;
     private final JobTriggerService jobTriggerService;
+    private final JobMqProperties jobMqProperties;
 
     /**
      * 分页查询任务列表（含下次执行时间）。
@@ -48,6 +50,10 @@ public class JobManageService {
                 .orderByDesc(JobInfo::getCreatedAt);
         IPage<JobInfo> page = jobInfoService.page(new Page<>(pageNum, pageSize), wrapper);
         return page.convert(this::toVO);
+    }
+
+    public java.util.List<String> allowedTargetServices() {
+        return jobMqProperties.getAllowedServices();
     }
 
     /**
@@ -168,6 +174,9 @@ public class JobManageService {
      * 业务校验：调度类型与表达式、执行类白名单、参数格式。
      */
     private void validate(JobSaveRequest request) {
+        if (!jobMqProperties.getAllowedServices().contains(request.getTargetService())) {
+            throw new IllegalArgumentException("目标服务未配置或不允许调度: " + request.getTargetService());
+        }
         boolean isCron = JobConstants.SCHEDULE_TYPE_CRON.equals(request.getScheduleType());
         boolean isFixedRate = JobConstants.SCHEDULE_TYPE_FIXED_RATE.equals(request.getScheduleType());
         if (!isCron && !isFixedRate) {
@@ -216,6 +225,7 @@ public class JobManageService {
     }
 
     private void copyFromRequest(JobSaveRequest request, JobInfo job) {
+        job.setTargetService(request.getTargetService());
         job.setJobName(request.getJobName());
         job.setInvokeClass(request.getInvokeClass());
         job.setInvokeMethod(request.getInvokeMethod());
@@ -234,6 +244,7 @@ public class JobManageService {
 
     private JobInfoVO toVO(JobInfo job) {
         JobInfoVO vo = new JobInfoVO();
+        vo.setTargetService(job.getTargetService());
         vo.setId(job.getId());
         vo.setJobName(job.getJobName());
         vo.setInvokeClass(job.getInvokeClass());

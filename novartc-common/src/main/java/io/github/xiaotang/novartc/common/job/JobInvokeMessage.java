@@ -14,6 +14,9 @@ import java.io.Serializable;
 @Data
 public class JobInvokeMessage implements Serializable {
 
+    /** 目标执行服务；旧消息缺失时仅按 novartc-server 处理。 */
+    private String targetService;
+
     /**
      * 调度日志ID（job_log 主键），用于结果回传关联
      */

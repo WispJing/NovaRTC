@@ -12,6 +12,10 @@ import lombok.Data;
 @Data
 public class JobSaveRequest {
 
+    @NotBlank(message = "目标服务不能为空")
+    @Size(max = 64, message = "目标服务最长 64 个字符")
+    private String targetService;
+
     /**
      * 任务名称
      */

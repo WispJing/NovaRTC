@@ -22,6 +22,9 @@ import lombok.ToString;
 @TableName("job_info")
 public class JobInfo extends BaseEntity {
 
+    @TableField("target_service")
+    private String targetService;
+
     /**
      * 任务名称
      */

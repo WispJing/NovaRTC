@@ -159,11 +159,13 @@ file-cleanup:
   lock-key: novartc:lock:invalid-file-record-cleanup
   lock-lease-minutes: 30
 
-job:
-  topic: 'novartc-job-topic'
-  resultTopic: 'novartc-job-result-topic'
-  consumerGroup: 'novartc-job-consumer-group'
-  allowedPackagePrefix: 'io.github.xiaotang.novartc'
+novartc:
+  job:
+    executor:
+      service-name: 'novartc-server'
+      topic: 'novartc-job-topic'
+      result-topic: 'novartc-job-result-topic'
+      consumer-group: 'novartc-job-executor-novartc-server'
 
 logging:
   level:

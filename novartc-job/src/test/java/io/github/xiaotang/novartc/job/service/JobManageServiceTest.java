@@ -5,6 +5,7 @@ import io.github.xiaotang.novartc.job.dto.JobSaveRequest;
 import io.github.xiaotang.novartc.job.entity.mysql.JobInfo;
 import io.github.xiaotang.novartc.job.scheduler.JobSchedulerService;
 import io.github.xiaotang.novartc.job.scheduler.JobTriggerService;
+import io.github.xiaotang.novartc.job.config.JobMqProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,7 +33,7 @@ class JobManageServiceTest {
         JobTriggerService jobTriggerService = mock(JobTriggerService.class);
         when(jobInfoService.save(any(JobInfo.class))).thenReturn(true);
         jobManageService = new JobManageService(
-                jobInfoService, jobLogService, jobSchedulerService, jobTriggerService);
+                jobInfoService, jobLogService, jobSchedulerService, jobTriggerService, new JobMqProperties());
     }
 
     @Test
@@ -87,6 +88,7 @@ class JobManageServiceTest {
     private JobSaveRequest validRequest() {
         JobSaveRequest request = new JobSaveRequest();
         request.setJobName("测试任务");
+        request.setTargetService("novartc-server");
         request.setInvokeClass("io.github.xiaotang.novartc.server.task.TestTask");
         request.setInvokeMethod("execute");
         request.setScheduleType("CRON");
