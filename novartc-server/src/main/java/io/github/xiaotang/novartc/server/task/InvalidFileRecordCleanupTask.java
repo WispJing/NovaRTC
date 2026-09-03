@@ -55,10 +55,6 @@ public class InvalidFileRecordCleanupTask {
     @JobHandler(jobName = "失效文件记录清理",
             remark = "扫描文件信息表，逻辑删除 MinIO 中确认不存在的记录")
     public void execute() {
-        if (!Boolean.TRUE.equals(cleanupProperties.getEnabled())) {
-            logger.debug("失效文件记录清理任务未启用，跳过执行");
-            return;
-        }
         cleanupInvalidRecords();
     }
 

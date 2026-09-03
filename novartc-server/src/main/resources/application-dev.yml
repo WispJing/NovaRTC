@@ -154,7 +154,6 @@ minio:
   allowed-extensions: jpg,jpeg,png,gif,webp,bmp,mp4,mp3,wav,pdf,doc,docx,xls,xlsx,zip
 
 file-cleanup:
-  enabled: true
   grace-period-hours: 24
   batch-size: 200
   lock-key: novartc:lock:invalid-file-record-cleanup

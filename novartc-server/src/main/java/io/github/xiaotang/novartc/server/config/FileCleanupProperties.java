@@ -12,10 +12,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "file-cleanup")
 public class FileCleanupProperties {
     /**
-     * 是否启用定时清理
-     */
-    private Boolean enabled = true;
-    /**
      * 宽限期（小时）：只清理上传时间早于该时长的记录，避免误删刚上传的文件
      */
     private Long gracePeriodHours = 24L;
