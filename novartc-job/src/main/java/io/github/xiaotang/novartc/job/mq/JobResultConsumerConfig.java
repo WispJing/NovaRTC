@@ -64,6 +64,8 @@ public class JobResultConsumerConfig {
                 try {
                     JobResultMessage result = JacksonUtil.toObject(
                             new String(msg.getBody(), StandardCharsets.UTF_8), JobResultMessage.class);
+                    logger.info("收到任务执行结果: logId={}, jobId={}, targetService={}, success={}",
+                            result.getLogId(), result.getJobId(), result.getTargetService(), result.getSuccess());
                     updateJobLog(result);
                 } catch (Exception e) {
                     logger.error("RocketMQ 任务结果回传消费失败", e);

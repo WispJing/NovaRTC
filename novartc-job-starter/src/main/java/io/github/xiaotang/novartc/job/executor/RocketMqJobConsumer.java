@@ -14,12 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RocketMqJobConsumer {
     private static final Logger logger = LoggerFactory.getLogger(RocketMqJobConsumer.class);
 
     private final JobInvokeExecutor executor;
     private final JobExecutorProperties properties;
+    private final AtomicInteger threadSequence = new AtomicInteger();
+    private final ThreadLocal<Boolean> threadNamed = new ThreadLocal<>();
 
     @Value("${rocketmq.name-server}")
     private String nameServer;
@@ -52,6 +55,7 @@ public class RocketMqJobConsumer {
 
     private ConsumeConcurrentlyStatus consume(
             java.util.List<org.apache.rocketmq.common.message.MessageExt> messages) {
+        renameConsumerThreadIfNecessary();
         try {
             for (var raw : messages) {
                 String body = new String(raw.getBody(), StandardCharsets.UTF_8);
@@ -62,6 +66,20 @@ public class RocketMqJobConsumer {
             logger.error("任务消息消费失败，将请求 RocketMQ 重试", e);
             return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
+    }
+
+    /**
+     * RocketMQ 默认线程名通常会包含较长的服务标识。仅重命名本消费者实际执行任务的
+     * 工作线程，方便日志阅读；服务名、Tag 和消费组仍使用完整配置值。
+     */
+    private void renameConsumerThreadIfNecessary() {
+        if (Boolean.TRUE.equals(threadNamed.get())) {
+            return;
+        }
+        String prefix = StringUtils.defaultIfBlank(
+                properties.getThreadNamePrefix(), "job-exec-");
+        Thread.currentThread().setName(prefix + threadSequence.incrementAndGet());
+        threadNamed.set(Boolean.TRUE);
     }
 
     @PreDestroy

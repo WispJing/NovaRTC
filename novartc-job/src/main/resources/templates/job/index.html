@@ -4,7 +4,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>NovaRTC 定时任务调度平台</title>
-    <link rel="stylesheet" href="/css/job.css"/>
+    <!-- 修改任务页面样式后更新版本号，避免浏览器使用旧缓存。 -->
+    <link rel="stylesheet" href="/css/job.css?v=20260903-2"/>
 </head>
 <body>
 
@@ -155,6 +156,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="/js/job.js"></script>
+<!-- 目标服务列由 job.js 动态渲染；版本号保证表头与行数据同步升级。 -->
+<script src="/js/job.js?v=20260903-2"></script>
 </body>
 </html>

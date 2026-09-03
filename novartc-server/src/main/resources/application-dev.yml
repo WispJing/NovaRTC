@@ -166,6 +166,7 @@ novartc:
       topic: 'novartc-job-topic'
       result-topic: 'novartc-job-result-topic'
       consumer-group: 'novartc-job-executor-novartc-server'
+      thread-name-prefix: 'job-exec-'
 
 logging:
   level:
@@ -175,4 +176,3 @@ logging:
     com.baomidou.mybatisplus: DEBUG
     org.apache.ibatis: DEBUG
     io.netty: INFO
-

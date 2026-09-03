@@ -6,6 +6,7 @@ import io.github.xiaotang.novartc.common.job.JobResultMessage;
 import io.github.xiaotang.novartc.common.util.JacksonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +120,10 @@ public class JobInvokeExecutor {
             result.setFinishTime(Instant.ofEpochMilli(ended).toString());
             result.setDurationMs(ended - started);
             result.setInstanceId(System.getenv().getOrDefault("HOSTNAME", "unknown"));
-            template.syncSend(properties.getResultTopic(), JacksonUtil.toJson(result));
+            SendResult sendResult = template.syncSend(
+                    properties.getResultTopic(), JacksonUtil.toJson(result));
+            logger.info("任务执行结果已回传: logId={}, jobId={}, success={}, msgId={}",
+                    message.getLogId(), message.getJobId(), success, sendResult.getMsgId());
         } catch (Exception e) {
             logger.error("任务执行结果回传失败: logId={}", message.getLogId(), e);
         }

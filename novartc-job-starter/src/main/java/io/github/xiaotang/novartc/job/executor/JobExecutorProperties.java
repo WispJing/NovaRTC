@@ -14,4 +14,6 @@ public class JobExecutorProperties {
     private String resultTopic = "novartc-job-result-topic";
     /** 空值时使用基于服务名的默认消费组，隔离不同服务。 */
     private String consumerGroup;
+    /** 任务执行线程显示前缀；不影响服务标识、消费组或消息 Tag。 */
+    private String threadNamePrefix = "job-exec-";
 }
