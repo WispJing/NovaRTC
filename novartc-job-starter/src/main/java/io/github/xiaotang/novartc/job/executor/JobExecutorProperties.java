@@ -16,4 +16,8 @@ public class JobExecutorProperties {
     private String consumerGroup;
     /** 任务执行线程显示前缀；不影响服务标识、消费组或消息 Tag。 */
     private String threadNamePrefix = "job-exec-";
+    /**
+     * 执行实例标识；空值时自动使用“服务名@主机名”。多副本部署可显式配置 Pod 名称。
+     */
+    private String instanceId;
 }

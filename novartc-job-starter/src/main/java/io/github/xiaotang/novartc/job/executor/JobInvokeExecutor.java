@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * 共享任务执行器。
@@ -119,7 +121,7 @@ public class JobInvokeExecutor {
             result.setStartTime(Instant.ofEpochMilli(started).toString());
             result.setFinishTime(Instant.ofEpochMilli(ended).toString());
             result.setDurationMs(ended - started);
-            result.setInstanceId(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+            result.setInstanceId(resolveInstanceId());
             SendResult sendResult = template.syncSend(
                     properties.getResultTopic(), JacksonUtil.toJson(result));
             logger.info("任务执行结果已回传: logId={}, jobId={}, success={}, msgId={}",
@@ -127,5 +129,25 @@ public class JobInvokeExecutor {
         } catch (Exception e) {
             logger.error("任务执行结果回传失败: logId={}", message.getLogId(), e);
         }
+    }
+
+    /**
+     * Windows 环境通常没有 HOSTNAME，因此不直接依赖单一环境变量。服务名前缀也让
+     * 调度日志能够区分不同微服务的执行来源。
+     */
+    private String resolveInstanceId() {
+        if (StringUtils.isNotBlank(properties.getInstanceId())) {
+            return properties.getInstanceId();
+        }
+        String hostName = StringUtils.defaultIfBlank(
+                System.getenv("HOSTNAME"), System.getenv("COMPUTERNAME"));
+        if (StringUtils.isBlank(hostName)) {
+            try {
+                hostName = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                hostName = "unknown-host";
+            }
+        }
+        return properties.getServiceName() + "@" + hostName;
     }
 }

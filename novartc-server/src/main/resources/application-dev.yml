@@ -167,6 +167,7 @@ novartc:
       result-topic: 'novartc-job-result-topic'
       consumer-group: 'novartc-job-executor-novartc-server'
       thread-name-prefix: 'job-exec-'
+      # 本地可自动解析为 novartc-server@主机名；多副本部署可设为 ${POD_NAME}。
 
 logging:
   level:
