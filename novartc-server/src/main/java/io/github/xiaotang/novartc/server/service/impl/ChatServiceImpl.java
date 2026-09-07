@@ -30,6 +30,7 @@ import io.github.xiaotang.novartc.server.service.IImGroupMemberService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import io.github.xiaotang.novartc.server.util.MinioUtil;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -70,6 +71,7 @@ public class ChatServiceImpl implements ChatService {
     private final ImFileMapper imFileMapper;
     private final MinioUtil minioUtil;
     private final MinioProperties minioProperties;
+    private final MinioUrlResolver minioUrlResolver;
 
     /**
      * 查询当前用户的会话列表，并附带最后一条消息与未读数。
@@ -113,7 +115,7 @@ public class ChatServiceImpl implements ChatService {
             if (targetUser != null) {
                 vo.setTitle(targetUser.getUsername());
                 vo.setTargetUserNum(targetUser.getUserNum());
-                vo.setAvatarUrl(targetUser.getAvatarUrl());
+                vo.setAvatarUrl(minioUrlResolver.resolve(targetUser.getAvatarUrl()));
                 vo.setOnline(isUserOnline(targetUser.getId()));
             } else {
                 vo.setTitle("未知用户");

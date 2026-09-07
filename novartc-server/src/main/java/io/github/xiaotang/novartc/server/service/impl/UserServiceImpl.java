@@ -9,6 +9,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.mapper.ImFileMapper;
 import io.github.xiaotang.novartc.server.mapper.ImUserMapper;
 import io.github.xiaotang.novartc.server.service.UserService;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final ImFileMapper imFileMapper;
     private final ImUserMapper imUserMapper;
+    private final MinioUrlResolver minioUrlResolver;
 
     @Override
     public String updateAvatar(String fileId) {
@@ -49,9 +51,10 @@ public class UserServiceImpl implements UserService {
         if (imUser == null) {
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
-        imUser.setAvatarUrl(imFile.getUrl());
+        // 用户表仅保存对象 key，避免持久化与部署环境绑定的域名、协议和端口。
+        imUser.setAvatarUrl(imFile.getObjectKey());
         imUserMapper.updateById(imUser);
-        logger.info("用户头像更新成功: 用户={}, 文件={}, 地址={}", userId, fileId, imFile.getUrl());
-        return imFile.getUrl();
+        logger.info("用户头像更新成功: 用户={}, 文件={}, 对象={}", userId, fileId, imFile.getObjectKey());
+        return minioUrlResolver.resolve(imFile.getObjectKey());
     }
 }

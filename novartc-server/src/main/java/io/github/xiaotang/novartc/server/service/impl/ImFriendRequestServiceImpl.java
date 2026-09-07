@@ -19,6 +19,7 @@ import io.github.xiaotang.novartc.server.service.IImFriendService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import io.github.xiaotang.novartc.server.service.UserRelationCacheService;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
     private final IImSingleChatService imSingleChatService;
     private final FriendRequestNotificationService friendRequestNotificationService;
     private final UserRelationCacheService userRelationCacheService;
+    private final MinioUrlResolver minioUrlResolver;
 
     /**
      * 查询当前用户相关的好友申请列表。
@@ -229,14 +231,14 @@ public class ImFriendRequestServiceImpl extends ServiceImpl<ImFriendRequestMappe
             vo.setRequesterId(userId);
             vo.setRequesterUserNum(user == null ? "" : user.getUserNum());
             vo.setRequesterUsername(user == null ? "" : user.getUsername());
-            vo.setRequesterAvatarUrl(user == null ? "" : user.getAvatarUrl());
+            vo.setRequesterAvatarUrl(user == null ? "" : minioUrlResolver.resolve(user.getAvatarUrl()));
             return;
         }
 
         vo.setReceiverId(userId);
         vo.setReceiverUserNum(user == null ? "" : user.getUserNum());
         vo.setReceiverUsername(user == null ? "" : user.getUsername());
-        vo.setReceiverAvatarUrl(user == null ? "" : user.getAvatarUrl());
+        vo.setReceiverAvatarUrl(user == null ? "" : minioUrlResolver.resolve(user.getAvatarUrl()));
     }
 
     private ApplicationException ex(ExceptionEnum exceptionEnum) {

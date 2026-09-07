@@ -1,12 +1,12 @@
 delete from im_user where is_deleted = 0;
 INSERT INTO im_user (id, user_num, username, password, email, avatar_url)
 VALUES
-    ('9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', 'U1001', '小棠', 'e10adc3949ba59abbe56e057f20f883e', 'xiaotang@example.com', 'https://img.example.com/u1.png'),
-    ('1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'U1002', '阿杰', 'e10adc3949ba59abbe56e057f20f883e', 'ajie@example.com', 'https://img.example.com/u2.png'),
-    ('5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'U1003', '小雨', 'e10adc3949ba59abbe56e057f20f883e', 'xiaoyu@example.com', 'https://img.example.com/u3.png'),
-    ('7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', 'U1004', '老王', 'e10adc3949ba59abbe56e057f20f883e', 'laowang@example.com', 'https://img.example.com/u4.png'),
-    ('2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'U1005', '小美', 'e10adc3949ba59abbe56e057f20f883e', 'xiaomei@example.com', 'https://img.example.com/u5.png'),
-    ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'e10adc3949ba59abbe56e057f20f883e', 'aqiang@example.com', 'https://img.example.com/u6.png');
+    ('9c4a8f6d2b3e4f1a9d7c5e8b2a6f3c10', 'U1001', '小棠', 'e10adc3949ba59abbe56e057f20f883e', 'xiaotang@example.com', NULL),
+    ('1f7b3e9c6a2d4c8e5b9a1d3f7c6e2b11', 'U1002', '阿杰', 'e10adc3949ba59abbe56e057f20f883e', 'ajie@example.com', NULL),
+    ('5d2c8a7f1e4b4d9c8f3a2b6e1c7d3f12', 'U1003', '小雨', 'e10adc3949ba59abbe56e057f20f883e', 'xiaoyu@example.com', NULL),
+    ('7e3a1c9d4f6b4e2a8d5c7b1f3a9e6c13', 'U1004', '老王', 'e10adc3949ba59abbe56e057f20f883e', 'laowang@example.com', NULL),
+    ('2a6d9e3c5b1f4a7e8c3d6f9b2a1e4c14', 'U1005', '小美', 'e10adc3949ba59abbe56e057f20f883e', 'xiaomei@example.com', NULL),
+    ('8b1f3c6d9a4e4c2f7d5a8e1b3c6d2a15', 'U1006', '阿强', 'e10adc3949ba59abbe56e057f20f883e', 'aqiang@example.com', NULL);
 
 delete from im_friend where is_deleted = 0;
 delete from im_friend_request where is_deleted = 0;

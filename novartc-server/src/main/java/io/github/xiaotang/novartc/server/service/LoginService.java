@@ -11,6 +11,7 @@ import io.github.xiaotang.novartc.server.dto.LoginResponse;
 import io.github.xiaotang.novartc.server.entity.common.TokenKickMessage;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.queue.TokenKickDispatchService;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class LoginService {
     private final TokenKickDispatchService tokenKickDispatchService;
     private final UserRelationCacheService userRelationCacheService;
     private final RiskControlService riskControlService;
+    private final MinioUrlResolver minioUrlResolver;
 
     /**
      * 登录（支持多端）
@@ -72,7 +74,9 @@ public class LoginService {
         redisTemplate.opsForSet().add(LoginConstant.USER_TOKEN_PREFIX + userId, token);
         userRelationCacheService.rebuildUserRelationsCacheAsync(userId);
 
-        return LoginResponse.of(imUser, token);
+        LoginResponse response = LoginResponse.of(imUser, token);
+        response.setAvatarUrl(minioUrlResolver.resolve(imUser.getAvatarUrl()));
+        return response;
     }
 
     /**

@@ -13,6 +13,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.AdminLoginLog;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.service.IAdminLoginLogService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -34,6 +35,7 @@ public class AdminAuthService {
     private final IAdminLoginLogService adminLoginLogService;
     private final AdminPermissionService adminPermissionService;
     private final RiskControlService riskControlService;
+    private final MinioUrlResolver minioUrlResolver;
 
     public AdminLoginVO login(AdminLoginRequest request, HttpServletRequest httpRequest) {
         String clientType = request == null ? null : request.getClientType();
@@ -152,7 +154,7 @@ public class AdminAuthService {
         vo.setUserId(user.getId());
         vo.setUserNum(user.getUserNum());
         vo.setUsername(user.getUsername());
-        vo.setAvatarUrl(user.getAvatarUrl());
+        vo.setAvatarUrl(minioUrlResolver.resolve(user.getAvatarUrl()));
         vo.setToken(token);
         vo.setSuperAdmin(Boolean.TRUE.equals(user.getIsAdmin()));
         vo.setMenuCodes(getMenuCodes(user.getId()));

@@ -20,6 +20,7 @@ import io.github.xiaotang.novartc.server.netty.UserChannelManager;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMMessageRepository;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMReadStatusRepository;
 import io.github.xiaotang.novartc.server.service.*;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -50,6 +51,7 @@ public class AdminConsoleService {
     private final StringRedisTemplate redisTemplate;
     private final UserRelationCacheService userRelationCacheService;
     private final FriendRequestNotificationService friendRequestNotificationService;
+    private final MinioUrlResolver minioUrlResolver;
 
     public List<AdminUserVO> listUsers(String currentUserId) {
         List<ImUser> users = adminPermissionService.isSuperAdmin(currentUserId)
@@ -345,7 +347,7 @@ public class AdminConsoleService {
             vo.setTargetUserId(targetUserId);
             vo.setTargetUserNum(target == null ? null : target.getUserNum());
             vo.setTitle(target == null ? targetUserId : target.getUsername());
-            vo.setAvatarUrl(target == null ? null : target.getAvatarUrl());
+            vo.setAvatarUrl(target == null ? null : minioUrlResolver.resolve(target.getAvatarUrl()));
             vo.setOnline(userChannelManager.isOnline(targetUserId));
             fillLastMessage(vo, userId, false);
             vo.setUnreadCount(countUnreadMessages(vo.getChatId(), userId));
@@ -476,7 +478,7 @@ public class AdminConsoleService {
         vo.setUserNum(user.getUserNum());
         vo.setUsername(user.getUsername());
         vo.setEmail(user.getEmail());
-        vo.setAvatarUrl(user.getAvatarUrl());
+        vo.setAvatarUrl(minioUrlResolver.resolve(user.getAvatarUrl()));
         vo.setIsAdmin(user.getIsAdmin());
         vo.setImOnline(userChannelManager.isOnline(user.getId()));
         vo.setAdminOnline(!adminAuthService.getActiveTokens(user.getId()).isEmpty());
@@ -489,7 +491,7 @@ public class AdminConsoleService {
         vo.setUserId(user.getId());
         vo.setUserNum(user.getUserNum());
         vo.setUsername(user.getUsername());
-        vo.setAvatarUrl(user.getAvatarUrl());
+        vo.setAvatarUrl(minioUrlResolver.resolve(user.getAvatarUrl()));
         vo.setOnline(userChannelManager.isOnline(user.getId()));
         return vo;
     }
@@ -514,13 +516,13 @@ public class AdminConsoleService {
             vo.setRequesterId(userId);
             vo.setRequesterUserNum(user == null ? null : user.getUserNum());
             vo.setRequesterUsername(user == null ? null : user.getUsername());
-            vo.setRequesterAvatarUrl(user == null ? null : user.getAvatarUrl());
+            vo.setRequesterAvatarUrl(user == null ? null : minioUrlResolver.resolve(user.getAvatarUrl()));
             return;
         }
         vo.setReceiverId(userId);
         vo.setReceiverUserNum(user == null ? null : user.getUserNum());
         vo.setReceiverUsername(user == null ? null : user.getUsername());
-        vo.setReceiverAvatarUrl(user == null ? null : user.getAvatarUrl());
+        vo.setReceiverAvatarUrl(user == null ? null : minioUrlResolver.resolve(user.getAvatarUrl()));
     }
 
     private List<AdminSessionVO> getRedisSessions(String userTokensKey,

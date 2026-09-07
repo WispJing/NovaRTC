@@ -7,6 +7,7 @@ import io.github.xiaotang.novartc.server.dto.FileUploadResponse;
 import io.github.xiaotang.novartc.server.entity.mysql.ImFile;
 import io.github.xiaotang.novartc.server.mapper.ImFileMapper;
 import io.github.xiaotang.novartc.server.util.MinioUtil;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +52,8 @@ class MinioFileStorageServiceImplTest {
         minioProperties.setBucket("novartc");
         minioProperties.setMaxFileSize(1L);
         minioProperties.setAllowedExtensions(List.of("jpg", "png", "pdf"));
-        fileStorageService = new MinioFileStorageServiceImpl(minioProperties, minioUtil, imFileMapper);
+        fileStorageService = new MinioFileStorageServiceImpl(
+                minioProperties, minioUtil, imFileMapper, new MinioUrlResolver(minioProperties));
     }
 
     @Test

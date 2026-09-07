@@ -5,6 +5,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImFriendRequest;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.proto.ChatMessage;
 import io.github.xiaotang.novartc.server.queue.ChatDispatchService;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class FriendRequestNotificationService {
     private final ChatDispatchService chatDispatchService;
     private final IImUserService imUserService;
+    private final MinioUrlResolver minioUrlResolver;
 
     /**
      * 推送好友申请创建事件。
@@ -69,7 +71,8 @@ public class FriendRequestNotificationService {
         return ChatMessage.User.newBuilder()
                 .setUserId(StringUtils.defaultString(actorUserId))
                 .setUsername(actorUser == null ? "" : StringUtils.defaultString(actorUser.getUsername()))
-                .setAvatarUrl(actorUser == null ? "" : StringUtils.defaultString(actorUser.getAvatarUrl()))
+                .setAvatarUrl(actorUser == null ? ""
+                        : StringUtils.defaultString(minioUrlResolver.resolve(actorUser.getAvatarUrl())))
                 .build();
     }
 

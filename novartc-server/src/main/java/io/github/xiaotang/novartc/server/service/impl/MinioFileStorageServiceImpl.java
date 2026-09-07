@@ -10,6 +10,7 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImFile;
 import io.github.xiaotang.novartc.server.mapper.ImFileMapper;
 import io.github.xiaotang.novartc.server.service.FileStorageService;
 import io.github.xiaotang.novartc.server.util.MinioUtil;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,7 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
     private final MinioProperties minioProperties;
     private final MinioUtil minioUtil;
     private final ImFileMapper imFileMapper;
+    private final MinioUrlResolver minioUrlResolver;
 
     /**
      * 启动时确保存储桶存在并开启公共读；失败仅记录日志，不阻塞应用启动，
@@ -83,7 +85,7 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
         logger.info("文件上传成功: 用户={}, 业务类型={}, 原始文件={}, 对象={}/{}",
                 UserContextHolder.getUserId(), type.code(), file.getOriginalFilename(), bucket, objectName);
 
-        String url = buildUrl(bucket, objectName);
+        String url = minioUrlResolver.resolve(objectName);
         String fileId = registerFile(type, file, extension, objectName, url);
 
         FileUploadResponse response = new FileUploadResponse();
@@ -150,16 +152,4 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
         return extension;
     }
 
-    /**
-     * 拼接对外访问地址，优先使用配置的 urlPrefix
-     */
-    private String buildUrl(String bucket, String objectName) {
-        String baseUrl = StringUtils.isNotBlank(minioProperties.getUrlPrefix())
-                ? minioProperties.getUrlPrefix()
-                : minioProperties.getEndpoint();
-        if (baseUrl.endsWith("/")) {
-            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
-        }
-        return baseUrl + "/" + bucket + "/" + objectName;
-    }
 }

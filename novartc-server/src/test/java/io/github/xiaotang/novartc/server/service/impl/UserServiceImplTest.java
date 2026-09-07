@@ -6,6 +6,8 @@ import io.github.xiaotang.novartc.server.entity.mysql.ImFile;
 import io.github.xiaotang.novartc.server.entity.mysql.ImUser;
 import io.github.xiaotang.novartc.server.mapper.ImFileMapper;
 import io.github.xiaotang.novartc.server.mapper.ImUserMapper;
+import io.github.xiaotang.novartc.server.config.MinioProperties;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,10 @@ class UserServiceImplTest {
     @BeforeEach
     void setUp() {
         UserContextHolder.setUserId("U1001");
-        userService = new UserServiceImpl(imFileMapper, imUserMapper);
+        MinioProperties properties = new MinioProperties();
+        properties.setEndpoint("http://localhost:6000");
+        properties.setBucket("novartc");
+        userService = new UserServiceImpl(imFileMapper, imUserMapper, new MinioUrlResolver(properties));
     }
 
     @AfterEach
@@ -49,12 +54,13 @@ class UserServiceImplTest {
         imFile.setId("file-1");
         imFile.setUploaderId(uploaderId);
         imFile.setBizType(bizType);
+        imFile.setObjectKey("avatar/20260828/a.png");
         imFile.setUrl("http://localhost:6000/novartc/avatar/20260828/a.png");
         return imFile;
     }
 
     @Test
-    void updateAvatarShouldPersistFileUrl() {
+    void updateAvatarShouldPersistObjectKeyAndReturnResolvedUrl() {
         when(imFileMapper.selectById("file-1")).thenReturn(avatarFile("U1001", "avatar"));
         when(imUserMapper.selectById("U1001")).thenReturn(new ImUser());
 
@@ -63,7 +69,7 @@ class UserServiceImplTest {
         assertThat(avatarUrl).isEqualTo("http://localhost:6000/novartc/avatar/20260828/a.png");
         ArgumentCaptor<ImUser> userCaptor = ArgumentCaptor.forClass(ImUser.class);
         verify(imUserMapper).updateById(userCaptor.capture());
-        assertThat(userCaptor.getValue().getAvatarUrl()).isEqualTo(avatarUrl);
+        assertThat(userCaptor.getValue().getAvatarUrl()).isEqualTo("avatar/20260828/a.png");
     }
 
     @Test

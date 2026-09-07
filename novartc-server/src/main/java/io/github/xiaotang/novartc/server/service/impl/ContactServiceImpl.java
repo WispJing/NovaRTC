@@ -18,6 +18,7 @@ import io.github.xiaotang.novartc.server.service.IImFriendRequestService;
 import io.github.xiaotang.novartc.server.service.IImFriendService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class ContactServiceImpl implements ContactService {
     private final IImSingleChatService imSingleChatService;
     private final IImFriendRequestService imFriendRequestService;
     private final UserChannelManager userChannelManager;
+    private final MinioUrlResolver minioUrlResolver;
 
     /**
      * 查询当前用户的好友联系人列表。
@@ -95,7 +97,7 @@ public class ContactServiceImpl implements ContactService {
         vo.setTargetUserId(targetUser.getId());
         vo.setTargetUserNum(targetUser.getUserNum());
         vo.setTitle(targetUser.getUsername());
-        vo.setAvatarUrl(targetUser.getAvatarUrl());
+        vo.setAvatarUrl(minioUrlResolver.resolve(targetUser.getAvatarUrl()));
         vo.setOnline(userChannelManager.isOnline(targetUser.getId()));
         vo.setLastMessage("");
         vo.setLastMessageType("SYSTEM");
@@ -134,7 +136,7 @@ public class ContactServiceImpl implements ContactService {
         vo.setUserId(user.getId());
         vo.setUserNum(user.getUserNum());
         vo.setUsername(user.getUsername());
-        vo.setAvatarUrl(user.getAvatarUrl());
+        vo.setAvatarUrl(minioUrlResolver.resolve(user.getAvatarUrl()));
         vo.setOnline(userChannelManager.isOnline(user.getId()));
         return vo;
     }

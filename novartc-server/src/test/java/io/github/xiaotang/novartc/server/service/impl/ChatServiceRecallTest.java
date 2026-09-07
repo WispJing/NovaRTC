@@ -16,6 +16,7 @@ import io.github.xiaotang.novartc.server.service.IImGroupMemberService;
 import io.github.xiaotang.novartc.server.service.IImSingleChatService;
 import io.github.xiaotang.novartc.server.service.IImUserService;
 import io.github.xiaotang.novartc.server.util.MinioUtil;
+import io.github.xiaotang.novartc.server.util.MinioUrlResolver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,7 +82,8 @@ class ChatServiceRecallTest {
         chatService = new ChatServiceImpl(
                 imUserService, imSingleChatService, imGroupChatService, imGroupMemberService,
                 imMessageRepository, imReadStatusRepository, userRouteService,
-                chatDispatchService, imFileMapper, minioUtil, minioProperties);
+                chatDispatchService, imFileMapper, minioUtil, minioProperties,
+                new MinioUrlResolver(minioProperties));
     }
 
     @AfterEach
