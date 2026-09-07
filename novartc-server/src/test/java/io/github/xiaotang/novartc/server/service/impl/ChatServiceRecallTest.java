@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -137,6 +138,22 @@ class ChatServiceRecallTest {
         assertThat(frame.getRecallContent().getRecallMessageId()).isEqualTo("msg-1");
         assertThat(frame.getRecallContent().getOperatorId()).isEqualTo("U1001");
         assertThat(frame.getSingleChatInfo().getUser2Id()).isEqualTo("U1002");
+    }
+
+    @Test
+    void recallShouldNotMarkMessageRecalledWhenMinioDeleteFails() {
+        when(imMessageRepository.findByMessageId("msg-1"))
+                .thenReturn(imageMessage(Instant.now().minusSeconds(30)));
+        when(imFileMapper.selectOne(any())).thenReturn(matchedFile());
+        doThrow(new RuntimeException("minio unavailable"))
+                .when(minioUtil).removeObject("novartc", "image/20260828/x.png");
+
+        assertThatThrownBy(() -> chatService.recall("chat-1", "msg-1"))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("文件删除失败");
+        verify(imFileMapper, never()).deleteById("file-1");
+        verify(imMessageRepository, never()).save(any());
+        verify(chatDispatchService, never()).dispatch(any());
     }
 
     @Test

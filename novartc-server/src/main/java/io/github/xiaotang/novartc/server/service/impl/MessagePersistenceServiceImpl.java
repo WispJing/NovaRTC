@@ -34,7 +34,8 @@ public class MessagePersistenceServiceImpl implements MessagePersistenceService 
         String chatId = resolveChatId(message);
         long chatSeq = chatSeqService.nextSeq(chatId);
         Instant serverTime = Instant.now();
-        String messageId = StringUtils.defaultIfBlank(message.getMessageId(), String.valueOf(messageIdUtil.nextId()));
+        // 正式消息编号只由服务端生成，避免客户端自定义 ID 与持久化记录不一致。
+        String messageId = String.valueOf(messageIdUtil.nextId());
 
         ChatMessage.MsgBody persistedMessage = rebuildMessage(message, authenticatedUserId, messageId);
         imMessageRepository.insert(toEntity(persistedMessage, chatSeq, serverTime));

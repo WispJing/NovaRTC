@@ -72,6 +72,8 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
 
             ChatMessage.MsgBody persistedMessage = messagePersistenceService.persist(msgBody, userId);
             ChatMsgLog.msg(persistedMessage);
+            // 将服务端生成的雪花 ID 回传当前连接，前端据此替换发送中的临时消息。
+            ctx.writeAndFlush(persistedMessage);
             chatDispatchService.dispatch(persistedMessage);
         } catch (Exception e) {
             ChatMsgLog.msgLog.error("消息处理异常: userId={}", userId, e);

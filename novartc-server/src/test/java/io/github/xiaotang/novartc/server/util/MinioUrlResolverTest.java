@@ -20,6 +20,17 @@ class MinioUrlResolverTest {
     }
 
     @Test
+    void shouldResolveObjectKeyFromPublicUrl() {
+        assertThat(resolver.resolveObjectKey(
+                "http://localhost:19000/novartc/file/20260907/a.pdf"))
+                .isEqualTo("file/20260907/a.pdf");
+        assertThat(resolver.resolveObjectKey("file/20260907/a.pdf"))
+                .isEqualTo("file/20260907/a.pdf");
+        assertThat(resolver.resolveObjectKey("https://example.com/other/file/a.pdf"))
+                .isNull();
+    }
+
+    @Test
     void shouldResolveObjectKeyWithPublicPrefix() {
         assertThat(resolver.resolve("avatar/20260907/a.jpg"))
                 .isEqualTo("https://files.example.com/novartc/avatar/20260907/a.jpg");

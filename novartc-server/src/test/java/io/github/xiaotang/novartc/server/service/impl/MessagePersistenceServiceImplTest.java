@@ -59,6 +59,7 @@ class MessagePersistenceServiceImplTest {
     @Test
     void persistShouldStoreFileContent() {
         ChatMessage.MsgBody message = baseSingle(ChatMessage.MessageType.FILE)
+                .setMessageId("client-generated-id")
                 .setFileContent(ChatMessage.FileContent.newBuilder()
                         .setFileUrl("http://localhost:9000/novartc/file/a.pdf")
                         .setFileName("a.pdf")
@@ -67,11 +68,13 @@ class MessagePersistenceServiceImplTest {
                         .build())
                 .build();
 
-        persistenceService.persist(message, "U1001");
+        ChatMessage.MsgBody persistedMessage = persistenceService.persist(message, "U1001");
 
         ArgumentCaptor<IMMessage> captor = ArgumentCaptor.forClass(IMMessage.class);
         verify(imMessageRepository).insert(captor.capture());
         IMMessage entity = captor.getValue();
+        assertThat(persistedMessage.getMessageId()).isEqualTo("1");
+        assertThat(entity.getMessageId()).isEqualTo("1");
         assertThat(entity.getMessageType()).isEqualTo("FILE");
         assertThat(entity.getContentJson())
                 .contains("\"fileUrl\":\"http://localhost:9000/novartc/file/a.pdf\"")

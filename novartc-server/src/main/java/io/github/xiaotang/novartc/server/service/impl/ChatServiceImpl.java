@@ -306,19 +306,25 @@ public class ChatServiceImpl implements ChatService {
         if (StringUtils.isBlank(fileUrl)) {
             return;
         }
+        String objectKey = minioUrlResolver.resolveObjectKey(fileUrl);
         ImFile imFile = imFileMapper.selectOne(
                 new LambdaQueryWrapper<ImFile>()
-                        .eq(ImFile::getUrl, fileUrl)
+                        .eq(ImFile::getUploaderId, message.getSenderId())
+                        .and(wrapper -> wrapper
+                                .eq(ImFile::getUrl, fileUrl)
+                                .or(StringUtils.isNotBlank(objectKey),
+                                        nested -> nested.eq(ImFile::getObjectKey, objectKey)))
                         .last("limit 1")
         );
         if (imFile == null) {
+            logger.warn("撤回消息未找到关联文件记录: 消息={}, 文件={}", message.getMessageId(), fileUrl);
             return;
         }
         try {
             minioUtil.removeObject(minioProperties.getBucket(), imFile.getObjectKey());
         } catch (RuntimeException e) {
             logger.error("撤回消息删除文件失败: 消息={}, 对象={}", message.getMessageId(), imFile.getObjectKey(), e);
-            return;
+            throw new BusinessException(ResultCode.SERVER_ERROR.code(), "文件删除失败，请稍后重试");
         }
         imFileMapper.deleteById(imFile.getId());
         logger.info("撤回消息已删除关联文件: 消息={}, 对象={}", message.getMessageId(), imFile.getObjectKey());
