@@ -39,7 +39,7 @@ class UserServiceImplTest {
     void setUp() {
         UserContextHolder.setUserId("U1001");
         MinioProperties properties = new MinioProperties();
-        properties.setEndpoint("http://localhost:6000");
+        properties.setEndpoint("http://localhost:9000");
         properties.setBucket("novartc");
         userService = new UserServiceImpl(imFileMapper, imUserMapper, new MinioUrlResolver(properties));
     }
@@ -55,7 +55,7 @@ class UserServiceImplTest {
         imFile.setUploaderId(uploaderId);
         imFile.setBizType(bizType);
         imFile.setObjectKey("avatar/20260828/a.png");
-        imFile.setUrl("http://localhost:6000/novartc/avatar/20260828/a.png");
+        imFile.setUrl("http://localhost:9000/novartc/avatar/20260828/a.png");
         return imFile;
     }
 
@@ -66,7 +66,7 @@ class UserServiceImplTest {
 
         String avatarUrl = userService.updateAvatar("file-1");
 
-        assertThat(avatarUrl).isEqualTo("http://localhost:6000/novartc/avatar/20260828/a.png");
+        assertThat(avatarUrl).isEqualTo("http://localhost:9000/novartc/avatar/20260828/a.png");
         ArgumentCaptor<ImUser> userCaptor = ArgumentCaptor.forClass(ImUser.class);
         verify(imUserMapper).updateById(userCaptor.capture());
         assertThat(userCaptor.getValue().getAvatarUrl()).isEqualTo("avatar/20260828/a.png");

@@ -50,9 +50,9 @@ spring:
       # 最大活动连接数（默认8）
       max-active: 50
       # 获取连接的超时时间（毫秒）
-      max-wait: 60000
+      max-wait: 90000
       # 间隔多久检测一次空闲连接（毫秒）
-      time-between-eviction-runs-millis: 60000
+      time-between-eviction-runs-millis: 90000
       # 连接在池中最小生存时间（毫秒）
       min-evictable-idle-time-millis: 300000
       # 连接在池中最大生存时间（毫秒，需小于MySQL wait_timeout）
@@ -145,7 +145,7 @@ im:
   groupMembersCacheKeyPreFix: 'im:relation:group:members:'
 
 minio:
-  endpoint: http://localhost:6000
+  endpoint: http://localhost:9000
   access-key: novartc
   secret-key: novartc123456
   bucket: novartc

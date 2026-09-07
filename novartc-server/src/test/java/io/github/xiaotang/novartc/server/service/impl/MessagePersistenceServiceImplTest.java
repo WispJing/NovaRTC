@@ -60,7 +60,7 @@ class MessagePersistenceServiceImplTest {
     void persistShouldStoreFileContent() {
         ChatMessage.MsgBody message = baseSingle(ChatMessage.MessageType.FILE)
                 .setFileContent(ChatMessage.FileContent.newBuilder()
-                        .setFileUrl("http://localhost:6000/novartc/file/a.pdf")
+                        .setFileUrl("http://localhost:9000/novartc/file/a.pdf")
                         .setFileName("a.pdf")
                         .setFileSize(1024)
                         .setContentType("application/pdf")
@@ -74,7 +74,7 @@ class MessagePersistenceServiceImplTest {
         IMMessage entity = captor.getValue();
         assertThat(entity.getMessageType()).isEqualTo("FILE");
         assertThat(entity.getContentJson())
-                .contains("\"fileUrl\":\"http://localhost:6000/novartc/file/a.pdf\"")
+                .contains("\"fileUrl\":\"http://localhost:9000/novartc/file/a.pdf\"")
                 .contains("\"fileName\":\"a.pdf\"")
                 .contains("\"contentType\":\"application/pdf\"");
     }
@@ -83,7 +83,7 @@ class MessagePersistenceServiceImplTest {
     void persistShouldStoreVideoContent() {
         ChatMessage.MsgBody message = baseSingle(ChatMessage.MessageType.VIDEO)
                 .setVideoContent(ChatMessage.VideoContent.newBuilder()
-                        .setVideoUrl("http://localhost:6000/novartc/video/b.mp4")
+                        .setVideoUrl("http://localhost:9000/novartc/video/b.mp4")
                         .setFileName("b.mp4")
                         .setFileSize(2048)
                         .build())
@@ -96,7 +96,7 @@ class MessagePersistenceServiceImplTest {
         IMMessage entity = captor.getValue();
         assertThat(entity.getMessageType()).isEqualTo("VIDEO");
         assertThat(entity.getContentJson())
-                .contains("\"videoUrl\":\"http://localhost:6000/novartc/video/b.mp4\"")
+                .contains("\"videoUrl\":\"http://localhost:9000/novartc/video/b.mp4\"")
                 .contains("\"fileName\":\"b.mp4\"");
     }
 
@@ -104,7 +104,7 @@ class MessagePersistenceServiceImplTest {
     void persistShouldStoreAudioContentWithDuration() {
         ChatMessage.MsgBody message = baseSingle(ChatMessage.MessageType.AUDIO)
                 .setAudioContent(ChatMessage.AudioContent.newBuilder()
-                        .setAudioUrl("http://localhost:6000/novartc/audio/c.wav")
+                        .setAudioUrl("http://localhost:9000/novartc/audio/c.wav")
                         .setFileName("c.wav")
                         .setFileSize(512)
                         .setDurationSeconds(9)
@@ -118,7 +118,7 @@ class MessagePersistenceServiceImplTest {
         IMMessage entity = captor.getValue();
         assertThat(entity.getMessageType()).isEqualTo("AUDIO");
         assertThat(entity.getContentJson())
-                .contains("\"audioUrl\":\"http://localhost:6000/novartc/audio/c.wav\"")
+                .contains("\"audioUrl\":\"http://localhost:9000/novartc/audio/c.wav\"")
                 .contains("\"durationSeconds\":9");
     }
 }

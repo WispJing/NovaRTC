@@ -48,7 +48,7 @@ class MinioFileStorageServiceImplTest {
     @BeforeEach
     void setUp() {
         minioProperties = new MinioProperties();
-        minioProperties.setEndpoint("http://localhost:6000");
+        minioProperties.setEndpoint("http://localhost:9000");
         minioProperties.setBucket("novartc");
         minioProperties.setMaxFileSize(1L);
         minioProperties.setAllowedExtensions(List.of("jpg", "png", "pdf"));
@@ -77,7 +77,7 @@ class MinioFileStorageServiceImplTest {
         assertThat(response.getContentType()).isEqualTo("image/png");
         assertThat(response.getFileId()).isNotBlank();
         assertThat(response.getUrl())
-                .isEqualTo("http://localhost:6000/novartc/" + objectNameCaptor.getValue());
+                .isEqualTo("http://localhost:9000/novartc/" + objectNameCaptor.getValue());
 
         ArgumentCaptor<ImFile> imFileCaptor = ArgumentCaptor.forClass(ImFile.class);
         verify(imFileMapper).insert(imFileCaptor.capture());

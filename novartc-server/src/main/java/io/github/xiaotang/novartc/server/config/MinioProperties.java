@@ -14,7 +14,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "minio")
 public class MinioProperties {
     /**
-     * MinIO API 地址，如 http://localhost:6000
+     * MinIO API 地址，如 http://localhost:9000
      */
     private String endpoint;
     /**

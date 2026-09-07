@@ -99,7 +99,7 @@ class ChatServiceRecallTest {
         message.setTargetUserId("U1002");
         message.setIsGroup(Boolean.FALSE);
         message.setMessageType("IMAGE");
-        message.setContentJson("{\"imageUrl\":\"http://localhost:6000/novartc/image/x.png\"}");
+        message.setContentJson("{\"imageUrl\":\"http://localhost:9000/novartc/image/x.png\"}");
         message.setServerTime(serverTime);
         return message;
     }
@@ -108,7 +108,7 @@ class ChatServiceRecallTest {
         ImFile imFile = new ImFile();
         imFile.setId("file-1");
         imFile.setObjectKey("image/20260828/x.png");
-        imFile.setUrl("http://localhost:6000/novartc/image/x.png");
+        imFile.setUrl("http://localhost:9000/novartc/image/x.png");
         return imFile;
     }
 

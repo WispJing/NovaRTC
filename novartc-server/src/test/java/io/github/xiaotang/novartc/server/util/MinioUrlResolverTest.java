@@ -27,7 +27,7 @@ class MinioUrlResolverTest {
 
     @Test
     void shouldKeepLegacyAbsoluteUrlDuringMigration() {
-        assertThat(resolver.resolve("http://localhost:6000/novartc/avatar/a.jpg"))
-                .isEqualTo("http://localhost:6000/novartc/avatar/a.jpg");
+        assertThat(resolver.resolve("http://localhost:9000/novartc/avatar/a.jpg"))
+                .isEqualTo("http://localhost:9000/novartc/avatar/a.jpg");
     }
 }

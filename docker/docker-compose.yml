@@ -177,7 +177,7 @@ services:
     image: minio/minio:latest
     container_name: minio
     ports:
-      - "6000:9000"    # S3 API，宿主机使用 6000
+      - "9000:9000"    # S3 API，宿主机使用 9000
       - "6001:9001"    # 管理控制台，宿主机使用 6001
     networks:
       - novartc-net
