@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.*;
@@ -232,10 +233,12 @@ public class AdminConsoleService {
         return requests.stream().map(this::toFriendRequestVO).toList();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO approveFriendRequest(String currentUserId, String requestId) {
         return handleFriendRequest(currentUserId, requestId, FriendRequestStatus.ACCEPTED.name());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public FriendRequestVO rejectFriendRequest(String currentUserId, String requestId) {
         return handleFriendRequest(currentUserId, requestId, FriendRequestStatus.REJECTED.name());
     }

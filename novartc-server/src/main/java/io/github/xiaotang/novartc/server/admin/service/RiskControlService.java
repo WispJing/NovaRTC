@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -61,6 +62,7 @@ public class RiskControlService {
         return items.stream().map(item -> toUserControlVO(item, userMap.get(item.getUserId()))).toList();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RiskUserControlVO banLogin(String operatorUserId, String operatorName, AdminRiskUserControlRequest request) {
         validateUser(request.getUserId());
         String scope = StringUtils.defaultIfBlank(request.getScope(), LoginConstant.LOGIN_SCOPE_IM);
@@ -83,6 +85,7 @@ public class RiskControlService {
         return toUserControlVO(entity, user);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RiskUserControlVO muteUser(String operatorUserId, String operatorName, AdminRiskUserControlRequest request) {
         validateUser(request.getUserId());
         closeUserControls(request.getUserId(), RiskConstant.USER_CONTROL_SEND_MUTE, LoginConstant.LOGIN_SCOPE_ALL);
@@ -122,6 +125,7 @@ public class RiskControlService {
         return items.stream().map(item -> toGroupMuteVO(item, groupMap.get(item.getGroupId()), userMap.get(item.getUserId()))).toList();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RiskGroupMuteVO muteGroupAll(String operatorUserId, String operatorName, AdminRiskGroupMuteRequest request) {
         validateGroup(request.getGroupId());
         closeGroupMutes(request.getGroupId(), null, RiskConstant.GROUP_MUTE_SCOPE_ALL);
@@ -140,6 +144,7 @@ public class RiskControlService {
         return toGroupMuteVO(entity, imGroupChatService.getById(request.getGroupId()), null);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RiskGroupMuteVO muteGroupUser(String operatorUserId, String operatorName, AdminRiskGroupMuteRequest request) {
         validateGroup(request.getGroupId());
         validateUser(request.getUserId());

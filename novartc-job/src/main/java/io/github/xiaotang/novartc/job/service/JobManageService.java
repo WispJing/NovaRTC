@@ -20,6 +20,7 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.UUID;
@@ -66,6 +67,7 @@ public class JobManageService {
     /**
      * 新增任务。
      */
+    @Transactional(rollbackFor = Exception.class)
     public JobInfoVO create(JobSaveRequest request) {
         validate(request);
         JobInfo job = new JobInfo();
@@ -80,6 +82,7 @@ public class JobManageService {
     /**
      * 编辑任务（调度配置变更后重新注册触发器）。
      */
+    @Transactional(rollbackFor = Exception.class)
     public JobInfoVO update(String id, JobSaveRequest request) {
         validate(request);
         JobInfo job = requireJob(id);
@@ -93,6 +96,7 @@ public class JobManageService {
     /**
      * 启用/停用任务。
      */
+    @Transactional(rollbackFor = Exception.class)
     public JobInfoVO toggle(String id) {
         JobInfo job = requireJob(id);
         boolean enabled = JobConstants.STATUS_ENABLED.equals(job.getStatus());

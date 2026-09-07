@@ -8,6 +8,7 @@ import io.github.xiaotang.novartc.server.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -83,6 +84,7 @@ public class AdminPermissionService {
         return getMenusForUser(userId, false).stream().map(AdminMenu::getId).distinct().toList();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void replaceUserMenus(String userId, List<String> menuIds) {
         adminUserMenuService.remove(new LambdaQueryWrapper<AdminUserMenu>().eq(AdminUserMenu::getUserId, userId));
         if (menuIds == null || menuIds.isEmpty()) {
