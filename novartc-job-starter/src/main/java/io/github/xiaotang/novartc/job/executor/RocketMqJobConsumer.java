@@ -43,6 +43,7 @@ public class RocketMqJobConsumer {
         consumer.setNamesrvAddr(nameServer);
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         consumer.setMessageModel(MessageModel.CLUSTERING);
+        configureConsumer(consumer);
         // Tag 与目标服务名完全一致，保证一条任务只会被目标服务消费。
         consumer.subscribe(properties.getTopic(), properties.getServiceName());
         consumer.registerMessageListener(
@@ -51,6 +52,16 @@ public class RocketMqJobConsumer {
         consumer.start();
         logger.info("任务消费者已启动: topic={}, tag={}, group={}",
                 properties.getTopic(), properties.getServiceName(), consumerGroup);
+    }
+
+    /**
+     * 任务在消费线程内同步完成后才确认消息。消费超时仅保护 RocketMQ 的投递判定，
+     * 不会中断已经开始执行的处理器。
+     */
+    void configureConsumer(DefaultMQPushConsumer targetConsumer) {
+        targetConsumer.setConsumeThreadMin(properties.getConsumeThreadMin());
+        targetConsumer.setConsumeThreadMax(properties.getConsumeThreadMax());
+        targetConsumer.setConsumeTimeout(properties.getConsumeTimeoutMinutes());
     }
 
     private ConsumeConcurrentlyStatus consume(
