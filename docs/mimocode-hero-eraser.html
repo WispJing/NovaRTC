@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>鼠标擦除显影 · demo</title>
+    <style>
+      :root {
+        --color-bg: #fcfaf8;
+        --color-ink: #26251e;
+        --color-ink-soft: #504f49;
+        --font-sans: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--color-bg);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .hero {
+        position: relative;
+        height: 592px;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      /* 底层：那张「画」。默认用多层 CSS 渐变自绘，离线可跑、不引外部素材。
+         想换成真实图片，改脚本顶部 CONFIG.BG_IMAGE 即可（会覆盖这里的渐变）。 */
+      .hero__bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background-color: #e8dcc8;
+        background-image: radial-gradient(
+            90% 70% at 20% 25%,
+            rgba(196, 124, 72, 0.75),
+            rgba(196, 124, 72, 0) 60%
+          ),
+          radial-gradient(
+            80% 70% at 76% 28%,
+            rgba(126, 150, 132, 0.6),
+            rgba(126, 150, 132, 0) 62%
+          ),
+          radial-gradient(
+            70% 60% at 56% 78%,
+            rgba(168, 86, 70, 0.55),
+            rgba(168, 86, 70, 0) 65%
+          ),
+          radial-gradient(
+            120% 90% at 50% 112%,
+            rgba(90, 74, 56, 0.65),
+            rgba(90, 74, 56, 0) 60%
+          ),
+          linear-gradient(150deg, #f0e4d0 0%, #d8c3a2 40%, #c2a888 70%, #a98f6d 100%);
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* 遮罩：一块与页面底色完全相同的 canvas，光标在上面「挖洞」露出底图。
+         用 canvas 而非 SVG mask，是为了跨浏览器（含 Safari/WebKit）稳定。 */
+      .hero__mask {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        display: block;
+      }
+
+      /* 文字层在遮罩之上，无论擦不擦都清晰可见 */
+      .hero__content {
+        position: relative;
+        z-index: 2;
+        max-width: 809px;
+        margin: 0 auto;
+        padding: 180px 24px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .hero__title {
+        margin: 0;
+        font-size: 64px;
+        line-height: 1.1;
+        letter-spacing: 1px;
+        font-weight: 500;
+      }
+
+      .hero__subtitle {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.8;
+        color: var(--color-ink-soft);
+      }
+
+      .hero__hint {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.8;
+        color: var(--color-ink-soft);
+        opacity: 0.75;
+      }
+
+      .notes {
+        max-width: 809px;
+        margin: 0 auto;
+        padding: 40px 24px 64px;
+        font-size: 13px;
+        line-height: 2;
+        color: var(--color-ink-soft);
+      }
+
+      .notes code {
+        background: #f3f0ef;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+      }
+
+      /* 触屏设备没有 hover，直接不盖遮罩，底图完整显示 */
+      @media (hover: none) {
+        .hero__mask {
+          display: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          height: 420px;
+        }
+        .hero__content {
+          padding-top: 120px;
+        }
+        .hero__title {
+          font-size: 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero" id="hero">
+      <div class="hero__bg" id="heroBg" aria-hidden="true"></div>
+      <canvas class="hero__mask" id="heroMask" aria-hidden="true"></canvas>
+
+      <div class="hero__content">
+        <h1 class="hero__title">擦除显影</h1>
+        <p class="hero__subtitle">
+          复刻 MiMo Code 主页首屏效果：一块与页面同色的画布盖住底图，
+          鼠标划过时墨点晕开、底图透出，随后自动复原。
+        </p>
+        <p class="hero__hint">
+          在上方区域移动鼠标试试 · 加 <code>?auto=1</code> 可自动扫掠演示
+        </p>
+      </div>
+    </section>
+
+    <div class="notes">
+      实现要点：<code>destination-out</code> 每帧挖洞 +
+      <code>source-over</code> 每帧重涂遮罩（所以洞会自愈）；
+      墨点轮廓用三频正弦扰动近似 <code>feTurbulence</code> 墨迹边缘；
+      <code>mousemove</code> 沿路径按 12px 插值补点，甩动鼠标也不断线；
+      存活墨点清零后 rAF 循环自动暂停。参数见脚本顶部
+      <code>CONFIG</code>。
+    </div>
+
+    <div id="selftest" style="display: none"></div>
+
+    <script>
+      (function () {
+        var CONFIG = {
+          // 换成真实图片时填 URL（相对/绝对均可），留空则用 CSS 渐变自绘的底图
+          BG_IMAGE: "",
+          // 遮罩色兜底值；实际会优先从 --color-bg 解析，保证和页面底色严丝合缝
+          MASK: "252, 250, 248",
+          R_START: 8, // 墨点起始半径
+          R_END: 128, // 墨点最大半径基准
+          R_VARY: 0.45, // 每点半径随机幅度 → 笔触变化
+          LIFETIME: 520, // ms，单个墨点扩张 + 淡出的寿命
+          STAMP_STEP: 12, // 沿光标路径的补点间距
+          MAX_STAMPS: 160, // 同时存活墨点上限
+          DPR_CAP: 2,
+          AUTO_DURATION: 2000 // ?auto=1 时自动扫掠时长 ms
+        };
+
+        var hero = document.getElementById("hero");
+        var canvas = document.getElementById("heroMask");
+        var bg = document.getElementById("heroBg");
+        var selftest = document.getElementById("selftest");
+        if (!hero || !canvas) return;
+
+        if (CONFIG.BG_IMAGE && bg) {
+          bg.style.backgroundImage = 'url("' + CONFIG.BG_IMAGE + '")';
+          bg.style.backgroundColor = "transparent";
+        }
+
+        // 触屏设备没有 hover：CSS 已隐藏遮罩，这里直接不启动
+        if (!window.matchMedia("(hover: hover)").matches) return;
+
+        var ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        // 遮罩色跟随 --color-bg，避免两者漂移导致画布边界露馅
+        var MASK = (function () {
+          var v = getComputedStyle(document.documentElement)
+            .getPropertyValue("--color-bg")
+            .trim();
+          var m = /^#([0-9a-f]{6})$/i.exec(v);
+          if (!m) return CONFIG.MASK;
+          var n = parseInt(m[1], 16);
+          return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(", ");
+        })();
+
+        var DPR = Math.min(window.devicePixelRatio || 1, CONFIG.DPR_CAP);
+        var w = 0;
+        var h = 0;
+
+        function resize() {
+          var rect = hero.getBoundingClientRect();
+          w = rect.width;
+          h = rect.height;
+          canvas.width = Math.round(w * DPR);
+          canvas.height = Math.round(h * DPR);
+          // canvas 是 replaced element，光靠 inset:0 不会拉伸；
+          // 不显式锁定 CSS 尺寸的话，光标和笔刷会错开一个 DPR 倍。
+          canvas.style.width = w + "px";
+          canvas.style.height = h + "px";
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = "rgb(" + MASK + ")";
+          ctx.fillRect(0, 0, w, h);
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        var stamps = [];
+        var lastX = null;
+        var lastY = null;
+
+        function addStamp(x, y) {
+          if (stamps.length >= CONFIG.MAX_STAMPS) stamps.shift();
+          stamps.push({
+            x: x,
+            y: y,
+            born: performance.now(),
+            seed: Math.random() * Math.PI * 2,
+            rmax:
+              CONFIG.R_END *
+              (1 - CONFIG.R_VARY + Math.random() * CONFIG.R_VARY)
+          });
+        }
+
+        function stampAlong(x, y) {
+          if (lastX === null) {
+            addStamp(x, y);
+          } else {
+            var dx = x - lastX;
+            var dy = y - lastY;
+            var dist = Math.hypot(dx, dy);
+            var steps = Math.max(1, Math.ceil(dist / CONFIG.STAMP_STEP));
+            for (var i = 1; i <= steps; i++) {
+              addStamp(lastX + (dx * i) / steps, lastY + (dy * i) / steps);
+            }
+          }
+          lastX = x;
+          lastY = y;
+        }
+
+        // 单个墨点：边缘不规则、羽化的洞，露出下面的画。
+        // 抖动的半径近似原来 feTurbulence 的墨迹边缘。
+        function carveInk(x, y, r, alpha, seed) {
+          var g = ctx.createRadialGradient(x, y, r * 0.25, x, y, r);
+          g.addColorStop(0, "rgba(0, 0, 0, " + 0.95 * alpha + ")");
+          g.addColorStop(0.55, "rgba(0, 0, 0, " + 0.88 * alpha + ")");
+          g.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          var segs = 32;
+          for (var i = 0; i <= segs; i++) {
+            var a = (i / segs) * Math.PI * 2;
+            var wob =
+              0.78 +
+              0.14 * Math.sin(a * 3 + seed) +
+              0.08 * Math.sin(a * 7 + seed * 2.1) +
+              0.05 * Math.sin(a * 13 + seed * 0.7);
+            var rr = r * wob;
+            var px = x + Math.cos(a) * rr;
+            var py = y + Math.sin(a) * rr;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        var AUTO =
+          /[?&]auto=1\b/.test(location.search) && w > 0 && h > 0;
+        var autoStart = 0;
+        var alphaMin = 255;
+        var autoX = 0;
+        var autoY = 0;
+
+        var running = false;
+        function loop() {
+          var now = performance.now();
+
+          // 自动演示：由 rAF 单一时钟驱动虚拟光标，无头环境下也确定可复现
+          if (AUTO) {
+            if (!autoStart) autoStart = now;
+            var t = (now - autoStart) / CONFIG.AUTO_DURATION;
+            if (t <= 1) {
+              autoX = w * (0.08 + 0.84 * t);
+              autoY = h * 0.5 + Math.sin(t * Math.PI * 3) * h * 0.22;
+              stampAlong(autoX, autoY);
+            }
+          }
+
+          // 先重涂整块遮罩，再把所有存活墨点重新挖出来
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = "rgb(" + MASK + ")";
+          ctx.fillRect(0, 0, w, h);
+
+          ctx.globalCompositeOperation = "destination-out";
+          for (var i = stamps.length - 1; i >= 0; i--) {
+            var p = (now - stamps[i].born) / CONFIG.LIFETIME;
+            if (p >= 1) {
+              stamps.splice(i, 1);
+              continue;
+            }
+            var ease = 1 - Math.pow(1 - p, 3); // easeOutCubic 扩张
+            var r = CONFIG.R_START + (stamps[i].rmax - CONFIG.R_START) * ease;
+            var alpha = 1 - p * p; // 随寿命把洞重新合上
+            carveInk(stamps[i].x, stamps[i].y, r, alpha, stamps[i].seed);
+          }
+
+          if (AUTO && stamps.length) {
+            // 采样光标处的画布 alpha，验证洞确实被挖穿
+            var sx = Math.min(canvas.width - 1, Math.max(0, Math.round(autoX * DPR)));
+            var sy = Math.min(canvas.height - 1, Math.max(0, Math.round(autoY * DPR)));
+            var a = ctx.getImageData(sx, sy, 1, 1).data[3];
+            if (a < alphaMin) alphaMin = a;
+          }
+
+          var autoSweepRunning =
+            AUTO && autoStart && now - autoStart < CONFIG.AUTO_DURATION;
+          if (stamps.length || autoSweepRunning) {
+            requestAnimationFrame(loop);
+          } else {
+            running = false; // 没有存活墨点了 → 暂停，不空转
+            if (AUTO) finishAuto();
+          }
+        }
+
+        function start() {
+          if (!running) {
+            running = true;
+            requestAnimationFrame(loop);
+          }
+        }
+
+        hero.addEventListener("mouseenter", function (e) {
+          var rect = hero.getBoundingClientRect();
+          lastX = e.clientX - rect.left;
+          lastY = e.clientY - rect.top;
+          stampAlong(lastX, lastY);
+          start();
+        });
+
+        hero.addEventListener("mousemove", function (e) {
+          var rect = hero.getBoundingClientRect();
+          stampAlong(e.clientX - rect.left, e.clientY - rect.top);
+          start();
+        });
+
+        hero.addEventListener("mouseleave", function () {
+          lastX = null;
+          lastY = null;
+        });
+
+        // 自检时机跟随动画真正结束（最后一个墨点过期、遮罩已整块重涂），
+        // 而不是固定 setTimeout：首帧延迟会让定时器早于墨点过期，
+        // 那样既测不到自愈，自动演示也会在画布上留一个永久的洞。
+        var autoFinished = false;
+        function finishAuto() {
+          if (autoFinished) return;
+          autoFinished = true;
+          var cx = Math.min(canvas.width - 1, Math.round((w / 2) * DPR));
+          var cy = Math.min(canvas.height - 1, Math.round((h / 2) * DPR));
+          var alphaAfter = ctx.getImageData(cx, cy, 1, 1).data[3];
+          var healed = alphaMin < 128 && alphaAfter === 255 && !stamps.length;
+          if (selftest) {
+            selftest.textContent =
+              (healed ? "PASS" : "FAIL") +
+              " alphaMin=" + alphaMin +
+              " alphaAfter=" + alphaAfter +
+              " stamps=" + stamps.length;
+          }
+        }
+
+        if (AUTO) start();
+      })();
+    </script>
+  </body>
+</html>
