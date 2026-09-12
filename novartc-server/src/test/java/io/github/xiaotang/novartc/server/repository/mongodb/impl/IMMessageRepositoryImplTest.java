@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
@@ -59,6 +60,24 @@ class IMMessageRepositoryImplTest {
 
         verify(mongoTemplate, never()).aggregate(
                 any(Aggregation.class), any(String.class), eq(IMMessage.class));
+    }
+
+    @Test
+    void findOtherUserMessageIdsByChatIdsShouldGroupProjectedMessages() {
+        IMMessage chatOneFirst = message("chat-1", "message-1");
+        IMMessage chatTwo = message("chat-2", "message-2");
+        IMMessage chatOneSecond = message("chat-1", "message-3");
+        when(mongoTemplate.find(any(Query.class), eq(IMMessage.class)))
+                .thenReturn(List.of(chatOneFirst, chatTwo, chatOneSecond));
+
+        Map<String, List<String>> result = repository.findOtherUserMessageIdsByChatIds(
+                List.of("chat-1", "chat-2"), "user-1");
+
+        assertThat(result).containsExactly(
+                Map.entry("chat-1", List.of("message-1", "message-3")),
+                Map.entry("chat-2", List.of("message-2"))
+        );
+        verify(mongoTemplate).find(any(Query.class), eq(IMMessage.class));
     }
 
     private IMMessage message(String chatId, String messageId) {

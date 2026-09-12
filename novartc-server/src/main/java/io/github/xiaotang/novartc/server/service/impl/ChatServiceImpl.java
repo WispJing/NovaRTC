@@ -473,12 +473,13 @@ public class ChatServiceImpl implements ChatService {
                 .distinct()
                 .toList();
         Map<String, IMMessage> latestMessages = imMessageRepository.findLatestByChatIds(chatIds);
+        Map<String, Integer> unreadCounts = countUnreadMessages(chatIds, currentUserId);
         for (ChatInfoVO chat : chats) {
             IMMessage latest = latestMessages.get(chat.getChatId());
             if (latest != null) {
                 applyLastMessage(chat, latest);
             }
-            chat.setUnreadCount(countUnreadMessages(chat.getChatId(), currentUserId));
+            chat.setUnreadCount(unreadCounts.getOrDefault(chat.getChatId(), 0));
         }
     }
 
@@ -488,14 +489,24 @@ public class ChatServiceImpl implements ChatService {
         vo.setLastMessage(resolveLastMessage(latest));
     }
 
-    private int countUnreadMessages(String chatId, String currentUserId) {
-        List<String> otherUserMessageIds = imMessageRepository.findOtherUserMessageIds(chatId, currentUserId);
-        if (otherUserMessageIds.isEmpty()) {
-            return 0;
+    private Map<String, Integer> countUnreadMessages(List<String> chatIds, String currentUserId) {
+        Map<String, List<String>> messageIdsByChat = imMessageRepository
+                .findOtherUserMessageIdsByChatIds(chatIds, currentUserId);
+        List<String> messageIds = messageIdsByChat.values().stream()
+                .flatMap(List::stream)
+                .distinct()
+                .toList();
+        if (messageIds.isEmpty()) {
+            return Map.of();
         }
 
-        Set<String> readMessageIds = imReadStatusRepository.findReadMessageIds(currentUserId, otherUserMessageIds);
-        return otherUserMessageIds.size() - readMessageIds.size();
+        Set<String> readMessageIds = imReadStatusRepository.findReadMessageIds(currentUserId, messageIds);
+        return messageIdsByChat.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> (int) entry.getValue().stream()
+                        .filter(messageId -> !readMessageIds.contains(messageId))
+                        .count()
+        ));
     }
 
     private IMReadStatus createReadStatus(String currentUserId, String messageId) {

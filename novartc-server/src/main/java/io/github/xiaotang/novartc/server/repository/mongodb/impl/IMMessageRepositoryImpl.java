@@ -78,6 +78,25 @@ public class IMMessageRepositoryImpl extends BaseMongoDaoIMpl<IMMessage> impleme
     }
 
     @Override
+    public Map<String, List<String>> findOtherUserMessageIdsByChatIds(List<String> chatIds,
+                                                                        String currentUserId) {
+        if (chatIds == null || chatIds.isEmpty()) {
+            return Map.of();
+        }
+
+        Query query = Query.query(Criteria.where("chat_id").in(chatIds).and("sender_id").ne(currentUserId));
+        query.fields().include("chat_id").include("message_id");
+        return find(query).stream()
+                .filter(message -> message.getChatId() != null && message.getMessageId() != null
+                        && !message.getMessageId().isBlank())
+                .collect(Collectors.groupingBy(
+                        IMMessage::getChatId,
+                        LinkedHashMap::new,
+                        Collectors.mapping(IMMessage::getMessageId, Collectors.toList())
+                ));
+    }
+
+    @Override
     public IMMessage findByMessageId(String messageId) {
         return findOne(Query.query(Criteria.where("message_id").is(messageId)));
     }

@@ -107,8 +107,8 @@ class AdminConsoleChatListTest {
         when(imUserService.list(any(LambdaQueryWrapper.class))).thenReturn(List.of(peer));
         when(imGroupMemberService.list(any(LambdaQueryWrapper.class))).thenReturn(List.of());
         when(imMessageRepository.findLatestByChatIds(anyList())).thenReturn(Map.of("chat-1", latest));
-        when(imMessageRepository.findOtherUserMessageIds("chat-1", "user-1"))
-                .thenReturn(List.of("message-1", "message-2", "message-3"));
+        when(imMessageRepository.findOtherUserMessageIdsByChatIds(List.of("chat-1"), "user-1"))
+                .thenReturn(Map.of("chat-1", List.of("message-1", "message-2", "message-3")));
         when(imReadStatusRepository.findReadMessageIds(
                 "user-1", List.of("message-1", "message-2", "message-3")))
                 .thenReturn(Set.of());
@@ -119,7 +119,7 @@ class AdminConsoleChatListTest {
         assertThat(result.get(0).getLastMessage()).isEqualTo("最新消息");
         assertThat(result.get(0).getUnreadCount()).isEqualTo(3);
         verify(imMessageRepository).findLatestByChatIds(argThat(chatIds -> chatIds.equals(List.of("chat-1"))));
-        verify(imMessageRepository).findOtherUserMessageIds("chat-1", "user-1");
+        verify(imMessageRepository).findOtherUserMessageIdsByChatIds(List.of("chat-1"), "user-1");
         verify(imReadStatusRepository).findReadMessageIds(
                 "user-1", List.of("message-1", "message-2", "message-3"));
         verify(imMessageRepository, never()).findHistory(anyString(), any(), anyInt());
@@ -141,7 +141,7 @@ class AdminConsoleChatListTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getUnreadCount()).isZero();
         verify(imMessageRepository).findLatestByChatIds(List.of("chat-1"));
-        verify(imMessageRepository, never()).findOtherUserMessageIds(anyString(), anyString());
+        verify(imMessageRepository, never()).findOtherUserMessageIdsByChatIds(anyList(), anyString());
         verify(imReadStatusRepository, never()).findReadMessageIds(anyString(), anyList());
         verify(imMessageRepository, never()).findHistory(anyString(), any(), anyInt());
     }

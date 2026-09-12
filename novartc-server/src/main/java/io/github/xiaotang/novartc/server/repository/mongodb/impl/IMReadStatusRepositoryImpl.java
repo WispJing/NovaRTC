@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @Repository
 public class IMReadStatusRepositoryImpl extends BaseMongoDaoIMpl<IMReadStatus> implements IMReadStatusRepository {
 
+    private static final int MESSAGE_ID_BATCH_SIZE = 1000;
+
     protected IMReadStatusRepositoryImpl() {
         super(IMReadStatus.class);
     }
@@ -31,9 +33,15 @@ public class IMReadStatusRepositoryImpl extends BaseMongoDaoIMpl<IMReadStatus> i
             return Set.of();
         }
 
-        Query query = Query.query(Criteria.where("user_id").is(userId).and("message_id").in(messageIds));
-        return find(query).stream()
-                .map(IMReadStatus::getMessage_id)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> result = new LinkedHashSet<>();
+        for (int start = 0; start < messageIds.size(); start += MESSAGE_ID_BATCH_SIZE) {
+            int end = Math.min(start + MESSAGE_ID_BATCH_SIZE, messageIds.size());
+            Query query = Query.query(Criteria.where("user_id").is(userId)
+                    .and("message_id").in(messageIds.subList(start, end)));
+            find(query).stream()
+                    .map(IMReadStatus::getMessage_id)
+                    .forEach(result::add);
+        }
+        return result;
     }
 }

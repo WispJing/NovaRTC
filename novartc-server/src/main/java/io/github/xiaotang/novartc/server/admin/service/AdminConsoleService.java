@@ -416,6 +416,9 @@ public class AdminConsoleService {
                 .distinct()
                 .toList();
         Map<String, IMMessage> latestMessages = imMessageRepository.findLatestByChatIds(chatIds);
+        Map<String, Integer> unreadCounts = includeUnread
+                ? countUnreadMessages(chatIds, currentUserId)
+                : Map.of();
         for (ChatInfoVO chat : chats) {
             IMMessage message = latestMessages.get(chat.getChatId());
             if (message != null) {
@@ -423,17 +426,25 @@ public class AdminConsoleService {
                 chat.setLastMessageType(message.getMessageType());
                 chat.setLastMessageTime(message.getServerTime());
             }
-            chat.setUnreadCount(includeUnread ? countUnreadMessages(chat.getChatId(), currentUserId) : 0);
+            chat.setUnreadCount(unreadCounts.getOrDefault(chat.getChatId(), 0));
         }
     }
 
-    private int countUnreadMessages(String chatId, String userId) {
-        List<String> unreadMessageIds = imMessageRepository.findOtherUserMessageIds(chatId, userId);
-        if (unreadMessageIds.isEmpty()) {
-            return 0;
+    private Map<String, Integer> countUnreadMessages(List<String> chatIds, String userId) {
+        Map<String, List<String>> messageIdsByChat = imMessageRepository
+                .findOtherUserMessageIdsByChatIds(chatIds, userId);
+        List<String> messageIds = messageIdsByChat.values().stream()
+                .flatMap(List::stream)
+                .distinct()
+                .toList();
+        if (messageIds.isEmpty()) {
+            return Map.of();
         }
-        Set<String> readIds = imReadStatusRepository.findReadMessageIds(userId, unreadMessageIds);
-        return (int) unreadMessageIds.stream().filter(id -> !readIds.contains(id)).count();
+        Set<String> readIds = imReadStatusRepository.findReadMessageIds(userId, messageIds);
+        return messageIdsByChat.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> (int) entry.getValue().stream().filter(id -> !readIds.contains(id)).count()
+        ));
     }
 
     private boolean belongsToChat(String userId, String chatId) {

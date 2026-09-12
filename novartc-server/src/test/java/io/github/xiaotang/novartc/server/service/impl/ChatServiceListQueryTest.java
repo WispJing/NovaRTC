@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -117,16 +118,13 @@ class ChatServiceListQueryTest {
         when(userRouteService.getUserInstances(anyString())).thenReturn(Set.of());
         when(imMessageRepository.findLatestByChatIds(anyList()))
                 .thenReturn(Map.of("chat-single", singleLatest, "chat-group", groupLatest));
-        when(imMessageRepository.findOtherUserMessageIds("chat-single", "user-1"))
-                .thenReturn(List.of("single-read", "single-unread"));
-        when(imMessageRepository.findOtherUserMessageIds("chat-group", "user-1"))
-                .thenReturn(List.of("group-read", "group-unread-1", "group-unread-2"));
-        when(imReadStatusRepository.findReadMessageIds(
-                "user-1", List.of("single-read", "single-unread")))
-                .thenReturn(Set.of("single-read"));
-        when(imReadStatusRepository.findReadMessageIds(
-                "user-1", List.of("group-read", "group-unread-1", "group-unread-2")))
-                .thenReturn(Set.of("group-read"));
+        when(imMessageRepository.findOtherUserMessageIdsByChatIds(anyList(), anyString()))
+                .thenReturn(Map.of(
+                        "chat-single", List.of("single-read", "single-unread"),
+                        "chat-group", List.of("group-read", "group-unread-1", "group-unread-2")
+                ));
+        when(imReadStatusRepository.findReadMessageIds(eq("user-1"), anyList()))
+                .thenReturn(Set.of("single-read", "group-read"));
 
         List<ChatInfoVO> result = chatService.chatList();
 
@@ -140,12 +138,11 @@ class ChatServiceListQueryTest {
 
         verify(imMessageRepository).findLatestByChatIds(argThat(chatIds ->
                 chatIds.size() == 2 && chatIds.containsAll(List.of("chat-single", "chat-group"))));
-        verify(imMessageRepository).findOtherUserMessageIds("chat-single", "user-1");
-        verify(imMessageRepository).findOtherUserMessageIds("chat-group", "user-1");
+        verify(imMessageRepository).findOtherUserMessageIdsByChatIds(argThat(chatIds ->
+                chatIds.size() == 2 && chatIds.containsAll(List.of("chat-single", "chat-group"))), eq("user-1"));
         verify(imReadStatusRepository).findReadMessageIds(
-                "user-1", List.of("single-read", "single-unread"));
-        verify(imReadStatusRepository).findReadMessageIds(
-                "user-1", List.of("group-read", "group-unread-1", "group-unread-2"));
+                eq("user-1"), argThat(messageIds -> messageIds.size() == 5 && messageIds.containsAll(List.of(
+                        "single-read", "single-unread", "group-read", "group-unread-1", "group-unread-2"))));
         verify(imMessageRepository, never()).findHistory(anyString(), any(), anyInt());
     }
 
