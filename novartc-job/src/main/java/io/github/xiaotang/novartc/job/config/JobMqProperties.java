@@ -32,4 +32,10 @@ public class JobMqProperties {
      * 结果回传消费者组
      */
     private String resultConsumerGroup = "novartc-job-result-consumer-group";
+
+    /**
+     * 任务从触发到等待结果的最大时长，超时后将 PENDING/PROCESSING 日志收敛为失败。
+     * 该值应大于最长处理器执行时间及消息传输延迟，避免仍在运行的任务被提前判定失败。
+     */
+    private long resultTimeoutSeconds = 3600;
 }

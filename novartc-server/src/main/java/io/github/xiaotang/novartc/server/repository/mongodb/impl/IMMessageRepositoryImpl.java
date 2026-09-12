@@ -4,11 +4,16 @@ import io.github.xiaotang.novartc.server.entity.mongodb.IMMessage;
 import io.github.xiaotang.novartc.server.repository.mongodb.BaseMongoDaoIMpl;
 import io.github.xiaotang.novartc.server.repository.mongodb.IMMessageRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2026/3/24 10:20
@@ -35,6 +40,31 @@ public class IMMessageRepositoryImpl extends BaseMongoDaoIMpl<IMMessage> impleme
                 .limit(limit);
 
         return find(query);
+    }
+
+    @Override
+    public Map<String, IMMessage> findLatestByChatIds(List<String> chatIds) {
+        if (chatIds == null || chatIds.isEmpty()) {
+            return Map.of();
+        }
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("chat_id").in(chatIds)),
+                Aggregation.sort(Sort.by(
+                        Sort.Order.asc("chat_id"),
+                        Sort.Order.desc("chat_seq")
+                )),
+                Aggregation.group("chat_id").first(Aggregation.ROOT).as("latest_message"),
+                Aggregation.replaceRoot("latest_message")
+        );
+        return aggregate(aggregation, IMMessage.class).stream()
+                .filter(message -> message.getChatId() != null)
+                .collect(Collectors.toMap(
+                        IMMessage::getChatId,
+                        Function.identity(),
+                        (first, ignored) -> first,
+                        LinkedHashMap::new
+                ));
     }
 
     @Override

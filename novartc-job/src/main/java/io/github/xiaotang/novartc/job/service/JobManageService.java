@@ -21,13 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Date;
 import java.util.UUID;
 
 /**
  * 定时任务管理服务：负责任务增删改查、启停、手动触发与调度日志查询，
- * 并保证数据库与 Quartz 调度器状态一致。
+ * 数据库为唯一事实源，事务提交后同步 Quartz，并由周期对账补偿同步失败。
  *
  * @author xiaotang
  */
@@ -74,7 +76,7 @@ public class JobManageService {
         job.setId(UUID.randomUUID().toString().replace("-", ""));
         copyFromRequest(request, job);
         jobInfoService.save(job);
-        scheduleIfEnabled(job);
+        synchronizeAfterCommit(job);
         logger.info("新增定时任务: jobId={}, jobName={}", job.getId(), job.getJobName());
         return toVO(job);
     }
@@ -88,7 +90,7 @@ public class JobManageService {
         JobInfo job = requireJob(id);
         copyFromRequest(request, job);
         jobInfoService.updateById(job);
-        reschedule(job);
+        synchronizeAfterCommit(job);
         logger.info("编辑定时任务: jobId={}, jobName={}", job.getId(), job.getJobName());
         return toVO(job);
     }
@@ -102,7 +104,7 @@ public class JobManageService {
         boolean enabled = JobConstants.STATUS_ENABLED.equals(job.getStatus());
         job.setStatus(enabled ? JobConstants.STATUS_DISABLED : JobConstants.STATUS_ENABLED);
         jobInfoService.updateById(job);
-        reschedule(job);
+        synchronizeAfterCommit(job);
         logger.info("切换定时任务状态: jobId={}, jobName={}, status={}", job.getId(), job.getJobName(), job.getStatus());
         return toVO(job);
     }
@@ -110,14 +112,11 @@ public class JobManageService {
     /**
      * 删除任务（逻辑删除，调度日志保留）。
      */
+    @Transactional(rollbackFor = Exception.class)
     public void delete(String id) {
         JobInfo job = requireJob(id);
-        try {
-            jobSchedulerService.unschedule(job.getId());
-        } catch (SchedulerException e) {
-            throw new IllegalStateException("移除调度器任务失败: " + e.getMessage(), e);
-        }
         jobInfoService.removeById(job.getId());
+        unscheduleAfterCommit(job.getId(), job.getJobName());
         logger.info("删除定时任务: jobId={}, jobName={}", job.getId(), job.getJobName());
     }
 
@@ -148,30 +147,48 @@ public class JobManageService {
         return job;
     }
 
-    private void scheduleIfEnabled(JobInfo job) {
-        if (!JobConstants.STATUS_ENABLED.equals(job.getStatus())) {
-            return;
-        }
-        try {
-            jobSchedulerService.schedule(job);
-        } catch (SchedulerException e) {
-            throw new IllegalStateException("任务注册到调度器失败: " + e.getMessage(), e);
-        }
+    /**
+     * 数据库事务提交后再改变 Quartz 外部状态。同步失败不回滚已提交的数据库记录，
+     * JobSchedulerService 的周期对账会按数据库状态继续补偿。
+     */
+    private void synchronizeAfterCommit(JobInfo job) {
+        runAfterCommit(() -> {
+            try {
+                if (JobConstants.STATUS_ENABLED.equals(job.getStatus())) {
+                    jobSchedulerService.schedule(job);
+                } else {
+                    jobSchedulerService.unschedule(job.getId());
+                }
+            } catch (SchedulerException e) {
+                logger.error("事务已提交但同步 Quartz 失败，等待周期对账: jobId={}, jobName={}, status={}",
+                        job.getId(), job.getJobName(), job.getStatus(), e);
+            }
+        });
     }
 
-    /**
-     * 启用则（重新）注册触发器，停用则移除。
-     */
-    private void reschedule(JobInfo job) {
-        try {
-            if (JobConstants.STATUS_ENABLED.equals(job.getStatus())) {
-                jobSchedulerService.schedule(job);
-            } else {
-                jobSchedulerService.unschedule(job.getId());
+    private void unscheduleAfterCommit(String jobId, String jobName) {
+        runAfterCommit(() -> {
+            try {
+                jobSchedulerService.unschedule(jobId);
+            } catch (SchedulerException e) {
+                logger.error("事务已提交但移除 Quartz 任务失败，等待周期对账: jobId={}, jobName={}",
+                        jobId, jobName, e);
             }
-        } catch (SchedulerException e) {
-            throw new IllegalStateException("同步调度器失败: " + e.getMessage(), e);
+        });
+    }
+
+    private void runAfterCommit(Runnable action) {
+        if (TransactionSynchronizationManager.isActualTransactionActive()
+                && TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    action.run();
+                }
+            });
+            return;
         }
+        action.run();
     }
 
     /**

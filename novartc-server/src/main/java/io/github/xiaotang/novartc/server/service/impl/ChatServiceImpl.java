@@ -122,8 +122,6 @@ public class ChatServiceImpl implements ChatService {
                 vo.setOnline(false);
             }
 
-            fillLastMessage(vo, currentUserId);
-            vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
             return vo;
         }).toList();
 
@@ -171,14 +169,13 @@ public class ChatServiceImpl implements ChatService {
                         .map(ImGroupMember::getUserId)
                         .filter(userId -> Boolean.TRUE.equals(onlineUserMap.get(userId)))
                         .count());
-                fillLastMessage(vo, currentUserId);
-                vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
                 return vo;
             }).toList();
 
             result.addAll(groupVos);
         }
 
+        fillChatSummaries(result, currentUserId);
         return result.stream()
                 .sorted((left, right) -> {
                     if (left.getLastMessageTime() == null && right.getLastMessageTime() == null) {
@@ -466,19 +463,29 @@ public class ChatServiceImpl implements ChatService {
         return vo;
     }
 
-    private void fillLastMessage(ChatInfoVO vo, String currentUserId) {
-        List<IMMessage> messages = imMessageRepository.findHistory(vo.getChatId(), null, 1);
-        if (messages.isEmpty()) {
+    private void fillChatSummaries(List<ChatInfoVO> chats, String currentUserId) {
+        if (chats.isEmpty()) {
             return;
         }
+        List<String> chatIds = chats.stream()
+                .map(ChatInfoVO::getChatId)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+        Map<String, IMMessage> latestMessages = imMessageRepository.findLatestByChatIds(chatIds);
+        for (ChatInfoVO chat : chats) {
+            IMMessage latest = latestMessages.get(chat.getChatId());
+            if (latest != null) {
+                applyLastMessage(chat, latest);
+            }
+            chat.setUnreadCount(countUnreadMessages(chat.getChatId(), currentUserId));
+        }
+    }
 
-        IMMessage latest = messages.getFirst();
+    private void applyLastMessage(ChatInfoVO vo, IMMessage latest) {
         vo.setLastMessageType(Boolean.TRUE.equals(latest.getRecalled()) ? "RECALL" : latest.getMessageType());
         vo.setLastMessageTime(latest.getServerTime() != null ? latest.getServerTime() : latest.getClientTime());
         vo.setLastMessage(resolveLastMessage(latest));
-        if (vo.getUnreadCount() == null) {
-            vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
-        }
     }
 
     private int countUnreadMessages(String chatId, String currentUserId) {

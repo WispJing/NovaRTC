@@ -10,9 +10,10 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
+import java.util.Objects;
 
 /**
  * 共享任务执行器。
@@ -34,35 +35,74 @@ public class JobInvokeExecutor {
         this.properties = properties;
     }
 
-    public void handle(JobInvokeMessage message) {
+    /**
+     * 执行任务并同步回传阶段状态。
+     * <p>
+     * 处理器执行前的回传失败可以安全重投；处理器一旦被调用，最终结果回传失败也不会
+     * 请求重投原始任务，避免非幂等处理器被盲目重复执行。
+     */
+    public HandleOutcome handle(JobInvokeMessage message) {
+        Objects.requireNonNull(message, "任务消息不能为空");
         long started = System.currentTimeMillis();
+        String instanceId = resolveInstanceId();
+        PreparedInvocation invocation;
+        try {
+            invocation = prepare(message);
+        } catch (Exception e) {
+            String error = errorMessage(e);
+            logger.error("任务执行前校验失败: logId={}, jobId={}",
+                    message.getLogId(), message.getJobId(), e);
+            JobResultMessage result = completedResult(
+                    message, false, error, started, System.currentTimeMillis(), instanceId);
+            return sendResult(result)
+                    ? HandleOutcome.COMPLETED
+                    : HandleOutcome.RETRY_WITHOUT_EXECUTION;
+        }
+
+        JobResultMessage processing = processingResult(message, started, instanceId);
+        if (!sendResult(processing)) {
+            logger.error("任务执行状态回传失败，处理器未执行并请求重投: logId={}, jobId={}",
+                    message.getLogId(), message.getJobId());
+            return HandleOutcome.RETRY_WITHOUT_EXECUTION;
+        }
+
         boolean success = false;
         String error = null;
         try {
-            String targetService = StringUtils.defaultIfBlank(
-                    message.getTargetService(), "novartc-server");
-            if (!properties.getServiceName().equals(targetService)) {
-                throw new IllegalArgumentException("任务目标服务不匹配: " + targetService);
-            }
-            if (isExpired(message) && !Byte.valueOf((byte) 1).equals(message.getTimeoutRerun())) {
-                throw new IllegalStateException("任务消息已过期且未配置重跑");
-            }
-            JobHandlerRegistry.Handler handler = registry.require(
-                    message.getInvokeClass(), message.getInvokeMethod());
-            JsonNode params = parseParams(message.getInvokeParams());
-            if (params.size() != handler.method().getParameterCount()) {
-                throw new IllegalArgumentException("任务参数与已注册处理器不匹配");
-            }
-            Object[] args = bindArgs(params, handler);
-            handler.method().invoke(handler.bean(), args);
+            invocation.handler().method().invoke(invocation.handler().bean(), invocation.args());
             success = true;
         } catch (Exception e) {
-            error = e.getCause() == null ? e.toString() : e.getCause().toString();
+            error = errorMessage(e);
             logger.error("任务执行失败: logId={}, jobId={}",
                     message.getLogId(), message.getJobId(), e);
-        } finally {
-            sendResult(message, success, error, started, System.currentTimeMillis());
         }
+
+        JobResultMessage result = completedResult(
+                message, success, error, started, System.currentTimeMillis(), instanceId);
+        if (sendResult(result)) {
+            return HandleOutcome.COMPLETED;
+        }
+        logger.error("任务已执行但最终结果回传失败，将确认原消息以避免重复执行: logId={}, jobId={}",
+                message.getLogId(), message.getJobId());
+        return HandleOutcome.EXECUTED_RESULT_PENDING;
+    }
+
+    private PreparedInvocation prepare(JobInvokeMessage message) {
+        String targetService = StringUtils.defaultIfBlank(
+                message.getTargetService(), "novartc-server");
+        if (!properties.getServiceName().equals(targetService)) {
+            throw new IllegalArgumentException("任务目标服务不匹配: " + targetService);
+        }
+        if (isExpired(message) && !Byte.valueOf((byte) 1).equals(message.getTimeoutRerun())) {
+            throw new IllegalStateException("任务消息已过期且未配置重跑");
+        }
+        JobHandlerRegistry.Handler handler = registry.require(
+                message.getInvokeClass(), message.getInvokeMethod());
+        JsonNode params = parseParams(message.getInvokeParams());
+        if (params.size() != handler.method().getParameterCount()) {
+            throw new IllegalArgumentException("任务参数与已注册处理器不匹配");
+        }
+        return new PreparedInvocation(handler, bindArgs(params, handler));
     }
 
     boolean isExpired(JobInvokeMessage message) {
@@ -106,29 +146,83 @@ public class JobInvokeExecutor {
         return args;
     }
 
-    private void sendResult(JobInvokeMessage message,
-                            boolean success,
-                            String error,
-                            long started,
-                            long ended) {
-        try {
-            JobResultMessage result = new JobResultMessage();
-            result.setLogId(message.getLogId());
-            result.setJobId(message.getJobId());
-            result.setTargetService(properties.getServiceName());
-            result.setSuccess(success);
-            result.setErrorMsg(StringUtils.abbreviate(error, 2000));
-            result.setStartTime(Instant.ofEpochMilli(started).toString());
-            result.setFinishTime(Instant.ofEpochMilli(ended).toString());
-            result.setDurationMs(ended - started);
-            result.setInstanceId(resolveInstanceId());
-            SendResult sendResult = template.syncSend(
-                    properties.getResultTopic(), JacksonUtil.toJson(result));
-            logger.info("任务执行结果已回传: logId={}, jobId={}, success={}, msgId={}",
-                    message.getLogId(), message.getJobId(), success, sendResult.getMsgId());
-        } catch (Exception e) {
-            logger.error("任务执行结果回传失败: logId={}", message.getLogId(), e);
+    private JobResultMessage processingResult(JobInvokeMessage message,
+                                              long started,
+                                              String instanceId) {
+        JobResultMessage result = baseResult(message, instanceId);
+        result.setExecutionStatus(JobResultMessage.STATUS_PROCESSING);
+        result.setStartTime(Instant.ofEpochMilli(started).toString());
+        return result;
+    }
+
+    private JobResultMessage completedResult(JobInvokeMessage message,
+                                             boolean success,
+                                             String error,
+                                             long started,
+                                             long ended,
+                                             String instanceId) {
+        JobResultMessage result = baseResult(message, instanceId);
+        result.setExecutionStatus(JobResultMessage.STATUS_COMPLETED);
+        result.setSuccess(success);
+        result.setErrorMsg(StringUtils.abbreviate(error, 2000));
+        result.setStartTime(Instant.ofEpochMilli(started).toString());
+        result.setFinishTime(Instant.ofEpochMilli(ended).toString());
+        result.setDurationMs(ended - started);
+        return result;
+    }
+
+    private JobResultMessage baseResult(JobInvokeMessage message, String instanceId) {
+        JobResultMessage result = new JobResultMessage();
+        result.setLogId(message.getLogId());
+        result.setJobId(message.getJobId());
+        result.setTargetService(properties.getServiceName());
+        result.setInstanceId(instanceId);
+        return result;
+    }
+
+    private boolean sendResult(JobResultMessage result) {
+        int attempts = Math.max(1, properties.getResultSendAttempts());
+        for (int attempt = 1; attempt <= attempts; attempt++) {
+            try {
+                SendResult sendResult = template.syncSend(
+                        properties.getResultTopic(), JacksonUtil.toJson(result));
+                logger.info("任务执行状态已回传: logId={}, jobId={}, executionStatus={}, success={}, msgId={}",
+                        result.getLogId(), result.getJobId(), result.getExecutionStatus(),
+                        result.getSuccess(), sendResult == null ? null : sendResult.getMsgId());
+                return true;
+            } catch (Exception e) {
+                if (attempt == attempts) {
+                    logger.error("任务执行状态回传失败: logId={}, executionStatus={}, attempts={}",
+                            result.getLogId(), result.getExecutionStatus(), attempts, e);
+                    return false;
+                }
+                logger.warn("任务执行状态回传失败，准备重试: logId={}, executionStatus={}, attempt={}/{}",
+                        result.getLogId(), result.getExecutionStatus(), attempt, attempts, e);
+                if (!pauseBeforeRetry()) {
+                    return false;
+                }
+            }
         }
+        return false;
+    }
+
+    private boolean pauseBeforeRetry() {
+        long interval = Math.max(0, properties.getResultSendRetryIntervalMs());
+        if (interval == 0) {
+            return true;
+        }
+        try {
+            Thread.sleep(interval);
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("任务执行状态回传重试等待被中断");
+            return false;
+        }
+    }
+
+    private String errorMessage(Exception e) {
+        return e.getCause() == null ? e.toString() : e.getCause().toString();
     }
 
     /**
@@ -149,5 +243,17 @@ public class JobInvokeExecutor {
             }
         }
         return properties.getServiceName() + "@" + hostName;
+    }
+
+    private record PreparedInvocation(JobHandlerRegistry.Handler handler, Object[] args) {
+    }
+
+    public enum HandleOutcome {
+        /** 任务未执行且状态无法回传，可安全请求 RocketMQ 重投。 */
+        RETRY_WITHOUT_EXECUTION,
+        /** 处理器已执行且最终结果已回传。 */
+        COMPLETED,
+        /** 处理器已执行但最终结果未回传，等待调度端超时收敛。 */
+        EXECUTED_RESULT_PENDING
     }
 }

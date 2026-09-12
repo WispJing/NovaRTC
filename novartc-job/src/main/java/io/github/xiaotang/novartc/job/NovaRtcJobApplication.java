@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.TimeZone;
 
@@ -18,6 +19,7 @@ import java.util.TimeZone;
  * @author xiaotang
  */
 @MapperScan("io.github.xiaotang.novartc.job.mapper")
+@EnableScheduling
 @SpringBootApplication
 public class NovaRtcJobApplication {
     private final Logger logger = LoggerFactory.getLogger(NovaRtcJobApplication.class);

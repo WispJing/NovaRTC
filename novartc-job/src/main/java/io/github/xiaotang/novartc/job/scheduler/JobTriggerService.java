@@ -73,7 +73,12 @@ public class JobTriggerService {
             logger.info("定时任务触发成功: logId={}, jobId={}, jobName={}, triggerType={}, msgId={}",
                     jobLog.getId(), jobInfo.getId(), jobInfo.getJobName(), triggerType, sendResult.getMsgId());
         } catch (Exception e) {
-            jobLog.setSendErrorMsg(StringUtils.abbreviate(e.toString(), 1000));
+            String sendError = StringUtils.abbreviate(e.toString(), 1000);
+            jobLog.setSendErrorMsg(sendError);
+            // 通知未发送成功时任务不可能被执行，直接结束日志，避免永久停留在待回传。
+            jobLog.setExecuteStatus(JobConstants.EXECUTE_FAIL);
+            jobLog.setExecuteErrorMsg("任务执行通知发送失败: " + sendError);
+            jobLog.setFinishTime(Instant.now());
             jobLogService.updateById(jobLog);
             logger.error("定时任务消息发送失败: logId={}, jobId={}, jobName={}",
                     jobLog.getId(), jobInfo.getId(), jobInfo.getJobName(), e);

@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +38,7 @@ class ImMessageWorkerPoolTest {
      */
     @Test
     void sameKeyTasksExecuteInOrder() throws InterruptedException {
-        pool = new ImMessageWorkerPool();
+        pool = new ImMessageWorkerPool(4, 1024, 10);
         int taskCount = 1000;
         List<Integer> results = new CopyOnWriteArrayList<>();
         CountDownLatch latch = new CountDownLatch(taskCount);
@@ -63,7 +64,7 @@ class ImMessageWorkerPoolTest {
      */
     @Test
     void differentKeysDoNotBlockEachOther() throws InterruptedException {
-        pool = new ImMessageWorkerPool();
+        pool = new ImMessageWorkerPool(4, 1024, 10);
         String slowKey = "user-slow";
         String fastKey = findKeyInDifferentBucket(slowKey);
 
@@ -96,6 +97,30 @@ class ImMessageWorkerPoolTest {
         assertTrue(elapsedMs < 300, "不同路由键的任务不应互相阻塞，实际等待 " + elapsedMs + "ms");
         assertNotEquals(slowThread.get(), fastThread.get(), "不同分桶应使用不同线程");
         assertTrue(slowDone.await(5, TimeUnit.SECONDS));
+    }
+
+    /**
+     * 分桶队列达到上限时必须快速拒绝，不能在 Netty IO 线程上阻塞或无限积压。
+     */
+    @Test
+    void fullBucketRejectsNewTask() throws InterruptedException {
+        pool = new ImMessageWorkerPool(1, 1, 1);
+        CountDownLatch running = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+
+        assertTrue(pool.submit("user-1", () -> {
+            running.countDown();
+            try {
+                release.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }));
+        assertTrue(running.await(5, TimeUnit.SECONDS));
+        assertTrue(pool.submit("user-1", () -> { }));
+
+        assertFalse(pool.submit("user-1", () -> { }));
+        release.countDown();
     }
 
     /**

@@ -1,12 +1,15 @@
 package io.github.xiaotang.novartc.server.netty;
 
 import io.github.xiaotang.novartc.server.config.ChatMsgLog;
+import io.github.xiaotang.novartc.server.config.IMConfigProperties;
 import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,13 +22,33 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ImMessageWorkerPool {
 
-    private static final int SHUTDOWN_TIMEOUT_SECONDS = 10;
+    private static final int MIN_WORKER_COUNT = 1;
+    private static final int DEFAULT_QUEUE_CAPACITY = 1024;
+    private static final int DEFAULT_SHUTDOWN_TIMEOUT_SECONDS = 10;
 
-    private final ExecutorService[] workers;
+    private final ThreadPoolExecutor[] workers;
+    private final int shutdownTimeoutSeconds;
 
-    public ImMessageWorkerPool() {
-        int workerCount = Math.max(4, Runtime.getRuntime().availableProcessors() * 2);
-        this.workers = new ExecutorService[workerCount];
+    @Autowired
+    public ImMessageWorkerPool(IMConfigProperties properties) {
+        this(resolveWorkerCount(properties),
+                positiveOrDefault(properties.getMessageWorkerQueueCapacity(), DEFAULT_QUEUE_CAPACITY),
+                positiveOrDefault(properties.getMessageWorkerShutdownTimeoutSeconds(),
+                        DEFAULT_SHUTDOWN_TIMEOUT_SECONDS));
+    }
+
+    ImMessageWorkerPool(int workerCount, int queueCapacity, int shutdownTimeoutSeconds) {
+        if (workerCount < MIN_WORKER_COUNT) {
+            throw new IllegalArgumentException("IM 业务线程数必须大于 0");
+        }
+        if (queueCapacity < 1) {
+            throw new IllegalArgumentException("IM 业务队列容量必须大于 0");
+        }
+        if (shutdownTimeoutSeconds < 1) {
+            throw new IllegalArgumentException("IM 业务线程池关闭等待时间必须大于 0");
+        }
+        this.shutdownTimeoutSeconds = shutdownTimeoutSeconds;
+        this.workers = new ThreadPoolExecutor[workerCount];
         for (int i = 0; i < workerCount; i++) {
             final int index = i;
             ThreadFactory threadFactory = runnable -> {
@@ -34,9 +57,18 @@ public class ImMessageWorkerPool {
                         ChatMsgLog.logger.error("IM 业务线程未捕获异常: thread={}", t.getName(), e));
                 return thread;
             };
-            this.workers[i] = Executors.newSingleThreadExecutor(threadFactory);
+            this.workers[i] = new ThreadPoolExecutor(
+                    1,
+                    1,
+                    0,
+                    TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<>(queueCapacity),
+                    threadFactory,
+                    new ThreadPoolExecutor.AbortPolicy()
+            );
         }
-        ChatMsgLog.logger.info("IM 消息业务线程池初始化完成: workerCount={}", workerCount);
+        ChatMsgLog.logger.info("IM 消息业务线程池初始化完成: workerCount={}, queueCapacity={}",
+                workerCount, queueCapacity);
     }
 
     /**
@@ -45,8 +77,17 @@ public class ImMessageWorkerPool {
      * @param routingKey 路由键（通常为发送者 userId）
      * @param task       业务任务
      */
-    public void submit(String routingKey, Runnable task) {
-        workers[bucketOf(routingKey)].execute(task);
+    public boolean submit(String routingKey, Runnable task) {
+        int bucket = bucketOf(routingKey);
+        try {
+            workers[bucket].execute(task);
+            return true;
+        } catch (RejectedExecutionException e) {
+            ChatMsgLog.logger.warn(
+                    "IM 业务队列已满或线程池已关闭，拒绝消息: routingKey={}, bucket={}, queueSize={}",
+                    routingKey, bucket, workers[bucket].getQueue().size());
+            return false;
+        }
     }
 
     /**
@@ -58,12 +99,12 @@ public class ImMessageWorkerPool {
 
     @PreDestroy
     public void shutdown() {
-        for (ExecutorService worker : workers) {
+        for (ThreadPoolExecutor worker : workers) {
             worker.shutdown();
         }
-        for (ExecutorService worker : workers) {
+        for (ThreadPoolExecutor worker : workers) {
             try {
-                if (!worker.awaitTermination(SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                if (!worker.awaitTermination(shutdownTimeoutSeconds, TimeUnit.SECONDS)) {
                     worker.shutdownNow();
                 }
             } catch (InterruptedException e) {
@@ -72,5 +113,20 @@ public class ImMessageWorkerPool {
             }
         }
         ChatMsgLog.logger.info("IM 消息业务线程池已关闭");
+    }
+
+    private static int resolveWorkerCount(IMConfigProperties properties) {
+        Integer configured = properties.getMessageWorkerCount();
+        if (configured == null || configured == 0) {
+            return Math.max(4, Runtime.getRuntime().availableProcessors() * 2);
+        }
+        if (configured > 0) {
+            return configured;
+        }
+        throw new IllegalArgumentException("IM 业务线程数不能小于 0");
+    }
+
+    private static int positiveOrDefault(Integer value, int defaultValue) {
+        return value == null ? defaultValue : value;
     }
 }

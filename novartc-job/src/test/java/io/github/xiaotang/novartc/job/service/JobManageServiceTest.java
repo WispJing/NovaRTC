@@ -6,14 +6,18 @@ import io.github.xiaotang.novartc.job.entity.mysql.JobInfo;
 import io.github.xiaotang.novartc.job.scheduler.JobSchedulerService;
 import io.github.xiaotang.novartc.job.scheduler.JobTriggerService;
 import io.github.xiaotang.novartc.job.config.JobMqProperties;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,17 +27,26 @@ import static org.mockito.Mockito.when;
 class JobManageServiceTest {
 
     private IJobInfoService jobInfoService;
+    private JobSchedulerService jobSchedulerService;
     private JobManageService jobManageService;
 
     @BeforeEach
     void setUp() {
         jobInfoService = mock(IJobInfoService.class);
         IJobLogService jobLogService = mock(IJobLogService.class);
-        JobSchedulerService jobSchedulerService = mock(JobSchedulerService.class);
+        jobSchedulerService = mock(JobSchedulerService.class);
         JobTriggerService jobTriggerService = mock(JobTriggerService.class);
         when(jobInfoService.save(any(JobInfo.class))).thenReturn(true);
         jobManageService = new JobManageService(
                 jobInfoService, jobLogService, jobSchedulerService, jobTriggerService, new JobMqProperties());
+    }
+
+    @AfterEach
+    void clearTransactionSynchronization() {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+        TransactionSynchronizationManager.setActualTransactionActive(false);
     }
 
     @Test
@@ -83,6 +96,21 @@ class JobManageServiceTest {
         request.setTimeoutRerun((byte) 2);
 
         assertThrows(IllegalArgumentException.class, () -> jobManageService.create(request));
+    }
+
+    @Test
+    void createSynchronizesQuartzOnlyAfterTransactionCommit() throws Exception {
+        TransactionSynchronizationManager.setActualTransactionActive(true);
+        TransactionSynchronizationManager.initSynchronization();
+
+        jobManageService.create(validRequest());
+
+        verify(jobSchedulerService, never()).schedule(any(JobInfo.class));
+        for (TransactionSynchronization synchronization
+                : TransactionSynchronizationManager.getSynchronizations()) {
+            synchronization.afterCommit();
+        }
+        verify(jobSchedulerService).schedule(any(JobInfo.class));
     }
 
     private JobSaveRequest validRequest() {

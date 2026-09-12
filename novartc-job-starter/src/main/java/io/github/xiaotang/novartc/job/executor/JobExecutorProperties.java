@@ -12,6 +12,10 @@ public class JobExecutorProperties {
     private String topic = "novartc-job-topic";
     /** 执行端回传执行结果的统一 Topic。 */
     private String resultTopic = "novartc-job-result-topic";
+    /** 结果消息同步发送最大尝试次数，包含首次发送。 */
+    private int resultSendAttempts = 3;
+    /** 结果消息发送失败后的重试间隔，单位毫秒。 */
+    private long resultSendRetryIntervalMs = 500;
     /** 空值时使用基于服务名的默认消费组，隔离不同服务。 */
     private String consumerGroup;
     /**

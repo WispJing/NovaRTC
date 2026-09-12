@@ -72,7 +72,7 @@ public class JobLog extends BaseEntity {
     private String sendErrorMsg;
 
     /**
-     * 执行状态 0-待回传 1-成功 2-失败
+     * 执行状态 0-待回传 1-成功 2-失败 3-执行中
      */
     @TableField("execute_status")
     private Byte executeStatus;

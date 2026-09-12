@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 @ChannelHandler.Sharable
 @RequiredArgsConstructor
 public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgBody> {
+    private static final String BUSY_MESSAGE = "服务繁忙，请稍后重试";
+
     private final ChatDispatchService chatDispatchService;
     private final MessagePersistenceService messagePersistenceService;
     private final UserRelationCacheService userRelationCacheService;
@@ -46,8 +48,13 @@ public class MessageHandler extends SimpleChannelInboundHandler<ChatMessage.MsgB
 
             // 业务处理（风控、持久化、分发）移交业务线程池，避免阻塞 Netty IO 线程；
             // 按发送者分桶保证同一用户的消息严格串行
-            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE ->
-                    imMessageWorkerPool.submit(userId, () -> handleMessage(ctx, msgBody, userId));
+            case TEXT, IMAGE, VIDEO, AUDIO, FILE, TEXT_AND_IMAGE -> {
+                boolean accepted = imMessageWorkerPool.submit(
+                        userId, () -> handleMessage(ctx, msgBody, userId));
+                if (!accepted) {
+                    WebSocketMsgHandler.sendSystemMessage(ctx, BUSY_MESSAGE);
+                }
+            }
 
             default -> ChatMsgLog.msgLog.warn("unsupported type {}, from {}", msgBody.getMessageType(), userId);
         }

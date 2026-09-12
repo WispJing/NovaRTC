@@ -322,11 +322,10 @@ public class AdminConsoleService {
             vo.setChatId(singleChat.getChatId());
             vo.setTargetUserId(singleChat.getUser2Id());
             vo.setTitle((left == null ? singleChat.getUser1Id() : left.getUsername()) + " / " + (right == null ? singleChat.getUser2Id() : right.getUsername()));
-            fillLastMessage(vo, null, true);
-            vo.setUnreadCount(0);
             chats.add(vo);
         }
         chats.addAll(listAllGroupChats());
+        fillChatSummaries(chats, null, false);
         chats.sort(Comparator.comparing(ChatInfoVO::getLastMessageTime, Comparator.nullsLast(Comparator.reverseOrder())));
         return chats;
     }
@@ -352,8 +351,6 @@ public class AdminConsoleService {
             vo.setTitle(target == null ? targetUserId : target.getUsername());
             vo.setAvatarUrl(target == null ? null : minioUrlResolver.resolve(target.getAvatarUrl()));
             vo.setOnline(userChannelManager.isOnline(targetUserId));
-            fillLastMessage(vo, userId, false);
-            vo.setUnreadCount(countUnreadMessages(vo.getChatId(), userId));
             result.add(vo);
         }
 
@@ -375,11 +372,10 @@ public class AdminConsoleService {
                 vo.setTitle(group.getGroupName());
                 vo.setMemberCount(members.size());
                 vo.setOnlineCount((int) members.stream().filter(member -> userChannelManager.isOnline(member.getUserId())).count());
-                fillLastMessage(vo, userId, false);
-                vo.setUnreadCount(countUnreadMessages(vo.getChatId(), userId));
                 result.add(vo);
             }
         }
+        fillChatSummaries(result, userId, true);
         result.sort(Comparator.comparing(ChatInfoVO::getLastMessageTime, Comparator.nullsLast(Comparator.reverseOrder())));
         return result;
     }
@@ -405,24 +401,29 @@ public class AdminConsoleService {
             vo.setTitle(group.getGroupName());
             vo.setMemberCount(members.size());
             vo.setOnlineCount((int) members.stream().filter(member -> userChannelManager.isOnline(member.getUserId())).count());
-            fillLastMessage(vo, null, true);
-            vo.setUnreadCount(0);
             result.add(vo);
         }
         return result;
     }
 
-    private void fillLastMessage(ChatInfoVO vo, String currentUserId, boolean superMode) {
-        List<IMMessage> messages = imMessageRepository.findHistory(vo.getChatId(), null, 1);
-        if (messages.isEmpty()) {
+    private void fillChatSummaries(List<ChatInfoVO> chats, String currentUserId, boolean includeUnread) {
+        if (chats.isEmpty()) {
             return;
         }
-        IMMessage message = messages.get(0);
-        vo.setLastMessage(message.getMessageText());
-        vo.setLastMessageType(message.getMessageType());
-        vo.setLastMessageTime(message.getServerTime());
-        if (!superMode && currentUserId != null) {
-            vo.setUnreadCount(countUnreadMessages(vo.getChatId(), currentUserId));
+        List<String> chatIds = chats.stream()
+                .map(ChatInfoVO::getChatId)
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toList();
+        Map<String, IMMessage> latestMessages = imMessageRepository.findLatestByChatIds(chatIds);
+        for (ChatInfoVO chat : chats) {
+            IMMessage message = latestMessages.get(chat.getChatId());
+            if (message != null) {
+                chat.setLastMessage(message.getMessageText());
+                chat.setLastMessageType(message.getMessageType());
+                chat.setLastMessageTime(message.getServerTime());
+            }
+            chat.setUnreadCount(includeUnread ? countUnreadMessages(chat.getChatId(), currentUserId) : 0);
         }
     }
 

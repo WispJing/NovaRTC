@@ -1,22 +1,28 @@
 package io.github.xiaotang.novartc.server.service;
 
 import io.github.xiaotang.novartc.server.config.IMConfigProperties;
+import io.github.xiaotang.novartc.server.entity.mysql.ImGroupMember;
 import io.github.xiaotang.novartc.server.mapper.ImFriendMapper;
 import io.github.xiaotang.novartc.server.mapper.ImGroupMemberMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -100,5 +106,39 @@ class UserRelationCacheServiceTest {
 
         assertFalse(userRelationCacheService.isFriend("u1", "f1"));
         verify(cacheRebuildExecutor, never()).execute(any());
+    }
+
+    @Test
+    void rebuildGroupMembersCacheShouldReplaceDataAndLoadedMarkerWithOneScript() {
+        String groupKey = "im:group:members:g1";
+        when(imConfigProperties.getGroupMembersCacheKeyPreFix()).thenReturn("im:group:members:");
+        when(imGroupMemberMapper.selectList(any())).thenReturn(List.of(
+                buildGroupMember("u1"),
+                buildGroupMember(" "),
+                buildGroupMember("u2"),
+                buildGroupMember("u1")
+        ));
+
+        userRelationCacheService.rebuildGroupMembersCache("g1");
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<RedisScript<Long>> scriptCaptor = ArgumentCaptor.forClass(RedisScript.class);
+        verify(redisTemplate).execute(
+                scriptCaptor.capture(),
+                eq(List.of(groupKey, groupKey + ":loaded")),
+                eq("u1"), eq("u2"));
+        assertThat(scriptCaptor.getValue().getScriptAsString())
+                .contains("redis.call('DEL', KEYS[1])")
+                .contains("local chunkSize = 1000")
+                .contains("redis.call('SADD', KEYS[1], unpack(chunk))")
+                .contains("redis.call('SET', KEYS[2], '1')");
+        verify(redisTemplate, never()).delete(any(String.class));
+        verify(redisTemplate, never()).opsForValue();
+    }
+
+    private ImGroupMember buildGroupMember(String userId) {
+        ImGroupMember member = new ImGroupMember();
+        member.setUserId(userId);
+        return member;
     }
 }

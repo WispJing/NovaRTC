@@ -311,6 +311,9 @@ function executeStatusTag(status) {
     if (status === 2) {
         return '<span class="tag tag-danger">失败</span>';
     }
+    if (status === 3) {
+        return '<span class="tag tag-primary">执行中</span>';
+    }
     return '<span class="tag tag-primary">待回传</span>';
 }
 

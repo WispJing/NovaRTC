@@ -59,6 +59,10 @@ job:
   topic: 'novartc-job-topic'
   result-topic: 'novartc-job-result-topic'
   result-consumer-group: 'novartc-job-result-consumer-group'
+  # 最终结果长时间未回传时自动收敛日志；应大于最长处理器执行时间及消息传输延迟
+  result-timeout-seconds: 3600
+  result-timeout-scan-interval-ms: 60000
+  scheduler-reconcile-interval-ms: 60000
   allowed-services:
     - novartc-server
 

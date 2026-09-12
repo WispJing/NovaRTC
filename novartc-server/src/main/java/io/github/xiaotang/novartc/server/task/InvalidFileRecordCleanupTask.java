@@ -68,27 +68,29 @@ public class InvalidFileRecordCleanupTask {
             logger.info("上一轮失效文件记录清理尚未结束，跳过本次执行");
             return 0;
         }
-        RLock lock = redissonClient.getLock(cleanupProperties.getLockKey());
-        boolean locked;
+        RLock lock = null;
+        boolean locked = false;
         try {
+            lock = redissonClient.getLock(cleanupProperties.getLockKey());
             // 零等待抢锁：未获取到说明其他实例正在执行，直接跳过
             locked = lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES);
+            if (!locked) {
+                logger.info("其他实例持有失效文件记录清理锁，跳过本次执行");
+                return 0;
+            }
+            return doCleanup();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.warn("获取失效文件记录清理分布式锁被中断，跳过本次执行");
             return 0;
-        }
-        if (!locked) {
-            logger.info("其他实例持有失效文件记录清理锁，跳过本次执行");
-            return 0;
-        }
-        try {
-            return doCleanup();
         } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
+            try {
+                if (locked && lock != null && lock.isHeldByCurrentThread()) {
+                    lock.unlock();
+                }
+            } finally {
+                running.set(false);
             }
-            running.set(false);
         }
     }
 

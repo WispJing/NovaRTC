@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -141,5 +143,78 @@ class InvalidFileRecordCleanupTaskTest {
         assertThat(cleaned).isZero();
         verify(imFileMapper, never()).selectList(any());
         verify(imFileMapper, never()).deleteById(anyString());
+    }
+
+    @Test
+    void cleanupShouldResetRunningWhenLockNotAcquired() throws InterruptedException {
+        when(redissonClient.getLock(cleanupProperties.getLockKey())).thenReturn(lock);
+        when(lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES))
+                .thenReturn(false, true);
+        when(lock.isHeldByCurrentThread()).thenReturn(true);
+        when(imFileMapper.selectList(any())).thenReturn(Collections.emptyList());
+
+        assertThat(cleanupTask.cleanupInvalidRecords()).isZero();
+        assertThat(cleanupTask.cleanupInvalidRecords()).isZero();
+
+        verify(lock, times(2)).tryLock(
+                0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES);
+        verify(imFileMapper, times(1)).selectList(any());
+        verify(lock, times(1)).unlock();
+    }
+
+    @Test
+    void cleanupShouldResetRunningWhenLockWaitInterrupted() throws InterruptedException {
+        when(redissonClient.getLock(cleanupProperties.getLockKey())).thenReturn(lock);
+        when(lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES))
+                .thenThrow(new InterruptedException("interrupted"))
+                .thenReturn(true);
+        when(lock.isHeldByCurrentThread()).thenReturn(true);
+        when(imFileMapper.selectList(any())).thenReturn(Collections.emptyList());
+
+        try {
+            assertThat(cleanupTask.cleanupInvalidRecords()).isZero();
+            assertThat(Thread.currentThread().isInterrupted()).isTrue();
+            Thread.interrupted();
+
+            assertThat(cleanupTask.cleanupInvalidRecords()).isZero();
+            verify(imFileMapper, times(1)).selectList(any());
+            verify(lock, times(1)).unlock();
+        } finally {
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void cleanupShouldResetRunningWhenLockLookupFails() throws InterruptedException {
+        RuntimeException lookupFailure = new IllegalStateException("redis unavailable");
+        when(redissonClient.getLock(cleanupProperties.getLockKey()))
+                .thenThrow(lookupFailure)
+                .thenReturn(lock);
+        when(lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES))
+                .thenReturn(true);
+        when(lock.isHeldByCurrentThread()).thenReturn(true);
+        when(imFileMapper.selectList(any())).thenReturn(Collections.emptyList());
+
+        assertThatThrownBy(cleanupTask::cleanupInvalidRecords).isSameAs(lookupFailure);
+        assertThat(cleanupTask.cleanupInvalidRecords()).isZero();
+
+        verify(redissonClient, times(2)).getLock(cleanupProperties.getLockKey());
+        verify(imFileMapper, times(1)).selectList(any());
+    }
+
+    @Test
+    void cleanupShouldResetRunningWhenUnlockFails() throws InterruptedException {
+        RuntimeException unlockFailure = new IllegalStateException("unlock failed");
+        when(redissonClient.getLock(cleanupProperties.getLockKey())).thenReturn(lock);
+        when(lock.tryLock(0, cleanupProperties.getLockLeaseMinutes(), TimeUnit.MINUTES))
+                .thenReturn(true);
+        when(lock.isHeldByCurrentThread()).thenReturn(true);
+        when(imFileMapper.selectList(any())).thenReturn(Collections.emptyList());
+        doThrow(unlockFailure).doNothing().when(lock).unlock();
+
+        assertThatThrownBy(cleanupTask::cleanupInvalidRecords).isSameAs(unlockFailure);
+        assertThat(cleanupTask.cleanupInvalidRecords()).isZero();
+
+        verify(lock, times(2)).unlock();
     }
 }

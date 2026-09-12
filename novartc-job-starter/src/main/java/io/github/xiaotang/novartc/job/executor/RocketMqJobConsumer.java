@@ -62,15 +62,28 @@ public class RocketMqJobConsumer {
         targetConsumer.setConsumeThreadMin(properties.getConsumeThreadMin());
         targetConsumer.setConsumeThreadMax(properties.getConsumeThreadMax());
         targetConsumer.setConsumeTimeout(properties.getConsumeTimeoutMinutes());
+        // 每批仅处理一条，避免一条安全重投导致同批已完成任务被再次执行。
+        targetConsumer.setConsumeMessageBatchMaxSize(1);
     }
 
-    private ConsumeConcurrentlyStatus consume(
+    ConsumeConcurrentlyStatus consume(
             java.util.List<org.apache.rocketmq.common.message.MessageExt> messages) {
         renameConsumerThreadIfNecessary();
         try {
             for (var raw : messages) {
                 String body = new String(raw.getBody(), StandardCharsets.UTF_8);
-                executor.handle(JacksonUtil.toObject(body, JobInvokeMessage.class));
+                JobInvokeMessage message = JacksonUtil.toObject(body, JobInvokeMessage.class);
+                JobInvokeExecutor.HandleOutcome outcome = executor.handle(message);
+                if (JobInvokeExecutor.HandleOutcome.RETRY_WITHOUT_EXECUTION.equals(outcome)) {
+                    logger.warn("任务尚未执行且状态无法回传，请求 RocketMQ 重投: logId={}, jobId={}",
+                            message.getLogId(), message.getJobId());
+                    return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                }
+                if (JobInvokeExecutor.HandleOutcome.EXECUTED_RESULT_PENDING.equals(outcome)) {
+                    logger.error("任务已执行但结果仍待回传，为避免非幂等处理器重复执行将确认原消息: "
+                                    + "logId={}, jobId={}",
+                            message.getLogId(), message.getJobId());
+                }
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         } catch (Exception e) {

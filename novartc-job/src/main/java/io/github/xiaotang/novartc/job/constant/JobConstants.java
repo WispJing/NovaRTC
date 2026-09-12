@@ -81,6 +81,11 @@ public final class JobConstants {
     public static final Byte EXECUTE_FAIL = (byte) 2;
 
     /**
+     * 执行状态：执行中。job_log.execute_status 为 TINYINT，增加该状态无需变更字段结构。
+     */
+    public static final Byte EXECUTE_PROCESSING = (byte) 3;
+
+    /**
      * Quartz JobDataMap 中的任务ID键
      */
     public static final String JOB_DATA_KEY_JOB_ID = "jobId";

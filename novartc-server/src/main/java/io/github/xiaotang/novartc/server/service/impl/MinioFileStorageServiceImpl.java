@@ -86,7 +86,13 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
                 UserContextHolder.getUserId(), type.code(), file.getOriginalFilename(), bucket, objectName);
 
         String url = minioUrlResolver.resolve(objectName);
-        String fileId = registerFile(type, file, extension, objectName, url);
+        String fileId;
+        try {
+            fileId = registerFile(type, file, extension, objectName, url);
+        } catch (RuntimeException registrationException) {
+            removeUploadedObjectAfterRegistrationFailure(bucket, objectName, registrationException);
+            throw registrationException;
+        }
 
         FileUploadResponse response = new FileUploadResponse();
         response.setFileId(fileId);
@@ -97,6 +103,23 @@ public class MinioFileStorageServiceImpl implements FileStorageService {
         response.setSize(file.getSize());
         response.setContentType(file.getContentType());
         return response;
+    }
+
+    /**
+     * 数据库登记失败时回滚已上传对象；补偿失败不覆盖原始登记异常。
+     */
+    private void removeUploadedObjectAfterRegistrationFailure(String bucket, String objectName,
+                                                               RuntimeException registrationException) {
+        try {
+            minioUtil.removeObject(bucket, objectName);
+            logger.warn("文件信息登记失败，已删除上传对象: {}/{}", bucket, objectName);
+        } catch (RuntimeException cleanupException) {
+            if (cleanupException != registrationException) {
+                registrationException.addSuppressed(cleanupException);
+            }
+            logger.error("文件信息登记失败且上传对象补偿删除失败: {}/{}",
+                    bucket, objectName, cleanupException);
+        }
     }
 
     /**

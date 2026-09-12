@@ -14,6 +14,12 @@ import java.io.Serializable;
 @Data
 public class JobResultMessage implements Serializable {
 
+    /** 处理器开始执行，尚未产生最终结果。 */
+    public static final String STATUS_PROCESSING = "PROCESSING";
+
+    /** 处理器已结束，{@link #success} 表示最终执行结果。 */
+    public static final String STATUS_COMPLETED = "COMPLETED";
+
     /** 实际执行服务，用于校验路由与审计。 */
     private String targetService;
 
@@ -26,6 +32,12 @@ public class JobResultMessage implements Serializable {
      * 任务ID
      */
     private String jobId;
+
+    /**
+     * 回传阶段：PROCESSING-开始执行，COMPLETED-执行结束。
+     * 旧版本消息缺失该字段时按 COMPLETED 兼容处理。
+     */
+    private String executionStatus;
 
     /**
      * 执行是否成功

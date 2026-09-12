@@ -131,6 +131,11 @@ im:
   port: 9688
   # 单实例最大 IM 连接数，0 表示不限制
   maxConnections: 0
+  # IM 业务处理分桶数，0 表示按 CPU 核数自动计算
+  messageWorkerCount: 0
+  # 每个分桶的最大排队消息数，队列满时拒绝并提示客户端重试
+  messageWorkerQueueCapacity: 1024
+  messageWorkerShutdownTimeoutSeconds: 10
   chatTopic: 'im-chat-topic'
   chatConsumerGroup: 'im-chat-consumer-group'
   presenceTopic: 'im-presence-topic'

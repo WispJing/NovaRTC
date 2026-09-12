@@ -6,6 +6,7 @@ import io.github.xiaotang.novartc.job.service.IJobInfoService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -16,6 +17,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -23,8 +25,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * {@link JobSchedulerService} 触发器构建单元测试（Quartz 内存调度器）。
@@ -32,6 +43,7 @@ import static org.mockito.Mockito.mock;
 class JobSchedulerServiceTest {
 
     private Scheduler scheduler;
+    private IJobInfoService jobInfoService;
     private JobSchedulerService jobSchedulerService;
 
     @BeforeEach
@@ -43,7 +55,8 @@ class JobSchedulerServiceTest {
         properties.put("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
         factory.initialize(properties);
         scheduler = factory.getScheduler();
-        jobSchedulerService = new JobSchedulerService(scheduler, mock(IJobInfoService.class));
+        jobInfoService = mock(IJobInfoService.class);
+        jobSchedulerService = new JobSchedulerService(scheduler, jobInfoService);
     }
 
     @AfterEach
@@ -113,6 +126,56 @@ class JobSchedulerServiceTest {
         CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey("4"));
         assertEquals("0 0/10 * * * ?", trigger.getCronExpression());
         assertEquals(1, scheduler.getJobKeys(groupMatcher()).size());
+    }
+
+    @Test
+    void rescheduleFailureKeepsOldJobAndNeverDeletesItFirst() throws Exception {
+        Scheduler failingScheduler = mock(Scheduler.class);
+        JobSchedulerService service = new JobSchedulerService(
+                failingScheduler, mock(IJobInfoService.class));
+        JobKey key = jobKey("failure");
+        TriggerKey triggerKey = triggerKey("failure");
+        JobDetail oldDetail = org.quartz.JobBuilder.newJob(SerialJobNotifyJob.class)
+                .withIdentity(key)
+                .usingJobData(JobConstants.JOB_DATA_KEY_JOB_ID, "failure")
+                .build();
+        Trigger oldTrigger = org.quartz.TriggerBuilder.newTrigger()
+                .withIdentity(triggerKey)
+                .forJob(key)
+                .withSchedule(org.quartz.CronScheduleBuilder.cronSchedule("0 0/5 * * * ?")
+                        .inTimeZone(TimeZone.getTimeZone("UTC")))
+                .build();
+        when(failingScheduler.getJobDetail(key)).thenReturn(oldDetail);
+        when(failingScheduler.getTrigger(triggerKey)).thenReturn(oldTrigger);
+        when(failingScheduler.checkExists(key)).thenReturn(true);
+        doThrow(new SchedulerException("reschedule failed"))
+                .when(failingScheduler).rescheduleJob(any(TriggerKey.class), any(Trigger.class));
+
+        assertThrows(SchedulerException.class, () -> service.schedule(
+                buildJob("failure", JobConstants.SCHEDULE_TYPE_CRON,
+                        "0 0/10 * * * ?", null, (byte) 0)));
+
+        verify(failingScheduler, never()).deleteJob(key);
+        ArgumentCaptor<JobDetail> detailCaptor = ArgumentCaptor.forClass(JobDetail.class);
+        verify(failingScheduler, times(2)).addJob(detailCaptor.capture(), anyBoolean(), anyBoolean());
+        assertSame(oldDetail, detailCaptor.getAllValues().get(1));
+    }
+
+    @Test
+    void reconcileRemovesDisabledAndDeletedJobs() throws Exception {
+        JobInfo disabled = buildJob(
+                "disabled", JobConstants.SCHEDULE_TYPE_CRON, "0 0/5 * * * ?", null, (byte) 0);
+        JobInfo deleted = buildJob(
+                "deleted", JobConstants.SCHEDULE_TYPE_CRON, "0 0/5 * * * ?", null, (byte) 0);
+        jobSchedulerService.schedule(disabled);
+        jobSchedulerService.schedule(deleted);
+        disabled.setStatus(JobConstants.STATUS_DISABLED);
+        when(jobInfoService.list()).thenReturn(List.of(disabled));
+
+        jobSchedulerService.reconcile();
+
+        assertFalse(scheduler.checkExists(jobKey("disabled")));
+        assertFalse(scheduler.checkExists(jobKey("deleted")));
     }
 
     /**

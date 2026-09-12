@@ -27,7 +27,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * MinIO 文件存储服务单元测试，不启动 Spring 上下文。
@@ -89,6 +91,37 @@ class MinioFileStorageServiceImplTest {
         assertThat(imFile.getUrl()).isEqualTo(response.getUrl());
         assertThat(imFile.getExtension()).isEqualTo("png");
         assertThat(imFile.getSize()).isEqualTo(3L);
+    }
+
+    @Test
+    void storeShouldRemoveUploadedObjectWhenRegistrationFails() {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "avatar.png", "image/png", new byte[]{1, 2, 3});
+        RuntimeException registrationFailure = new IllegalStateException("database unavailable");
+        when(imFileMapper.insert(any(ImFile.class))).thenThrow(registrationFailure);
+
+        assertThatThrownBy(() -> fileStorageService.store(file, "avatar"))
+                .isSameAs(registrationFailure);
+
+        ArgumentCaptor<String> objectNameCaptor = ArgumentCaptor.forClass(String.class);
+        verify(minioUtil).putObject(eq("novartc"), objectNameCaptor.capture(),
+                any(InputStream.class), eq("image/png"), anyLong());
+        verify(minioUtil).removeObject("novartc", objectNameCaptor.getValue());
+    }
+
+    @Test
+    void storeShouldKeepRegistrationFailureWhenCompensationAlsoFails() {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "avatar.png", "image/png", new byte[]{1, 2, 3});
+        RuntimeException registrationFailure = new IllegalStateException("database unavailable");
+        RuntimeException cleanupFailure = new IllegalStateException("minio unavailable");
+        when(imFileMapper.insert(any(ImFile.class))).thenThrow(registrationFailure);
+        doThrow(cleanupFailure).when(minioUtil).removeObject(eq("novartc"), any(String.class));
+
+        assertThatThrownBy(() -> fileStorageService.store(file, "avatar"))
+                .isSameAs(registrationFailure)
+                .satisfies(throwable -> assertThat(throwable.getSuppressed())
+                        .containsExactly(cleanupFailure));
     }
 
     @Test

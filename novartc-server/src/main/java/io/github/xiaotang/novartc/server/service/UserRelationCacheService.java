@@ -9,6 +9,7 @@ import io.github.xiaotang.novartc.server.mapper.ImGroupMemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -28,6 +29,24 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserRelationCacheService {
+    /**
+     * 原子替换关系集合并写入已加载标记，避免并发读取看到中间状态。
+     */
+    private static final DefaultRedisScript<Long> REPLACE_SET_SCRIPT = new DefaultRedisScript<>("""
+            redis.call('DEL', KEYS[1])
+            local chunkSize = 1000
+            for startIndex = 1, #ARGV, chunkSize do
+                local chunk = {}
+                local endIndex = math.min(startIndex + chunkSize - 1, #ARGV)
+                for index = startIndex, endIndex do
+                    chunk[#chunk + 1] = ARGV[index]
+                end
+                redis.call('SADD', KEYS[1], unpack(chunk))
+            end
+            redis.call('SET', KEYS[2], '1')
+            return 1
+            """, Long.class);
+
     /**
      * 条带锁，防止缓存击穿：并发未命中时同一条带内只允许一次重建。
      */
@@ -279,12 +298,11 @@ public class UserRelationCacheService {
     }
 
     private void replaceSet(String key, Collection<String> values) {
-        // 先写数据、后打 loaded 标记，保证读到标记时数据必然已就绪
-        redisTemplate.delete(key);
-        if (values != null && !values.isEmpty()) {
-            redisTemplate.opsForSet().add(key, values.stream().filter(StringUtils::isNotBlank).distinct().toArray(String[]::new));
-        }
-        redisTemplate.opsForValue().set(buildLoadedKey(key), "1");
+        String[] members = values == null ? new String[0] : values.stream()
+                .filter(StringUtils::isNotBlank)
+                .distinct()
+                .toArray(String[]::new);
+        redisTemplate.execute(REPLACE_SET_SCRIPT, List.of(key, buildLoadedKey(key)), (Object[]) members);
     }
 
     private String buildUserFriendKey(String userId) {
